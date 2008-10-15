@@ -238,7 +238,7 @@ ENTRY(sys_ni_syscall)
 ENTRY(sys_call_table)
 	.long sys_ni_syscall	/* @ system call #0 */
 	.long sys_ni_syscall
-	.long sys_ni_syscall
+	.long sys_fork		/* @ Crida al sistema Fork 0x2 */
 	.long sys_ni_syscall
 	.long sys_write		/* @ Crida al sistema Write 0x4 */
 	.long sys_ni_syscall
