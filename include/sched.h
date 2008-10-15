@@ -30,6 +30,7 @@ extern union task_union task[NR_TASKS];
 
 /* Inicialitza les dades del proces inicial */
 void init_task0();
+void init_sched();
 struct task_struct* current();
 struct task_struct * list_head_to_task_struct(struct list_head * l);
 
