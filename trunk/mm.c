@@ -233,7 +233,16 @@ int initialize_P0_frames(void)
 int alloc_frames( int nframes )
 {
     /* You must insert code here */
-    return 0;
+    int i, j, ok=0;
+    for (i=0; i<TOTAL_PAGES && ok!=nframes && TOTAL_PAGES-i > nframes; i++) {
+    	ok=0;
+    	for(j=i; j < i+nframes; j++){
+    		if(phys_mem[j]==FREE_FRAME) ok++;
+    		else break;
+    	}
+    if (ok!=nframes) i=j;
+    }
+    return ok==nframes ? i : -1;
 }
 
 /* free_frames - Mark as FREE_FRAME 'nframes' consecutive pages from the initial  'frame'.*/
@@ -241,8 +250,7 @@ void free_frames( unsigned int frame, int nframes )
 {
     /* You must insert code here */
     int i;
-    for (i=frame; i < frame+nframes; i++) 
-    {
+    for (i=frame; i < frame+nframes; i++) {
     	phys_mem[i]=FREE_FRAME;
     }
 }
