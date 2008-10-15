@@ -86,3 +86,19 @@ int sys_getpid(){
 	struct task_struct * p=current();
 	return p->pid;
 }
+
+int search_free_task(){
+int i;
+	for(i=0; i< NR_TASKS; i++){
+		if(task[i].task.pid<0) return i;
+	}
+	return -1;
+}
+int sys_fork(){
+
+	int t = search_free_task();
+	if (t==-1) return -EAGAIN;
+	
+	copy_data();
+	struct task_union fill = 
+}
