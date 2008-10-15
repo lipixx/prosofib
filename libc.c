@@ -32,6 +32,19 @@ int write(int fd,char *buffer,int size)
 
 }
 
+int getpid(void)
+{
+  int pid;
+  __asm__ __volatile__(
+		      "movl $20,%%eax\n"
+		      "int $0x80\n"
+		      "movl %%eax, %0\n"
+		      : "=g"(pid)
+		      :
+		      : "%ebx"
+		       );
+}
+
 
 void perror()
 {
