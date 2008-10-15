@@ -4,19 +4,24 @@
 
 #include <sched.h>
 #include <list.h>
-
+s
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
 
 
+void init_sched()
+{
+  INIT_LIST_HEAD(&runqueue);
+  pid = 0;
+}
+
 void init_task0(int first_ph)
 {
   struct task_struct task0;
-  task0.pid = 1;
+  task0.pid = ++pid;
   task0.quantum = 0;
   task0.tics_cpu = 0;
   task0.pagines_fisiques[0] = first_ph;
-  INIT_LIST_HEAD(&runqueue);
   list_add(&(task0.p_rqueue),&runqueue);
 }
 
