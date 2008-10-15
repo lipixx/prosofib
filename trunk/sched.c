@@ -12,13 +12,14 @@ union task_union task[NR_TASKS]
 void init_sched()
 {
   INIT_LIST_HEAD(&runqueue);
-  pid = 0;
+  pid = 1;
 }
 
 void init_task0(int first_ph)
 {
   struct task_struct task0;
-  task0.pid = ++pid;
+  task0.pid = pid;
+  pid++;
   task0.quantum = 0;
   task0.tics_cpu = 0;
   task0.pagines_fisiques[0] = first_ph;
