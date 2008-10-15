@@ -43,6 +43,7 @@ int getpid(void)
 		      :
 		      : "%ebx"
 		       );
+  return pid;
 }
 
 
