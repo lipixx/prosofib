@@ -80,7 +80,8 @@ main(void)
   first_ph=init_mm();
   iniTemps();
 
-
+  /* Inicialitzem les variables i estructures del scheduler */
+  init_sched();
 
   /* Initialize task 0 data */
   init_task0(first_ph);
