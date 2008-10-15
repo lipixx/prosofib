@@ -69,7 +69,7 @@
 	outb %al, $0x20
 
 #define MINSTAB 0
-#define MAXSTAB 10
+#define MAXSTAB 20
 	
 ENTRY(divide_error_handler)
 	SAVE_ALL
@@ -247,4 +247,14 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall	/*@ system call #10*/
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_getpid	/* @ Crida al sistema getpid 0x14 (#20)*/
 
