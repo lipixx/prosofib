@@ -51,12 +51,16 @@ void itoa(int n, char *buffer)
   int ndigits = n;
   int i = 0;
 
+  if (n ==0) buffer[0] = '0';
+
+  /* Comptem el nombre de digits */
   while (ndigits > 0)
     {
       i++;
       ndigits /= 10;
     }
 
+  
   while (i > 0)
     {		
       buffer[i-1] = (n%10) + '0';
