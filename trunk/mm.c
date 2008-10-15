@@ -232,7 +232,6 @@ int initialize_P0_frames(void)
  * Returns the initial frame number or -1 in case not enough consecutive pages available. */
 int alloc_frames( int nframes )
 {
-    /* You must insert code here */
     int i, j, ok=0;
     for (i=0; i<TOTAL_PAGES && ok!=nframes && TOTAL_PAGES-i > nframes; i++) {
     	ok=0;
@@ -248,7 +247,6 @@ int alloc_frames( int nframes )
 /* free_frames - Mark as FREE_FRAME 'nframes' consecutive pages from the initial  'frame'.*/
 void free_frames( unsigned int frame, int nframes )
 {
-    /* You must insert code here */
     int i;
     for (i=frame; i < frame+nframes; i++) {
     	phys_mem[i]=FREE_FRAME;
