@@ -81,3 +81,8 @@ int comprova_fd(int fd,int operacio)
 
   return -EBADR;	/* Invalid request descriptor */
 }
+
+int sys_getpid(){
+	struct task_struct * p=current();
+	return p->pid;
+}
