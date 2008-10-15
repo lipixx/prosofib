@@ -240,6 +240,11 @@ int alloc_frames( int nframes )
 void free_frames( unsigned int frame, int nframes )
 {
     /* You must insert code here */
+    int i;
+    for (i=frame; i < frame+nframes; i++) 
+    {
+    	phys_mem[i]=FREE_FRAME;
+    }
 }
 
 
