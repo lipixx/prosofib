@@ -7,6 +7,7 @@
 #define __LIBC_H__
 
 int write(int fd, char *buffer, int size);
+int getpid(void);
 void perror();
 
 #endif  /* __LIBC_H__ */
