@@ -17,12 +17,10 @@ void init_sched()
 
 void init_task0(int first_ph)
 {
-  struct task_struct task0;
-  task0.pid = pid;
-  pid++;
-  task0.quantum = 0;
-  task0.tics_cpu = 0;
-  task0.pagines_fisiques[0] = first_ph;
+  task[0].task.pid = pid++;
+  task[0].task.quantum = 0;
+  task[0].task.tics_cpu = 0;
+  task[0].task.pagines_fisiques[0] = first_ph; 
   list_add(&(task0.p_rqueue),&runqueue);
 }
 

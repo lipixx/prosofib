@@ -23,12 +23,7 @@ int write(int fd,char *buffer,int size)
      
 );
 
-  if (val < 0){
-    errno = 0-val;
-    perror();
-    return -1;
-  }
-  else return val;
+  return check_errno(val);
 
 }
 
@@ -46,6 +41,61 @@ int getpid(void)
   return pid;
 }
 
+
+
+
+
+/* FORK
+
+RETURN VALUES
+
+     Upon successful completion, fork() returns a value of 0 to the child
+     process and returns the process ID of the child process to the parent
+     process.  Otherwise, a value of -1 is returned to the parent process, no
+     child process is created, and the global variable errno is set to indi-
+     cate the error.
+
+ERRORS
+
+     Fork() will fail and no child process will be created if:
+
+     [EAGAIN]           The system-imposed limit on the total number of pro-
+                        cesses under execution would be exceeded.  This limit
+                        is configuration-dependent.
+
+     [EAGAIN]           The system-imposed limit MAXUPRC (<sys/param.h>) on
+                        the total number of processes under execution by a
+                        single user would be exceeded.
+
+     [ENOMEM]           There is insufficient swap space for the new process.
+
+*/
+
+int fork(void)
+{
+  int val = -1;
+  __asm__ __volatile__(
+		       "movl $2,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax, %0\n"
+		       : "=g" (val)
+		       :
+		       : "%ebx"
+		       );
+
+  return check_errno(val);
+  
+}
+
+int check_errno(val)
+{
+  if (val < 0){
+    errno = 0-val;
+    perror();
+    return -1;
+  }
+  else return val;
+}
 
 void perror()
 {
