@@ -4,7 +4,7 @@
 
 #include <sched.h>
 #include <list.h>
-s
+
 union task_union task[NR_TASKS]
   __attribute__((__section__(".data.task")));
 
