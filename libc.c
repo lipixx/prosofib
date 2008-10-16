@@ -104,6 +104,7 @@ void perror()
     {
     case 5: write(1,"EIO: I/O error \n",16); break;
     case 9: write(1,"EBADF: Bad file number \n",24); break;
+    case 11: write(1,"EAGAIN: Try again \n",19); break;
     case 14: write(1,"EFAULT: Bad address \n",21); break;
     case 22: write(1,"EINVAL: Invalid argument \n",26);break;
     case 27: write(1,"EFBIG: File too large \n",23);break;
