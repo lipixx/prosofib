@@ -9,5 +9,6 @@
 int write(int fd, char *buffer, int size);
 int getpid(void);
 void perror();
+int check_errno(int i);
 
 #endif  /* __LIBC_H__ */
