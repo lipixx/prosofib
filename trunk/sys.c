@@ -84,7 +84,7 @@ int comprova_fd(int fd,int operacio)
 }
 
 int sys_getpid(){
-	struct task_struct * p=current();
+	struct task_struct *p=current();
 	return p->pid;
 }
 
@@ -105,19 +105,20 @@ int sys_fork(){
 	
 	/* Herencia dades usuari*/
 	int i, frame;
-	struct task_struct * p=current();
+	struct task_struct *p=current();
 
-	for(i=0; i<NUM_PAG_CODE+NUM_PAG_DATA && task[t].pagines_fisiques[i]!=-1; i++){
+	for(i=0; i<NUM_PAG_DATA && task[t].pagines_fisiques[i]!=-1; i++){
 		
 		frame=alloc_frames(1);
 		if (frame==-1) return - EAGAIN;
 
 		/* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' del fill(nomes de forma temporal) */
-		set_ss_pag(task[t].task.pagines_fisiques[i], frame);
+		set_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA, frame);
 		
 		/* Copiam la pagina del pare al frame del fill, el qual acabam d'associar amb la pagina logica del nou proces*/
-		copy_data(p->pagines_fisiques[i],task[t].task.pagines_fisiques[i], PAGE_SIZE);
-			
+		//copy_data(p->pagines_fisiques[i],task[t].task.pagines_fisiques[i], PAGE_SIZE);
+		copy_data(PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+i), PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+i), PAGE_SIZE);
+		
 		/* Allibarem les pagines fisiques*/
 		del_ss_pag(frame);
 			
