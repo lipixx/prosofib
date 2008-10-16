@@ -21,7 +21,7 @@ void init_task0(int first_ph)
   task[0].task.quantum = 0;
   task[0].task.tics_cpu = 0;
   task[0].task.pagines_fisiques[0] = first_ph; 
-  list_add(&(task0.p_rqueue),&runqueue);
+  list_add(&(task[0].task.run_list),&runqueue);
 }
 
 struct task_struct * current()
