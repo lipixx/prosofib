@@ -41,6 +41,6 @@ struct task_struct * current()
 
 struct task_struct * list_head_to_task_struct(struct list_head * l)
 {
-  return list_entry(l,struct task_struct,p_rqueue);
+  return list_entry(l,struct task_struct,run_list);
 }
 
