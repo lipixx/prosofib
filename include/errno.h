@@ -3,6 +3,7 @@
 
 #define	EIO		 5	/* I/O error */
 #define	EBADF		 9	/* Bad file number */
+#define	EAGAIN		11	/* Try again */
 #define	EFAULT		14	/* Bad address */
 #define	EINVAL		22	/* Invalid argument */
 #define	EFBIG		27	/* File too large */
