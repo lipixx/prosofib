@@ -69,6 +69,7 @@ void set_user_pages( int first_ph_page)
   /* CODE */
   for (pag=PAG_LOG_INIT_CODE_P0;pag<PAG_LOG_INIT_DATA_P0;pag++){
   	pagusr_table[pag].entry = 0;
+  	//La first_ph_page = NUM_PAG_KERNEL
   	pagusr_table[pag].bits.pbase_addr = first_ph_page;
   	pagusr_table[pag].bits.user = 1;
   	pagusr_table[pag].bits.present = 1;
@@ -78,6 +79,7 @@ void set_user_pages( int first_ph_page)
   /* DATA */ 
   for (pag=PAG_LOG_INIT_DATA_P0;pag<PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA;pag++){
   	pagusr_table[pag].entry = 0;
+        //first_ph_page ara val PAG_LOG_INIT_DATA_P0 del bucle anterior 
   	pagusr_table[pag].bits.pbase_addr = first_ph_page;
   	pagusr_table[pag].bits.user = 1;
   	pagusr_table[pag].bits.rw = 1;
@@ -163,6 +165,12 @@ void setGdt()
 /***********************************************/
 /************* TSS MANAGEMENT*******************/
 /***********************************************/
+/*Entre altres el TSS diu on es troba la pila del sistema
+En el cas del proces 0, es posa tss.esp0 a KERNEL_ESP
+veure que val aquesta variable dins segment.h i ens n'adonem
+que es la & de la pila del task[0]. Per tant, el proces
+que s'inicialitza es el 0 ja per defecte
+*/
 void setTSS()
 {
   tss.PreviousTaskLink   = NULL;
