@@ -99,6 +99,7 @@ int sys_fork(){
 	int t = search_free_task();
 	if (t==-1) return -EAGAIN;
 	
-	copy_data();
-	struct task_union fill = 
+	/* Copiar el task_union del pare al fill */
+	copy_data(current(), &task[t], 4096);
+	//struct task_union fill = 
 }
