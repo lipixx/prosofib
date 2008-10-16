@@ -7,6 +7,7 @@
 #include <utils.h>
 #include <errno.h>
 #include <sched.h>
+#include <mm_address.h>
 
 #define LECTURA 0
 #define ESCRIPTURA 1
@@ -101,5 +102,27 @@ int sys_fork(){
 	
 	/* Copiar el task_union del pare al fill */
 	copy_data(current(), &task[t], 4096);
-	//struct task_union fill = 
+	
+	/* Herencia dades usuari*/
+	int i, frame;
+	struct task_struct * p=current();
+
+	for(i=0; i<NUM_PAG_CODE+NUM_PAG_DATA && task[t].pagines_fisiques[i]!=-1; i++){
+		
+		frame=alloc_frames(1);
+		if (frame==-1) return - EAGAIN;
+
+		/* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' del fill(nomes de forma temporal) */
+		set_ss_pag(task[t].task.pagines_fisiques[i], frame);
+		
+		/* Copiam la pagina del pare al frame del fill, el qual acabam d'associar amb la pagina logica del nou proces*/
+		copy_data(p->pagines_fisiques[i],task[t].task.pagines_fisiques[i], PAGE_SIZE);
+			
+		/* Allibarem les pagines fisiques*/
+		del_ss_pag(frame);
+			
+		
+	}
+	
+	return 0;
 }
