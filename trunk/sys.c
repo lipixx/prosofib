@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <sched.h>
 #include <mm_address.h>
+#include <mm.h>
 
 #define LECTURA 0
 #define ESCRIPTURA 1
@@ -97,39 +98,39 @@ int i;
 }
 int sys_fork(){
 
-	int t = search_free_task();
-	if (t==-1) return -EAGAIN;
+	int fill = search_free_task();
+	if (fill==-1) return -EAGAIN;
 	
 	/* Copiar el task_union del pare al fill */
-	copy_data(current(), &task[t], 4096);
+	copy_data(current(), &task[fill], 4096);
 	
 	/* Herencia dades usuari*/
-	int i, frame;
-	struct task_struct *p=current();
+	int i;
+	//struct task_struct *p=current();
 	
-	int free_frames[NUM_PAG_DATA]
-	for (i=0; i< NUM_PAG_DATA; i++);
+	int frames[NUM_PAG_DATA];
+	for (i=0; i< NUM_PAG_DATA; i++){
+	/* Mirem que hi hagi prou frames lliures */
+		frames[i]=alloc_frames(1);
+		if (frames[i]==-1) return - EAGAIN;
+	}
 	
-	alloc de i pagines, i si s'han allocat correctament, copiar les dades
-	si no nhi ha prou EAGAIN
-	
-	
-		int taula[i]=alloc_frames(1);
-	
-
-	for(i=0; i<NUM_PAG_DATA && task[t].pagines_fisiques[i]!=-1; i++){
+	for(i=0; i<NUM_PAG_DATA; i++){
 		
-		//frame=alloc_frames(1);
-		if (frame==-1) return - EAGAIN;
-
 		/* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' del fill(nomes de forma temporal) */
-		set_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+i, frame);
+		set_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+i, frames[i]);
 		
 		/* Copiam la pagina del pare al frame del fill, el qual acabam d'associar amb la pagina logica del nou proces*/
-		copy_data(PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+i), PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+i), PAGE_SIZE);
+		copy_data((char*)(PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+i)), (char*)(PAGE_SIZE*(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+i)), PAGE_SIZE);
 		
 		/* Allibarem les pagines fisiques*/
-		del_ss_pag(frame);
+		del_ss_pag(frames[i]);
+		
+		/* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
+		task[fill].task.pagines_fisiques[i]=frames[i];
+		
+		/* Modifiquem el PID del fill mitjançant l'eax, que sera el valor que retornara quan el proces restauri el seu context */
+		task[fill].stack[KERNEL_STACK_SIZE-4]=0;
 			
 		
 	}
