@@ -23,7 +23,7 @@ void init_task0(int first_ph)
   task[0].task.tics_cpu = 0;
   task[0].task.pagines_fisiques[0] = first_ph;
   
-  for (i=0;i<NUM_PAG_CODE+NUM_PAG_DATA;i++)
+  for (i=0;i<NUM_PAG_DATA;i++)
     task[0].task.pagines_fisiques[i] = -1;
   
   list_add(&(task[0].task.run_list),&runqueue);
