@@ -191,8 +191,8 @@ void setTSS()
   tss.ebp                = tss.esp;
   tss.esi                = NULL;
   tss.edi                = NULL;
-  tss.es                 = __USER_DS;
-  tss.cs                 = __USER_CS;
+  tss.es                 = __USER_DS;	
+  tss.cs                 = __USER_CS;	/* El codi dels processos sempre esta a la mateixa direccio fisica */
   tss.ss                 = __USER_DS;
   tss.ds                 = __USER_DS;
   tss.fs                 = NULL;
@@ -247,7 +247,10 @@ int alloc_frames( int nframes )
     		if(phys_mem[j]==FREE_FRAME) ok++;
     		else break;
     	}
-    if (ok!=nframes) i=j;
+    if (ok!=nframes){
+    /* Si hem trobar nframes consecutius els marquem com a USED */
+	for(j-=1; j>=i; j--) phys_mem[j]==USED_FRAME;
+     i=j;
     }
     return ok==nframes ? i : -1;
 }
