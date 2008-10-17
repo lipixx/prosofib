@@ -240,6 +240,8 @@ int initialize_P0_frames(void)
  * Returns the initial frame number or -1 in case not enough consecutive pages available. */
 int alloc_frames( int nframes )
 {
+	/* Crec que aixi com ho tenim implementat, que cada vegada cercam un unic frame lliure, tot aixo que feim aqui no te cap sentit... */
+	
     int i, j, ok=0;
     for (i=0; i<TOTAL_PAGES && ok!=nframes && TOTAL_PAGES-i > nframes; i++) {
     	ok=0;
@@ -249,8 +251,9 @@ int alloc_frames( int nframes )
     	}
     if (ok!=nframes){
     /* Si hem trobar nframes consecutius els marquem com a USED */
-	for(j-=1; j>=i; j--) phys_mem[j]==USED_FRAME;
-     i=j;
+	for(j=j-1; j>=i; j--) phys_mem[j]==USED_FRAME;
+	
+    }
     }
     return ok==nframes ? i : -1;
 }
