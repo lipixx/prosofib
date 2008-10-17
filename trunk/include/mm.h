@@ -11,7 +11,7 @@
  
 #define FREE_FRAME 0
 #define USED_FRAME 1
-#define TO_NUM_PAGE(pagina) return pagina >> 12
+#define PH_ADDR_TO_FRAME(address) return address >> 12
 
 /* Bytemap to mark the free physical pages */
 Byte phys_mem[TOTAL_PAGES];
