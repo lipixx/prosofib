@@ -14,7 +14,7 @@ struct task_struct {
   int pid;
   int quantum;
   int tics_cpu;
-  int pagines_fisiques[NUM_PAG_CODE+NUM_PAG_DATA];
+  int pagines_fisiques[NUM_PAG_DATA];
   struct list_head run_list;
 };
 
