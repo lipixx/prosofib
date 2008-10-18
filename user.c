@@ -9,6 +9,8 @@ main(void)
 {
   
   printf("\nBenvinguts a ZeOS!");
+  
+  fork();
   //Jocs de proves:
   // runjp(); 
   // run2_jp();
