@@ -98,6 +98,8 @@ int i;
 }
 int sys_fork(){
 
+	int i, pidfill;
+	int frames[NUM_PAG_DATA];	
 	int fill = search_free_task();
 	if (fill==-1) return -EAGAIN;
 	
@@ -105,10 +107,7 @@ int sys_fork(){
 	copy_data(current(), &task[fill], 4096);
 	
 	/* Herencia dades usuari*/
-	int i;
-	//struct task_struct *p=current();
-	
-	int frames[NUM_PAG_DATA];
+
 	for (i=0; i< NUM_PAG_DATA; i++){
 	/* Mirem que hi hagi prou frames lliures */
 		frames[i]=alloc_frames(1);
@@ -128,12 +127,20 @@ int sys_fork(){
 		
 		/* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
 		task[fill].task.pagines_fisiques[i]=frames[i];
-		
-		/* Modifiquem el PID del fill mitjançant l'eax, que sera el valor que retornara quan el proces restauri el seu context */
-		task[fill].stack[KERNEL_STACK_SIZE-4]=0;
-			
-		
-	}
+	}	
 	
-	return 0;
+	/* Modifiquem el 'PID' del fill mitjançant l'eax, que sera el valor que retornara quan el proces restauri el seu context */
+	task[fill].stack[KERNEL_STACK_SIZE-4] = 0;	/* Ojo! On esta el registre EAX? */
+		
+	/* Inicialitzar els camps del task_struct no comuns al fill */
+	pidfill=pid++;
+	task[fill].task.pid = pidfill;
+	task[fill].task.quantum = 60;	/* Tots els processos tindran el mateix quantum */
+	task[fill].task.tics_cpu = 0;
+			
+	/* Inserir el nou proces a la llista de preparats: runqueue */		
+	list_add(&(task[fill].task.run_list),&runqueue);
+	
+	
+	return pidfill;
 }
