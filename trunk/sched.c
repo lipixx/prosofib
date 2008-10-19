@@ -9,53 +9,113 @@
 #include <utils.h>
 #include <mm.h>
 #include <errno.h>
+#include <segment.h>
 
-union task_union task[NR_TASKS]
-  __attribute__((__section__(".data.task")));
+union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
 
-void init_sched()
+void
+init_sched ()
 {
-  INIT_LIST_HEAD(&runqueue);
+  INIT_LIST_HEAD (&runqueue);
   pid = 1;
 }
 
-void init_task0(int first_ph)
+void
+init_task0 (int first_ph)
 {
   int i = 0;
   task[0].task.pid = pid++;
   task[0].task.quantum = 0;
   task[0].task.tics_cpu = 0;
   task[0].task.pagines_fisiques[0] = first_ph;
-  
+
   /*for (i=0;i<NUM_PAG_DATA;i++)
-    task[0].task.pagines_fisiques[i] = -1;*/
-    for (i=0; i< NUM_PAG_DATA; i++){
-	/* Mirem que hi hagi prou frames lliures */
-		task[0].task.pagines_fisiques[i]=alloc_frames(1);
-		if (task[0].task.pagines_fisiques[i]==-1) return - EAGAIN;
-	}
-  
-  list_add(&(task[0].task.run_list),&runqueue);
+     task[0].task.pagines_fisiques[i] = -1; */
+  for (i = 0; i < NUM_PAG_DATA; i++)
+    {
+      /* Mirem que hi hagi prou frames lliures */
+      task[0].task.pagines_fisiques[i] = alloc_frames (1);
+      //if (task[0].task.pagines_fisiques[i]==-1) return - EAGAIN;
+    }
+
+  list_add (&(task[0].task.run_list), &runqueue);
 }
 
-struct task_struct * current()
+struct task_struct *
+current ()
 {
   struct task_struct *p;
 
-  __asm__ __volatile__(
-		       "movl $0xfffff000, %%ecx\n"
-		       "andl %%esp, %%ecx\n"
-		       "movl %%ecx, %0\n"
-		       : "=g" (p)
-		       :
-		       : "%ecx"
-		       );
+  __asm__ __volatile__ ("movl $0xfffff000, %%ecx\n"
+			"andl %%esp, %%ecx\n"
+			"movl %%ecx, %0\n":"=g" (p)::"%ecx");
   return p;
 }
 
-struct task_struct * list_head_to_task_struct(struct list_head * l)
+struct task_struct *
+list_head_to_task_struct (struct list_head *l)
 {
-  return list_entry(l,struct task_struct,run_list);
+  return list_entry (l, struct task_struct, run_list);
 }
 
+/* TASK_SWITCH. *t es el punter al task que es passara a executar */
+void
+task_switch (union task_union *t)
+{
+  int i;
+  /*
+    a.  Actualitzar la TSS perque apunti a la pila de sistema de t.
+    b. Actualitzar la taula de pagines perque les pagines de dades+pila
+    d'usuari de t siguin accessibles.
+    c.  Canviar a la pila de sistema del nou proces
+    d.  Restaurar els registres.
+    e.  Cal fer EOI? --> SI!!
+    f.  IRET
+  */
+  
+  //Cast a (DWord)?.. 
+  /* Agafem la @ de la pila de la union t i actualitzem TSS
+     &(t->stack[KERNEL_STACK_SIZE])*/
+  tss.esp0 = (DWord) &(t->stack);
+  
+  /*Si permetessim agafar un num variable de pagines fisiques,
+    hauriem de modificar aquesta condicio i invalidar les sobrants*/
+  for (i=0; i<NUM_PAG_DATA;i++)
+    set_ss_pag(PAG_LOG_INIT_DATA_P0+i, (unsigned int)t->task.pagines_fisiques[i]);
+  
+  /*Hem de moure el primer valor de la pila de t, dins %esp.
+    OJO! On esta esp dins la pila de sistema???*/
+  __asm__ __volatile__
+    (
+     "movl %0,%%esp\n"
+     :
+     : "g" ((DWord) &(t->stack[KERNEL_STACK_SIZE - 16]))
+     );
+  
+  
+  /*Restaurar els registres amb la macro RESTORE_ALL, copiem
+    el codi aqui per no tenir que incluir entry.S*/
+  __asm__ __volatile__(
+		       "popl %ebx\n"
+		       "popl %ecx\n"
+		       "popl %edx\n"
+		       "popl %esi\n"
+		       "popl %edi\n"
+		       "popl %ebp\n"
+		       "popl %eax\n"
+		       "popl %ds\n"
+		       "popl %es\n"
+		       "popl %fs\n"
+		       "popl %gs\n"
+			  );
+
+  /* Haurem de fer un EOI, ja que sino no podrem rebre futures
+     interrupcions. La macro la vam definir a entry.S. Per no
+     fer un include copiarem el codi aqui. De pas fem l'iret*/
+  __asm__ __volatile__(
+		       "movb $0x20,%al\n"
+		       "outb %al, $0x20\n"
+		       "iret\n"
+		       );
+}

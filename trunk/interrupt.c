@@ -9,27 +9,27 @@
 #include <entry.h>
 
 Gate idt[IDT_ENTRIES];
-Register    idtR;
+Register idtR;
 int temps;
 
-char char_map[] =
-{
-  '\0','\0','1','2','3','4','5','6',
-  '7','8','9','0','\'','¡','\0','\0',
-  'q','w','e','r','t','y','u','i',
-  'o','p','`','+','\0','\0','a','s',
-  'd','f','g','h','j','k','l','ñ',
-  '\0','º','\0','ç','z','x','c','v',
-  'b','n','m',',','.','-','\0','*',
-  '\0','\0','\0','\0','\0','\0','\0','\0',
-  '\0','\0','\0','\0','\0','\0','\0','7',
-  '8','9','-','4','5','6','+','1',
-  '2','3','0','\0','\0','\0','<','\0',
-  '\0','\0','\0','\0','\0','\0','\0','\0',
-  '\0','\0'
+char char_map[] = {
+  '\0', '\0', '1', '2', '3', '4', '5', '6',
+  '7', '8', '9', '0', '\'', '¡', '\0', '\0',
+  'q', 'w', 'e', 'r', 't', 'y', 'u', 'i',
+  'o', 'p', '`', '+', '\0', '\0', 'a', 's',
+  'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ñ',
+  '\0', 'º', '\0', 'ç', 'z', 'x', 'c', 'v',
+  'b', 'n', 'm', ',', '.', '-', '\0', '*',
+  '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+  '\0', '\0', '\0', '\0', '\0', '\0', '\0', '7',
+  '8', '9', '-', '4', '5', '6', '+', '1',
+  '2', '3', '0', '\0', '\0', '\0', '<', '\0',
+  '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0',
+  '\0', '\0'
 };
 
-void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
+void
+setInterruptHandler (int vector, void (*handler) (), int maxAccessibleFromPL)
 {
   /***********************************************************************/
   /* THE INTERRUPTION GATE FLAGS:                          R1: pg. 5-11  */
@@ -40,16 +40,17 @@ void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
   /*         |   \ DPL = Num. higher PL from which it is accessible      */
   /*          \ P = Segment Present bit                                  */
   /***********************************************************************/
-  Word flags = (Word)(maxAccessibleFromPL << 13);
-  flags |= 0x8E00;    /* P = 1, D = 1, Type = 1110 (Interrupt Gate) */
+  Word flags = (Word) (maxAccessibleFromPL << 13);
+  flags |= 0x8E00;		/* P = 1, D = 1, Type = 1110 (Interrupt Gate) */
 
-  idt[vector].lowOffset       = lowWord((DWord)handler);
+  idt[vector].lowOffset = lowWord ((DWord) handler);
   idt[vector].segmentSelector = __KERNEL_CS;
-  idt[vector].flags           = flags;
-  idt[vector].highOffset      = highWord((DWord)handler);
+  idt[vector].flags = flags;
+  idt[vector].highOffset = highWord ((DWord) handler);
 }
 
-void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
+void
+setTrapHandler (int vector, void (*handler) (), int maxAccessibleFromPL)
 {
   /***********************************************************************/
   /* THE TRAP GATE FLAGS:                                  R1: pg. 5-11  */
@@ -60,199 +61,219 @@ void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL)
   /*         |   \ DPL = Num. higher PL from which it is accessible      */
   /*          \ P = Segment Present bit                                  */
   /***********************************************************************/
-  Word flags = (Word)(maxAccessibleFromPL << 13);
+  Word flags = (Word) (maxAccessibleFromPL << 13);
 
   //flags |= 0x8F00;    /* P = 1, D = 1, Type = 1111 (Trap Gate) */
   /* Changed to 0x8e00 to convert it to an 'interrupt gate' and so
      the system calls will be thread-safe. */
-  flags |= 0x8E00;    /* P = 1, D = 1, Type = 1110 (Interrupt Gate) */
+  flags |= 0x8E00;		/* P = 1, D = 1, Type = 1110 (Interrupt Gate) */
 
-  idt[vector].lowOffset       = lowWord((DWord)handler);
+  idt[vector].lowOffset = lowWord ((DWord) handler);
   idt[vector].segmentSelector = __KERNEL_CS;
-  idt[vector].flags           = flags;
-  idt[vector].highOffset      = highWord((DWord)handler);
+  idt[vector].flags = flags;
+  idt[vector].highOffset = highWord ((DWord) handler);
 }
 
 
-void setIdt()
+void
+setIdt ()
 {
   /* Program interrups/exception service routines */
-  idtR.base  = (DWord)idt;
-  idtR.limit = IDT_ENTRIES * sizeof(Gate) - 1;
-    
-  /* Inicialitzar excepcions IDT*/
-  setInterruptHandler(0,divide_error_handler,0);
-  setInterruptHandler(1,debug_handler,3);
-  setInterruptHandler(2,nmi_handler,0);
-  setInterruptHandler(3,breakpoint_handler,3);
-  setInterruptHandler(4,overflow_handler,0);
-  setInterruptHandler(5,bounds_check_handler,0);
-  setInterruptHandler(6,invalid_opcode_handler,0);
-  setInterruptHandler(7,device_not_available_handler,0);
-  setInterruptHandler(8,double_fault_handler,0);
-  setInterruptHandler(9,coprocessor_segment_overrun_handler,0);
-  setInterruptHandler(10,invalid_tss_handler,0);
-  setInterruptHandler(11,segment_not_present_handler,0);
-  setInterruptHandler(12,stack_exception_handler,0);
-  setInterruptHandler(13,general_protection_handler,0);
-  setInterruptHandler(14,page_fault_handler,0);
-  setInterruptHandler(16,floating_point_error_handler,0);
-  setInterruptHandler(17,alignment_check_handler,0);
-  setInterruptHandler(32,clock_handler,0);
-  setInterruptHandler(33,keyboard_handler,0);
-  setTrapHandler(128,system_call_handler,3);
+  idtR.base = (DWord) idt;
+  idtR.limit = IDT_ENTRIES * sizeof (Gate) - 1;
+
+  /* Inicialitzar excepcions IDT */
+  setInterruptHandler (0, divide_error_handler, 0);
+  setInterruptHandler (1, debug_handler, 3);
+  setInterruptHandler (2, nmi_handler, 0);
+  setInterruptHandler (3, breakpoint_handler, 3);
+  setInterruptHandler (4, overflow_handler, 0);
+  setInterruptHandler (5, bounds_check_handler, 0);
+  setInterruptHandler (6, invalid_opcode_handler, 0);
+  setInterruptHandler (7, device_not_available_handler, 0);
+  setInterruptHandler (8, double_fault_handler, 0);
+  setInterruptHandler (9, coprocessor_segment_overrun_handler, 0);
+  setInterruptHandler (10, invalid_tss_handler, 0);
+  setInterruptHandler (11, segment_not_present_handler, 0);
+  setInterruptHandler (12, stack_exception_handler, 0);
+  setInterruptHandler (13, general_protection_handler, 0);
+  setInterruptHandler (14, page_fault_handler, 0);
+  setInterruptHandler (16, floating_point_error_handler, 0);
+  setInterruptHandler (17, alignment_check_handler, 0);
+  setInterruptHandler (32, clock_handler, 0);
+  setInterruptHandler (33, keyboard_handler, 0);
+  setTrapHandler (128, system_call_handler, 3);
 
 /* ADD INITIALIZATION CODE FOR INTERRUPT VECTOR */
-  set_idt_reg(&idtR);
+  set_idt_reg (&idtR);
 
 }
 
-void iniTemps()
+void
+iniTemps ()
 {
   temps = -1;
 }
 
 /* IDT # 0 */
-void divide_error_routine()
+void
+divide_error_routine ()
 {
-  printk("DIVIDE ERROR EXCEPTION");
-  while(1);
+  printk ("DIVIDE ERROR EXCEPTION");
+  while (1);
 
 }
 
 	/* IDT # 1 */
-void debug_routine()
+void
+debug_routine ()
 {
-  printk("DEBUG");
-  while(1);
+  printk ("DEBUG");
+  while (1);
 
 }
-	
+
 	/* IDT # 2 */
-void nmi_routine()
+void
+nmi_routine ()
 {
-  printk("NON MASCABLE INTERRUPT");
-  while(1);
+  printk ("NON MASCABLE INTERRUPT");
+  while (1);
 
 }
-	
+
 	/* IDT # 3 */
-void  breakpoint_routine()
+void
+breakpoint_routine ()
 {
-  printk("BREAKPOINT");
-  while(1);
+  printk ("BREAKPOINT");
+  while (1);
 
 }
-	
+
 	/* IDT # 4 */
-void overflow_routine()
+void
+overflow_routine ()
 {
-  printk("OVERFLOW");
-  while(1);
+  printk ("OVERFLOW");
+  while (1);
 
 }
-	
+
 	/* IDT # 5 */
-void  bounds_check_routine()
+void
+bounds_check_routine ()
 {
-  printk("BOUNDS CHECK EXCEPTION");
-  while(1);
+  printk ("BOUNDS CHECK EXCEPTION");
+  while (1);
 
 }
-	
+
 	/* IDT # 6 */
-void invalid_opcode_routine()
+void
+invalid_opcode_routine ()
 {
-  printk("INVALID OPCODE");
-  while(1);
+  printk ("INVALID OPCODE");
+  while (1);
 
 }
-	
+
 	/* IDT # 7 */
-void device_not_available_routine()
+void
+device_not_available_routine ()
 {
-  printk("DEVICE NOT AVAILABLE");
-  while(1);
+  printk ("DEVICE NOT AVAILABLE");
+  while (1);
 
 }
-	
+
 	/* IDT # 8 amb parametre de 4 bytes */
-void double_fault_routine()
+void
+double_fault_routine ()
 {
-  printk("DOUBLE FAULT");
-  while(1);
+  printk ("DOUBLE FAULT");
+  while (1);
 
 }
-	
+
 	/* IDT # 9 */
-void coprocessor_segment_overrun_routine()
+void
+coprocessor_segment_overrun_routine ()
 {
-  printk("COPROCESSOR SEGMENT EXCEPTION");
-  while(1);
+  printk ("COPROCESSOR SEGMENT EXCEPTION");
+  while (1);
 
 }
-	
-	
+
+
 	/* IDT # 10 amb parametre de 4 bytes */
-void invalid_tss_routine()
+void
+invalid_tss_routine ()
 {
-  printk("INVALID TSS");
-  while(1);
+  printk ("INVALID TSS");
+  while (1);
 
 }
-	
+
 	/* IDT # 11 amb parametre de 4 bytes */
-void segment_not_present_routine()
+void
+segment_not_present_routine ()
 {
-  printk("SEGMENT NOT PRESENT");
-  while(1);
+  printk ("SEGMENT NOT PRESENT");
+  while (1);
 
 }
-       
+
 	/* IDT # 12 amb parametre de 4 bytes */
-void stack_exception_routine()
+void
+stack_exception_routine ()
 {
-  printk("STACK EXCEPTION");
-  while(1);
+  printk ("STACK EXCEPTION");
+  while (1);
 
 }
-	
+
 	/* IDT # 13 amb parametre de 4 bytes */
-void general_protection_routine()
+void
+general_protection_routine ()
 {
-  printk("GENERAL PROTECTION EXCEPTION");
-  while(1);
+  printk ("GENERAL PROTECTION EXCEPTION");
+  while (1);
 
 }
-	
+
 	/* IDT # 14 amb parametre de 4 bytes */
-void page_fault_routine()
+void
+page_fault_routine ()
 {
-  printk("PAGE FAULT");
-  while(1);
+  printk ("PAGE FAULT");
+  while (1);
 
 }
-	
+
 	/* IDT # 16 */
-void floating_point_error_routine()
+void
+floating_point_error_routine ()
 {
-  printk("FLOATING POINT ERROR");
-  while(1);
+  printk ("FLOATING POINT ERROR");
+  while (1);
 
 }
-	
+
 	/* IDT # 17 amb parametre de 4 bytes */
-void alignment_check_routine()
+void
+alignment_check_routine ()
 {
-  printk("ALIGNMENT CHECK EXCEPTION");
-  while(1);
+  printk ("ALIGNMENT CHECK EXCEPTION");
+  while (1);
 }
 
-void clock_routine()
+void
+clock_routine ()
 {
   int minuts;
   int segons;
-  char hora[6] = {'0','0',':','0','0','\0'};
+  char hora[6] = { '0', '0', ':', '0', '0', '\0' };
   temps++;
 
   /* Aqui hauria de ser un 18 tics/segon, pero els IPS del fitxer
@@ -264,11 +285,11 @@ void clock_routine()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-  if (temps%650==0)
+  if (temps % 650 == 0)
     {
-      segons = temps/650;
-      minuts = segons/60;
-      segons = segons%60;
+      segons = temps / 650;
+      minuts = segons / 60;
+      segons = segons % 60;
 
       /* Si fa mes de 100 minuts, reiniciarem el comptador de temps.
        * Hi ha altres alternatives com tenir una variable especifica
@@ -281,20 +302,21 @@ void clock_routine()
        */
       if (minuts > 99)
 	{
-	minuts = 0;
-	temps = 0;
+	  minuts = 0;
+	  temps = 0;
 	}
 
-      itoa(minuts/10, &hora[0]);
-      itoa(minuts%10, &hora[1]);
+      itoa (minuts / 10, &hora[0]);
+      itoa (minuts % 10, &hora[1]);
       hora[2] = ':';
-      itoa(segons/10, &hora[3]);
-      itoa(segons%10, &hora[4]);  
-      printk_xy(70,10,hora);   
+      itoa (segons / 10, &hora[3]);
+      itoa (segons % 10, &hora[4]);
+      printk_xy (70, 10, hora);
     }
 }
 
-void itoa(int n, char *buffer)
+void
+itoa (int n, char *buffer)
 {
   int ndigits = n;
   int i = 0;
@@ -306,29 +328,30 @@ void itoa(int n, char *buffer)
     }
 
   while (i > 0)
-    {		
-      buffer[i-1] = (n%10) + '0';
+    {
+      buffer[i - 1] = (n % 10) + '0';
       n /= 10;
       i--;
     }
-	
+
 }
 
-void keyboard_routine()
+void
+keyboard_routine ()
 {
-  Byte b = inb(0x60);
+  Byte b = inb (0x60);
   char c;
-  
-  if (!(b & 0x80)) //Make
+
+  if (!(b & 0x80))		//Make
     {
-      c=char_map[b & 0x7f];
-      
+      c = char_map[b & 0x7f];
+
       if (char_map[b] == '\0')
-	printk_xy(70,17,"Control");
+	printk_xy (70, 17, "Control");
       else
 	{
-	  printk_xy(70,17,"       ");
-	  printc_xy(70,17,c);
-       }
-   }
+	  printk_xy (70, 17, "       ");
+	  printc_xy (70, 17, c);
+	}
+    }
 }
