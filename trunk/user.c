@@ -12,8 +12,10 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   int i = fork ();
   printf("\nContador pid actual: ");
   printint(i);
-  if (i==0) printf("\nSoc el pare");
+
+  if (i==1) printf("\nSoc el pare i tenc PID:");
   else printf("\nSoc el fill i tenc PID: ");
+
   i = getpid();
   printint(i);
   
