@@ -266,6 +266,7 @@ alloc_frames (int nframes)
   for (i = 0; i < TOTAL_PAGES && ok != nframes && TOTAL_PAGES - i > nframes;
        i++)
     {
+      ok=0;
       for (j = i; j < i + nframes; j++)
 	{
 	  if (phys_mem[j] == FREE_FRAME)
