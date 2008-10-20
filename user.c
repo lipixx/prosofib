@@ -28,7 +28,11 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   // runjp(); 
   // run2_jp();
 
-  while (1);
+  while(1)
+    {
+      if (getpid() == 1) printf("p");
+      else printf("f");
+    }
   return 0;
 }
 
