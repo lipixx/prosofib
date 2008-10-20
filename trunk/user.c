@@ -13,7 +13,12 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   printf("\nContador pid actual: ");
   printint(i);
 
-  if (i==1) printf("\nSoc el pare i tenc PID:");
+  if (i!=0)
+    {
+      printf("\nSoc el pare i el meu fill te PID: ");
+      printint(i);
+      printf("\nJo tenc PID:");
+    }
   else printf("\nSoc el fill i tenc PID: ");
 
   i = getpid();
