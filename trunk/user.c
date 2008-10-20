@@ -9,8 +9,15 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   printf ("\nBenvinguts a ZeOS!");
 
-  fork ();
-  //Jocs de proves:
+  int i = fork ();
+  printf("\nContador pid actual: ");
+  printint(i);
+  if (i==0) printf("\nSoc el pare");
+  else printf("\nSoc el fill i tenc PID: ");
+  i = getpid();
+  printint(i);
+  
+//Jocs de proves:
   // runjp(); 
   // run2_jp();
 

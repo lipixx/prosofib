@@ -17,8 +17,11 @@ union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 void
 init_sched ()
 {
+  int i;
   INIT_LIST_HEAD (&runqueue);
   pid = 1;
+  for(i = 0; i < NR_TASKS; i++)
+    task[i].task.pid = -1;
 }
 
 void
@@ -57,6 +60,18 @@ struct task_struct *
 list_head_to_task_struct (struct list_head *l)
 {
   return list_entry (l, struct task_struct, run_list);
+}
+
+int
+search_free_task ()
+{
+  int i;
+  for (i = 0; i < NR_TASKS; i++)
+    {
+      if (task[i].task.pid < 0)
+	return i;
+    }
+  return -1;
 }
 
 /* TASK_SWITCH. *t es el punter al task que es passara a executar */
