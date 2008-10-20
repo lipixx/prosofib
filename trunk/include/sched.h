@@ -32,8 +32,12 @@ extern union task_union task[NR_TASKS];
 void init_task0();
 void init_sched();
 int search_free_task();
+void task_switch(union task_union *t);
 struct task_struct* current();
 struct task_struct * list_head_to_task_struct(struct list_head * l);
+
+//DEBUG, ELIMINAR
+void debug_function(void);
 
 #endif  /* __SCHED_H__ */
 

@@ -7,6 +7,7 @@
 #include <hardware.h>
 #include <io.h>
 #include <entry.h>
+#include <sched.h>
 
 Gate idt[IDT_ENTRIES];
 Register idtR;
@@ -312,6 +313,9 @@ clock_routine ()
       itoa (segons / 10, &hora[3]);
       itoa (segons % 10, &hora[4]);
       printk_xy (70, 10, hora);
+      
+      //DEBUG
+      debug_function();
     }
 }
 

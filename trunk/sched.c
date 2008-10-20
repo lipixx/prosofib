@@ -13,6 +13,17 @@
 
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
+//ELIMINAR
+int debug = 1;
+
+void debug_function()
+{
+  task_switch(&(task[debug]));
+
+  if (debug == 0) debug ++;
+  else debug--;
+}
+//FI ELIMINAR
 
 void
 init_sched ()
@@ -89,15 +100,18 @@ task_switch (union task_union *t)
     f.  IRET
   */
   
-  //Cast a (DWord)?.. 
   /* Agafem la @ de la pila de la union t i actualitzem TSS
-     &(t->stack[KERNEL_STACK_SIZE])*/
-  tss.esp0 = (DWord) &(t->stack);
+     Es un stack[KERNEL_STACK_SIZE] i no un stack, perque la stack
+     esta definida com a vector.
+  */
+  tss.esp0 = (DWord) (&t->stack[KERNEL_STACK_SIZE]);
   
   /*Si permetessim agafar un num variable de pagines fisiques,
-    hauriem de modificar aquesta condicio i invalidar les sobrants*/
+    hauriem de modificar aquesta condicio i invalidar les sobrants de la
+    taula residuals d'altres processos
+  */
   for (i=0; i<NUM_PAG_DATA;i++)
-    set_ss_pag(PAG_LOG_INIT_DATA_P0+i, (unsigned int)t->task.pagines_fisiques[i]);
+    set_ss_pag(PAG_LOG_INIT_DATA_P0+i, t->task.pagines_fisiques[i]);
   
   /*Hem de moure el primer valor de la pila de t, dins %esp.
     OJO! On esta esp dins la pila de sistema???*/
@@ -105,7 +119,7 @@ task_switch (union task_union *t)
     (
      "movl %0,%%esp\n"
      :
-     : "g" ((DWord) &(t->stack[KERNEL_STACK_SIZE - 16]))
+     : "g" ((DWord) (&t->stack[KERNEL_STACK_SIZE-16]))
      );
   
   
@@ -125,9 +139,11 @@ task_switch (union task_union *t)
 		       "popl %gs\n"
 			  );
 
-  /* Haurem de fer un EOI, ja que sino no podrem rebre futures
-     interrupcions. La macro la vam definir a entry.S. Per no
-     fer un include copiarem el codi aqui. De pas fem l'iret*/
+  //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
+  /* Haurem de fer un EOI nomes si venim de una interrupcio,
+     ja que sino no podrem rebre futures interrupcions.
+     La macro la vam definir a entry.S. Per no fer un include 
+     copiarem el codi aqui. De pas fem l'iret. */
   __asm__ __volatile__(
 		       "movb $0x20,%al\n"
 		       "outb %al, $0x20\n"
