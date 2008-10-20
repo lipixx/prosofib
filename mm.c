@@ -262,11 +262,22 @@ alloc_frames (int nframes)
 {
   /* Crec que aixi com ho tenim implementat, que cada vegada cercam un unic frame lliure, tot aixo que feim aqui no te cap sentit... */
 
-  int i = 0, j = 0, ok = 0;
-  for (i = 0; i < TOTAL_PAGES && ok != nframes && TOTAL_PAGES - i > nframes;
-       i++)
+  int i, j=0, ok=0;
+  for (i=0;i<TOTAL_PAGES && TOTAL_PAGES-i>nframes;i++)
     {
       ok=0;
+      while (j<nframes && phys_mem[i+j]==FREE_FRAME) j++;
+      
+      if (j == nframes)
+	{
+	  for (ok=0;ok<nframes;ok++) phys_mem[ok+i] = USED_FRAME;
+	  return i;
+	}
+      else
+	i+=j;
+    }
+  
+  /*
       for (j = i; j < i + nframes; j++)
 	{
 	  if (phys_mem[j] == FREE_FRAME)
@@ -276,8 +287,8 @@ alloc_frames (int nframes)
 	}
       if (ok == nframes)
 	{
-	  /* Si hem trobat nframes consecutius els marquem com a USED */
-	  while (j >= i)
+      Si hem trobat nframes consecutius els marquem com a USED
+    while (j >= i)
 	    {
 	      phys_mem[j] = USED_FRAME;
 	      j--;
@@ -285,6 +296,8 @@ alloc_frames (int nframes)
 	  return i;
 	}
     }
+*/
+  
   return -1;
   //return ok==nframes ? i : -1;
 }
