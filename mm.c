@@ -131,7 +131,6 @@ set_ss_pag (unsigned page, unsigned frame)
   pagusr_table[page].bits.user = 1;
   pagusr_table[page].bits.rw = 1;
   pagusr_table[page].bits.present = 1;
-  set_cr3 ();
 }
 
 void

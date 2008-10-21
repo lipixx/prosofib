@@ -132,8 +132,7 @@ sys_fork ()
 
       /* Copiam la pagina del pare al frame del fill, el qual acabam d'associar amb la pagina logica del nou proces */
       copy_data ((char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + i)),
-		 (char *) (PAGE_SIZE *
-			   (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA + i)),
+		 (char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA + i)),
 		 PAGE_SIZE);
 
       /* Alliberem les pagines fisiques */
@@ -142,6 +141,7 @@ sys_fork ()
       /* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
       task[fill].task.pagines_fisiques[i] = frames[i];
     }
+  set_cr3();
 
   /* Modifiquem el 'PID' del fill mitjancant l'eax, que sera el valor que retornara 
      quan el proces restauri el seu context. -10 perque quan entrem al sistema 

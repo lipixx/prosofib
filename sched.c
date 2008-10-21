@@ -13,18 +13,6 @@
 
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
-//ELIMINAR
-int debug = 0;
-
-void debug_function()
-{
-  if (debug == 0) debug ++;
-  else debug--;
-
-  task_switch(&task[debug]);
-}
-//FI ELIMINAR
-
 void
 init_sched ()
 {
@@ -113,8 +101,10 @@ task_switch (union task_union *t)
   for (i=0; i<NUM_PAG_DATA && t->task.pagines_fisiques[i]!=-1;i++)
     set_ss_pag(PAG_LOG_INIT_DATA_P0+i, t->task.pagines_fisiques[i]);
   
+  set_cr3();
+
   /*Hem de moure el primer valor de la pila de t, dins %esp.
-    OJO! On esta esp dins la pila de sistema???*/
+   */
   __asm__ __volatile__
     (
      "movl %0,%%esp\n"
