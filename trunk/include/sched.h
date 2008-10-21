@@ -36,9 +36,6 @@ void task_switch(union task_union *t);
 struct task_struct* current();
 struct task_struct * list_head_to_task_struct(struct list_head * l);
 
-//DEBUG, ELIMINAR
-void debug_function(void);
-
 #endif  /* __SCHED_H__ */
 
 
