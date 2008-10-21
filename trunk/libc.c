@@ -11,13 +11,19 @@ int
 write (int fd, char *buffer, int size)
 {
   int val = -1;
-  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" "movl 12(%%ebp),%%ecx\n" "movl 16(%%ebp),%%edx\n" "movl $4,%%eax\n" "int $0x80\n" "movl %%eax, %0\n":"=g" (val)	/*bind %0 */
+  __asm__ __volatile__ (
+			"movl 8(%%ebp),%%ebx\n" 
+			"movl 12(%%ebp),%%ecx\n" 
+			"movl 16(%%ebp),%%edx\n" 
+			"movl $4,%%eax\n" 
+			"int $0x80\n" 
+			"movl %%eax, %0\n"
+			:"=g" (val)	/*bind %0 */
 			:	/*bind %1,%2,%3 si hi fossin.. */
 			:"%ebx"	/*announce to the compiler that ebx is dirty */
     );
 
-  return check_errno (val);
-
+   return check_errno (val);
 }
 
 int
