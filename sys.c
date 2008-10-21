@@ -143,8 +143,13 @@ sys_fork ()
       task[fill].task.pagines_fisiques[i] = frames[i];
     }
 
-  /* Modifiquem el 'PID' del fill mitjansant l'eax, que sera el valor que retornara quan el proces restauri el seu context */
-  task[fill].stack[KERNEL_STACK_SIZE - 10] = 0;	/* Ojo! On esta el registre EAX? */
+  /* Modifiquem el 'PID' del fill mitjancant l'eax, que sera el valor que retornara 
+     quan el proces restauri el seu context. -10 perque quan entrem al sistema 
+     s'apila ss,esp,eflags,cs,eip i llavors tots els registres de la macro SAVE_ALL 
+     (entry.S). 
+  */
+  task[fill].stack[KERNEL_STACK_SIZE - 10] = 0;	
+
 
   /* Inicialitzar els camps del task_struct no comuns al fill */
   pidfill = pid++;

@@ -14,14 +14,14 @@
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
 //ELIMINAR
-int debug = 1;
+int debug = 0;
 
 void debug_function()
 {
-  task_switch(&task[debug]);
-
   if (debug == 0) debug ++;
   else debug--;
+
+  task_switch(&task[debug]);
 }
 //FI ELIMINAR
 
@@ -105,7 +105,7 @@ task_switch (union task_union *t)
      esta definida com a vector.
   */
   tss.esp0 = (DWord) &(t->stack[KERNEL_STACK_SIZE]);
-  
+
   /*Si permetessim agafar un num variable de pagines fisiques,
     hauriem de modificar aquesta condicio i invalidar les sobrants de la
     taula, residuals d'altres processos
@@ -122,10 +122,21 @@ task_switch (union task_union *t)
      : "g" ((DWord) &(t->stack[KERNEL_STACK_SIZE-16]))
      );
   
+
   
-  /*Restaurar els registres amb la macro RESTORE_ALL, copiem
-    el codi aqui per no tenir que incluir entry.S*/
+  //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
+  /* Haurem de fer un EOI nomes si venim de una interrupcio,
+     ja que sino no podrem rebre futures interrupcions.*/
+
   __asm__ __volatile__(
+		       "movb $0x20,%al\n"
+		       "outb %al, $0x20\n"
+		       );
+
+ /*Restaurar els registres per sortir del sistema i tornar
+  al fork*/
+  __asm__ __volatile__(
+		      
 		       "popl %ebx\n"
 		       "popl %ecx\n"
 		       "popl %edx\n"
@@ -137,16 +148,6 @@ task_switch (union task_union *t)
 		       "popl %es\n"
 		       "popl %fs\n"
 		       "popl %gs\n"
-		       );
-
-  //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
-  /* Haurem de fer un EOI nomes si venim de una interrupcio,
-     ja que sino no podrem rebre futures interrupcions.
-     La macro la vam definir a entry.S. Per no fer un include 
-     copiarem el codi aqui. De pas fem l'iret. */
-  __asm__ __volatile__(
-		       "movb $0x20,%al\n"
-		       "outb %al, $0x20\n"
 		       "iret\n"
 		       );
 }

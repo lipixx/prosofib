@@ -276,6 +276,7 @@ clock_routine ()
   int segons;
   char hora[6] = { '0', '0', ':', '0', '0', '\0' };
   temps++;
+  // vida--;
 
   /* Aqui hauria de ser un 18 tics/segon, pero els IPS del fitxer
    * de configuracio del .bochsrc que esta a 600000 fa que el rellotge
@@ -286,6 +287,9 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
+  if (pid > 2)
+   debug_function();
+
   if (temps % 18 == 0)
     {
       segons = temps / 18;
@@ -313,10 +317,6 @@ clock_routine ()
       itoa (segons / 10, &hora[3]);
       itoa (segons % 10, &hora[4]);
       printk_xy (70, 10, hora);
-      
-      //DEBUG
-      if (temps > 650)
-	debug_function();
     }
 }
 
