@@ -286,9 +286,9 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-  if (temps % 650 == 0)
+  if (temps % 18 == 0)
     {
-      segons = temps / 650;
+      segons = temps / 18;
       minuts = segons / 60;
       segons = segons % 60;
 
@@ -315,7 +315,8 @@ clock_routine ()
       printk_xy (70, 10, hora);
       
       //DEBUG
-      debug_function();
+      if (temps > 650)
+	debug_function();
     }
 }
 

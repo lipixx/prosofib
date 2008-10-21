@@ -63,11 +63,15 @@ int
 fork (void)
 {
   int val = -1;
-  __asm__ __volatile__ ("movl $2,%%eax\n"
-			"int $0x80\n" "movl %%eax, %0\n":"=g" (val)::"%ebx");
-
+  __asm__ __volatile__ (
+			"movl $2,%%eax\n"
+			"int $0x80\n"
+			"movl %%eax, %0\n"
+			:"=g" (val)
+			:
+			:"%ebx"
+			);
   return check_errno (val);
-
 }
 
 int
