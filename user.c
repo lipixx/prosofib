@@ -8,22 +8,27 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 {
 
   printf ("\nBenvinguts a ZeOS!");
-
+  int k;
   int i = fork ();
-  printf("\nContador pid actual: ");
+  printf("\nRetorn des fork: ");
   printint(i);
 
-  if (i!=0)
+  if (i==1)
     {
       printf("\nSoc el pare i el meu fill te PID: ");
       printint(i);
       printf("\nJo tenc PID:");
+      k = getpid();
+      printint(k);
     }
-  else printf("\nSoc el fill i tenc PID: ");
+  else if (i==0)
+    {
+      printf("\nSoc el fill i tenc PID: ");
+      k = getpid();
+      printint(k);
+    }
 
-  i = getpid();
-  printint(i);
-  
+
 //Jocs de proves:
   // runjp(); 
   // run2_jp();
@@ -31,8 +36,9 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   while(1)
     {
       if (getpid() == 1) printf("p");
-      else printf("f");
+      else if (getpid() == 2) printf("f");
     }
+
   return 0;
 }
 

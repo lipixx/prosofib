@@ -18,7 +18,7 @@ int debug = 1;
 
 void debug_function()
 {
-  task_switch(&(task[debug]));
+  task_switch(&task[debug]);
 
   if (debug == 0) debug ++;
   else debug--;
@@ -96,7 +96,7 @@ task_switch (union task_union *t)
     d'usuari de t siguin accessibles.
     c.  Canviar a la pila de sistema del nou proces
     d.  Restaurar els registres.
-    e.  Cal fer EOI? --> SI!!
+    e.  Cal fer EOI? --> Si venim de una int si!!
     f.  IRET
   */
   
@@ -104,13 +104,13 @@ task_switch (union task_union *t)
      Es un stack[KERNEL_STACK_SIZE] i no un stack, perque la stack
      esta definida com a vector.
   */
-  tss.esp0 = (DWord) (&t->stack[KERNEL_STACK_SIZE]);
+  tss.esp0 = (DWord) &(t->stack[KERNEL_STACK_SIZE]);
   
   /*Si permetessim agafar un num variable de pagines fisiques,
     hauriem de modificar aquesta condicio i invalidar les sobrants de la
-    taula residuals d'altres processos
+    taula, residuals d'altres processos
   */
-  for (i=0; i<NUM_PAG_DATA;i++)
+  for (i=0; i<NUM_PAG_DATA && t->task.pagines_fisiques[i]!=-1;i++)
     set_ss_pag(PAG_LOG_INIT_DATA_P0+i, t->task.pagines_fisiques[i]);
   
   /*Hem de moure el primer valor de la pila de t, dins %esp.
@@ -119,7 +119,7 @@ task_switch (union task_union *t)
     (
      "movl %0,%%esp\n"
      :
-     : "g" ((DWord) (&t->stack[KERNEL_STACK_SIZE-16]))
+     : "g" ((DWord) &(t->stack[KERNEL_STACK_SIZE-16]))
      );
   
   
@@ -137,7 +137,7 @@ task_switch (union task_union *t)
 		       "popl %es\n"
 		       "popl %fs\n"
 		       "popl %gs\n"
-			  );
+		       );
 
   //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
   /* Haurem de fer un EOI nomes si venim de una interrupcio,

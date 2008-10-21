@@ -144,7 +144,7 @@ sys_fork ()
     }
 
   /* Modifiquem el 'PID' del fill mitjansant l'eax, que sera el valor que retornara quan el proces restauri el seu context */
-  task[fill].stack[KERNEL_STACK_SIZE - 16] = 0;	/* Ojo! On esta el registre EAX? */
+  task[fill].stack[KERNEL_STACK_SIZE - 10] = 0;	/* Ojo! On esta el registre EAX? */
 
   /* Inicialitzar els camps del task_struct no comuns al fill */
   pidfill = pid++;
