@@ -10,6 +10,7 @@
 #include <mm_address.h>
 #include <mm.h>
 
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 
@@ -175,11 +176,13 @@ void sys_exit()
 	/* Alliberar les estructures del proces */
 	
 	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
+	
+	//list_del(proces_actual->run_list.prev,proces_actual.run_list->next);
 
 	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
-		free_frames(proces_actual->pagines_fisiques[i],1);
+		free_frames(proces_actual.task->pagines_fisiques[i],1);
 		
-	task_switch(task);
+	task_switch(task); /* Posar el seguent element de la runqueue*/
 	}
 
 
