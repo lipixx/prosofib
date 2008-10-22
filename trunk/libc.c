@@ -80,6 +80,17 @@ fork (void)
   return check_errno (val);
 }
 
+void exit()
+{
+__asm__ __volatile__(
+	"movl $1,%%eax\n"
+	"int $0x80\n"	/* Feim la crida al sistema que no retornara mai */
+	:
+	:
+	);
+
+}
+
 int
 check_errno (val)
 {
