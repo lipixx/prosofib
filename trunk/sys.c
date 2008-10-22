@@ -106,43 +106,45 @@ int
 sys_fork ()
 {
   
-  int i, pidfill;
+  int i,j;
   int frames[NUM_PAG_DATA];
   int fill = search_free_task ();
   if (fill == -1)
     return -EAGAIN;
   
+
   /* Copiar el task_union del pare al fill */
   copy_data (current (), &task[fill], 4096);
   
-  /* Herencia dades usuari */
-  
-  for (i = 0; i < NUM_PAG_DATA; i++)
+  /* Herencia dades usuari, mirem que hi hagi prou frames lliures */
+  for (j = 0; j<NUM_PAG_DATA && current()->pagines_fisiques[j]!=-1; j++)
     {
-      /* Mirem que hi hagi prou frames lliures */
-      frames[i] = alloc_frames (1);
-      if (frames[i] == -1)
+      frames[j] = alloc_frames(1);
+      if (frames[j] == -1)
 	return -EAGAIN;
     }
   
-  for (i = 0; i < NUM_PAG_DATA; i++)
+  for (i = 0; i<NUM_PAG_DATA && i<=j; i++)
     {
       
-      /* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' del fill(nomes de forma temporal) */
-      set_ss_pag (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA + i, frames[i]);
+      /* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' 
+	 del fill(nomes de forma temporal) */
+      set_ss_pag (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA, frames[i]);
 
-      /* Copiam la pagina del pare al frame del fill, el qual acabam d'associar amb la pagina logica del nou proces */
+      /* Copiam el frame del pare al frame del fill, el qual acabam 
+	 d'associar amb la pagina logica del nou proces */
       copy_data ((char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + i)),
-		 (char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA + i)),
+		 (char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA)),
 		 PAGE_SIZE);
-
-      /* Alliberem les pagines fisiques */
-      del_ss_pag (frames[i]);
-
+      
       /* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
       task[fill].task.pagines_fisiques[i] = frames[i];
     }
-  set_cr3();
+
+  /* Alliberem les pagines fisiques */
+  //del_ss_pag (frames[i]); <--Malament. No li fot NUM_PAG_DATA+1 perque 0+2 = 2, 
+  //que en realitat son 3 pagines, 0 i 1 de pare i 2 sa temporal.
+  del_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+2);
 
   /* Modifiquem el 'PID' del fill mitjancant l'eax, que sera el valor que retornara 
      quan el proces restauri el seu context. -10 perque quan entrem al sistema 
@@ -153,16 +155,15 @@ sys_fork ()
 
 
   /* Inicialitzar els camps del task_struct no comuns al fill */
-  pidfill = pid++;
-  task[fill].task.pid = pidfill;
+  task[fill].task.pid = pid++;
   task[fill].task.quantum = 60;	/* Tots els processos tindran el mateix quantum */
   task[fill].task.tics_cpu = 0;
 
   /* Inserir el nou proces a la llista de preparats: runqueue */
   list_add (&(task[fill].task.run_list), &runqueue);
 
-
-  return pidfill;
+  
+  return pid-1;
 }
 
 void sys_exit()
