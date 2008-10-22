@@ -99,12 +99,10 @@ task_switch (union task_union *t)
     taula, residuals d'altres processos
   */
   for (i=0; i<NUM_PAG_DATA && t->task.pagines_fisiques[i]!=-1;i++)
-    set_ss_pag(PAG_LOG_INIT_DATA_P0+i, t->task.pagines_fisiques[i]);
+    set_ss_pag(PAG_LOG_INIT_DATA_P0+i,(unsigned)(t->task.pagines_fisiques[i]));
   
-  set_cr3();
-
-  /*Hem de moure el primer valor de la pila de t, dins %esp.
-   */
+  
+  /*Hem de moure la @ del primer valor de la pila de t, dins %esp.*/
   __asm__ __volatile__
     (
      "movl %0,%%esp\n"
@@ -112,7 +110,7 @@ task_switch (union task_union *t)
      : "g" ((DWord) &(t->stack[KERNEL_STACK_SIZE-16]))
      );
   
-
+  
   
   //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
   /* Haurem de fer un EOI nomes si venim de una interrupcio,
