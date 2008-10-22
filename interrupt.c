@@ -289,7 +289,7 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-  if (pid > 2 && temps > 10)
+  if (pid > 2 && temps > 10) //aprox cada mig segon
     {
       debug = current()->pid;
       if (debug == 2) debug = 0;

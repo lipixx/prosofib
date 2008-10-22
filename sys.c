@@ -112,7 +112,7 @@ sys_fork ()
   if (fill == -1)
     return -EAGAIN;
   
-
+  
   /* Copiar el task_union del pare al fill */
   copy_data (current (), &task[fill], 4096);
   
@@ -130,7 +130,7 @@ sys_fork ()
       /* Associa sa pagina logica del pare amb sa pagina fisica o 'frame' 
 	 del fill(nomes de forma temporal) */
       set_ss_pag (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA, frames[i]);
-
+      
       /* Copiam el frame del pare al frame del fill, el qual acabam 
 	 d'associar amb la pagina logica del nou proces */
       copy_data ((char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + i)),
@@ -140,20 +140,18 @@ sys_fork ()
       /* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
       task[fill].task.pagines_fisiques[i] = frames[i];
     }
-
+  
   /* Alliberem les pagines fisiques */
-  //del_ss_pag (frames[i]); <--Malament. No li fot NUM_PAG_DATA+1 perque 0+2 = 2, 
-  //que en realitat son 3 pagines, 0 i 1 de pare i 2 sa temporal.
-  del_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA+2);
-
+  del_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA);
+  
   /* Modifiquem el 'PID' del fill mitjancant l'eax, que sera el valor que retornara 
      quan el proces restauri el seu context. -10 perque quan entrem al sistema 
      s'apila ss,esp,eflags,cs,eip i llavors tots els registres de la macro SAVE_ALL 
      (entry.S). 
   */
   task[fill].stack[KERNEL_STACK_SIZE - 10] = 0;	
-
-
+  
+  
   /* Inicialitzar els camps del task_struct no comuns al fill */
   task[fill].task.pid = pid++;
   task[fill].task.quantum = 60;	/* Tots els processos tindran el mateix quantum */
@@ -181,9 +179,9 @@ void sys_exit()
 	//list_del(proces_actual->run_list.prev,proces_actual.run_list->next);
 
 	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
-		free_frames(proces_actual.task->pagines_fisiques[i],1);
+		free_frames(proces_actual->pagines_fisiques[i],1);
 		
-	task_switch(task); /* Posar el seguent element de la runqueue*/
+	task_switch(&task[i]); /* Posar el seguent element de la runqueue*/
 	}
 
 
