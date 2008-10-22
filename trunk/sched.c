@@ -95,8 +95,7 @@ task_switch (union task_union *t)
   tss.esp0 = (DWord) &(t->stack[KERNEL_STACK_SIZE]);
 
   /*Si permetessim agafar un num variable de pagines fisiques,
-    hauriem de modificar aquesta condicio i invalidar les sobrants de la
-    taula, residuals d'altres processos
+    hauriem d'invalidar les sobrants de la taula, residuals d'altres processos
   */
   for (i=0; i<NUM_PAG_DATA && t->task.pagines_fisiques[i]!=-1;i++)
     set_ss_pag(PAG_LOG_INIT_DATA_P0+i,(unsigned)(t->task.pagines_fisiques[i]));
