@@ -173,11 +173,13 @@ void sys_exit()
 	int i;
 	
 	/* Alliberar les estructures del proces */
-	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
-		phys_mem[proces_actual->pagines_fisiques[i]]=FREE_FRAME;
-		
-	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
 	
+	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
+
+	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
+		free_frames(proces_actual->pagines_fisiques[i],1);
+		
+	task_switch(task);
 	}
 
 
