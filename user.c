@@ -13,7 +13,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   printf("\nRetorn des fork: ");
   printint(i);
 
-  if (i==1)
+  if (i==2)
     {
       printf("\nSoc el pare i el meu fill te PID: ");
       printint(i);
@@ -21,13 +21,14 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       k = getpid();
       printint(k);
     }
-  else if (i==0)
+  
+  if (i==0)
     {
       printf("\nSoc el fill i tenc PID: ");
       k = getpid();
       printint(k);
     }
-
+  
 
 //Jocs de proves:
   // runjp(); 
