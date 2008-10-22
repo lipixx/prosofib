@@ -163,3 +163,22 @@ sys_fork ()
 
   return pidfill;
 }
+
+void sys_exit()
+{
+	struct task_struct* proces_actual = current();
+	
+	if(proces_actual->pid!=1){	/* Mai podem matar el proces 1 */
+
+	int i;
+	
+	/* Alliberar les estructures del proces */
+	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
+		phys_mem[proces_actual->pagines_fisiques[i]]=FREE_FRAME;
+		
+	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
+	
+	}
+
+
+}
