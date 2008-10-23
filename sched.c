@@ -29,7 +29,7 @@ init_task0 (int first_ph)
 {
   int i = 0;
   task[0].task.pid = pid++;
-  task[0].task.quantum = 500;
+  task[0].task.quantum = 10;
   task[0].task.tics_cpu = 0;
   vida = task[0].task.quantum;
   for (i=0;i<NUM_PAG_DATA;i++)
