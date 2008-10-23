@@ -7,6 +7,7 @@
 #define	EBADF		 9	/* Bad file number */
 #define	EAGAIN		11	/* Try again */
 #define	EFAULT		14	/* Bad address */
+#define	EBUSY		16	/* Device or resource busy */
 #define	EINVAL		22	/* Invalid argument */
 #define	EFBIG		27	/* File too large */
 #define	ENOSYS		38	/* Function not implemented */
