@@ -98,9 +98,11 @@ task_switch (union task_union *t)
     hauriem d'invalidar les sobrants de la taula, residuals d'altres processos
   */
   for (i=0; i<NUM_PAG_DATA && t->task.pagines_fisiques[i]!=-1;i++)
-    set_ss_pag(PAG_LOG_INIT_DATA_P0+i,(unsigned)(t->task.pagines_fisiques[i]));
-  
-  
+      set_ss_pag(PAG_LOG_INIT_DATA_P0+i,(unsigned)(t->task.pagines_fisiques[i]));
+      
+
+  set_cr3();
+    
   /*Hem de moure la @ del primer valor de la pila de t, dins %esp.*/
   __asm__ __volatile__
     (
