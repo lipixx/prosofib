@@ -26,7 +26,10 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	  printf("\nCreant un nou fill amb pid:");
 	  printint(i);
 	}
-      else printf("\nSoc el fill 3er");
+      else{
+        printf("\nSoc el fill 3er");
+    	printf(0x0234);
+    }
     }
   
   if (i==0)
