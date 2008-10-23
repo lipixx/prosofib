@@ -257,10 +257,10 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_getpid	/* @ Crida al sistema getpid 0x14 (#20)*/
-	.long sys_ni_syscall
-	.long sys_ni_syscall
-	.long sys_ni_syscall
-	.long sys_ni_syscall
+	.long sys_sem_init	/* @ Crida al sistema sem_init # 21 */
+	.long sys_sem_wait	/* @ Crida al sistema sem_wait # 22 */
+	.long sys_sem_signal	/* @ Crida al sistema sem_signal # 23 */
+	.long sys_sem_destroy	/* @ Crida al sistema sem_destroy # 24 */
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall

@@ -212,11 +212,31 @@ int sys_get_stats(int spid, int *tics)
 	/* Cercam el proces amb PID=pid */
 	for(i=0; i<NR_TASKS && task[i].task.pid!=spid; i++);
 	
-	if(task[i].task.pid!=spid) return -ESRCH;	/* No such process */
+	if(task[i].task.pid!=spid || spid==-1) return -ESRCH;	/* No such process */
 	
 	/* Si hi ha el proces amb PID=pid */
 	
 	if (copy_to_user(&(task[i].task.tics_cpu),tics,4) < 0) return -EFAULT;	/* Bad address */ 
 	return 0;
 	 
+}
+
+int sem_init (int n_sem, unsigned int value)
+{
+return 0;
+}
+
+int sem_wait (int n_sem)
+{
+return 0;
+}
+
+int sem_signal (int n_sem)
+{
+return 0;
+}
+
+int sem_destroy (int n_sem)
+{
+return 0;
 }
