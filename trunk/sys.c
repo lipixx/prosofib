@@ -160,7 +160,7 @@ sys_fork ()
   task[fill].task.tics_cpu = 0;
 
   /* Inserir el nou proces a la llista de preparats: runqueue */
-  list_add (&(task[fill].task.run_list), &runqueue);
+  list_add_tail (&(task[fill].task.run_list), &runqueue);
 
   
   return pid-1;
