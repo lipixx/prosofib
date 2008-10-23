@@ -204,3 +204,19 @@ void sys_exit()
 
 
 }
+
+int sys_get_stats(int pid, int *tics)
+{
+	int i;
+
+	/* Cercam el proces amb PID=pid */
+	for(i=0; i<NR_TASKS && task[i].task.pid!=pid; i++)
+	
+	if(task[i].task.pid!=pid) return -ESRCH;	/* No such process */
+	
+	/* Si hi ha el proces amb PID=pid */
+	
+	if (copy_to_user(&task[i].task.tics_cpu,&tics,4) < 0) return -EFAULT;	/* Bad address */ 
+	return 0;
+	 
+}

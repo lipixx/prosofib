@@ -27,7 +27,12 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	  printint(i);
 	}
       else{
-        printf("\nSoc el fill 3er");
+        printf("\nSoc el fill 3er\n");
+	int ntics;
+        get_stats(2,&ntics);
+        printf("Nombre de tics:");
+        printint(ntics);
+        printf("\n");
 	//Page fault:
     	//__asm__ __volatile__ ("movl 0x0, %esp");
     }
