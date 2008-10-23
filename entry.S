@@ -257,4 +257,15 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_getpid	/* @ Crida al sistema getpid 0x14 (#20)*/
-
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall	/*@ system call #30*/
+	.long sys_ni_syscall
+	.long sys_nice	 	/*@ Crida al sistema nice #32*/
