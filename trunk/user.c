@@ -51,7 +51,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	     printf(",tinc pid:");
 	     printint(getpid());
 	     /*Codi de T3*/
-	     sem_signal(0);
+	     sem_wait(0);
 	     nice(30);
 	     while(1) printf("T3");
 	     break;
@@ -63,6 +63,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	      printf(", el meu pid es:");
 	      printint(getpid());
 	      /*Codi de T1*/
+	      // sem_wait(0);
 	      nice(10);
 	      while(1) printf("T1");
 	      break;
@@ -79,6 +80,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       printf(", el meu pid es:");
       printint(getpid());
       /*Codi de T0*/
+      // sem_wait(0);
       nice(5);
       while(1) printf("T0");
       break;    
