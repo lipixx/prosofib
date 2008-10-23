@@ -19,7 +19,7 @@ init_sched ()
 {
   int i;
   INIT_LIST_HEAD (&runqueue);
-  pid = 1;
+  pid = 0;
   for(i = 0; i < NR_TASKS; i++)
     task[i].task.pid = -1;
 }
