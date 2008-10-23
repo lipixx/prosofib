@@ -13,11 +13,12 @@ extern Gate idt[IDT_ENTRIES];
 extern Register idtR;
 int vida;
 
-void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL);
-void setTrapHandler(int vector, void (*handler)(), int maxAccessibleFromPL);
-void setIdt();
-void itoa(int num, char *buffer);
-void iniTemps();
-void sys_exit();
+void setInterruptHandler (int vector, void (*handler) (),
+			  int maxAccessibleFromPL);
+void setTrapHandler (int vector, void (*handler) (), int maxAccessibleFromPL);
+void setIdt ();
+void itoa (int num, char *buffer);
+void iniTemps ();
+void sys_exit ();
 
-#endif  /* __INTERRUPT_H__ */
+#endif /* __INTERRUPT_H__ */

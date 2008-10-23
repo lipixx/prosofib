@@ -11,8 +11,8 @@
 /**********************/
 
 Byte inb (unsigned short port);
-void printc(char c);
-void printk(char *string);
-void printc_xy(int x, int y, char c);
-void printk_xy(int x, int y, char *string);
-#endif  /* __IO_H__ */
+void printc (char c);
+void printk (char *string);
+void printc_xy (int x, int y, char c);
+void printk_xy (int x, int y, char *string);
+#endif /* __IO_H__ */
