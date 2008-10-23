@@ -125,6 +125,67 @@ int nice(int quantum)
   return check_errno(val);
 }
 
+
+int sem_init(int n_sem, unsigned int value)
+{
+ int val = -1;
+  __asm__ __volatile__(
+		       "movl 8(%%ebp),%%ebx\n"
+		       "movl 12(%%ebp),%%ecx\n"
+		       "movl $21,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax,%0\n"
+		       :"=g" (val)
+		       :
+		       :"%ebx"
+		       );
+  return check_errno(val);
+}
+
+int sem_wait(int n_sem)
+{
+ int val = -1;
+  __asm__ __volatile__(
+		       "movl 8(%%ebp),%%ebx\n"
+		       "movl $22,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax,%0\n"
+		       :"=g" (val)
+		       :
+		       :"%ebx"
+		       );
+  return check_errno(val);
+}
+int sem_signal(int n_sem)
+{
+ int val = -1;
+  __asm__ __volatile__(
+		       "movl 8(%%ebp),%%ebx\n"
+		       "movl $23,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax,%0\n"
+		       :"=g" (val)
+		       :
+		       :"%ebx"
+		       );
+  return check_errno(val);
+}
+
+int sem_destroy(int n_sem)
+{
+  int val = -1;
+  __asm__ __volatile__(
+		       "movl 8(%%ebp),%%ebx\n"
+		       "movl $24,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax,%0\n"
+		       :"=g" (val)
+		       :
+		       :"%ebx"
+		       );
+  return check_errno(val);
+}
+
 int
 check_errno (val)
 {
