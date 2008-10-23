@@ -249,14 +249,16 @@ general_protection_routine ()
 void
 page_fault_routine ()
 {
-  int pid_fault=current()->pid;
-  
+  int pid_fault = current ()->pid;
+
   printk ("PAGE FAULT:\nHa fallat el proces amb PID=");
   //printk ("Ha fallat el proces amb PID=");
   printc ('0' + pid_fault);
-  
-  if (pid_fault!=0) sys_exit();
-  else while (1);
+
+  if (pid_fault != 0)
+    sys_exit ();
+  else
+    while (1);
 
 }
 
@@ -283,8 +285,8 @@ clock_routine ()
   int minuts;
   int segons;
   char hora[6] = { '0', '0', ':', '0', '0', '\0' };
-  struct task_struct * old_task;
-  union task_union * new_task;
+  struct task_struct *old_task;
+  union task_union *new_task;
 
   /* Aqui hauria de ser un 18 tics/segon, pero els IPS del fitxer
    * de configuracio del .bochsrc que esta a 600000 fa que el rellotge
@@ -295,41 +297,42 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-  
+
   vida--;
-  old_task = current();
+  old_task = current ();
   old_task->tics_cpu++;
   if (vida == 0)
     {
-      list_del(&(old_task->run_list));
-      list_add_tail(&(old_task->run_list),&runqueue);
-      new_task = (union task_union*) (list_head_to_task_struct(runqueue.next));
+      list_del (&(old_task->run_list));
+      list_add_tail (&(old_task->run_list), &runqueue);
+      new_task =
+	(union task_union *) (list_head_to_task_struct (runqueue.next));
       vida = new_task->task.quantum;
       call_from_int = 1;
-      task_switch(new_task);
+      task_switch (new_task);
     }
-  
+
 
 
   /*
-  if (pid > 3) //aprox cada mig segon
-    {
-      debug = current()->pid;
+     if (pid > 3) //aprox cada mig segon
+     {
+     debug = current()->pid;
 
-      switch (debug)
-	{
-      case 1:
-      task_switch(&task[1]);
-      break;
-      case 2:
-	task_switch(&task[2]);
-	break;
-      case 3: 
-	task_switch(&task[0]);
-	break;
-	default: break;
-	}
-    }*/
+     switch (debug)
+     {
+     case 1:
+     task_switch(&task[1]);
+     break;
+     case 2:
+     task_switch(&task[2]);
+     break;
+     case 3: 
+     task_switch(&task[0]);
+     break;
+     default: break;
+     }
+     } */
 
   if (temps % 18 == 0)
     {

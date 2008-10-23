@@ -11,19 +11,12 @@ int
 write (int fd, char *buffer, int size)
 {
   int val = -1;
-  __asm__ __volatile__ (
-			"movl 8(%%ebp),%%ebx\n" 
-			"movl 12(%%ebp),%%ecx\n" 
-			"movl 16(%%ebp),%%edx\n" 
-			"movl $4,%%eax\n" 
-			"int $0x80\n" 
-			"movl %%eax, %0\n"
-			:"=g" (val)	/*bind %0 */
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" "movl 12(%%ebp),%%ecx\n" "movl 16(%%ebp),%%edx\n" "movl $4,%%eax\n" "int $0x80\n" "movl %%eax, %0\n":"=g" (val)	/*bind %0 */
 			:	/*bind %1,%2,%3 si hi fossin.. */
 			:"%ebx"	/*announce to the compiler that ebx is dirty */
     );
 
-   return check_errno (val);
+  return check_errno (val);
 }
 
 int
@@ -69,121 +62,84 @@ int
 fork (void)
 {
   int val = -1;
-  __asm__ __volatile__ (
-			"movl $2,%%eax\n"
-			"int $0x80\n"
-			"movl %%eax, %0\n"
-			:"=g" (val)
-			:
-			:"%ebx"
-			);
+  __asm__ __volatile__ ("movl $2,%%eax\n"
+			"int $0x80\n" "movl %%eax, %0\n":"=g" (val)::"%ebx");
 
   return check_errno (val);
 }
 
-void exit()
+void
+exit ()
 {
-__asm__ __volatile__(
-	"movl $1,%%eax\n"
-	"int $0x80\n"	/* Feim la crida al sistema que no retornara mai */
-	:
-	:
-	);
+  __asm__ __volatile__ ("movl $1,%%eax\n" "int $0x80\n"	/* Feim la crida al sistema que no retornara mai */
+			::);
 
 }
 
-int get_stats(int pid, int *tics)
+int
+get_stats (int pid, int *tics)
 {
-int res = -1;
-  __asm__ __volatile__ (
-			"movl 8(%%ebp),%%ebx\n" 	/* Primer parametre */
-			"movl 12(%%ebp),%%ecx\n" 	/* Segon parametre */
-			"movl $35,%%eax\n" 
-			"int $0x80\n" 			/* TRAP */
-			"movl %%eax, %0\n"		
-			:"=g" (res)			/* resultat a res */
-			:	
-			:"%ebx"	
-    );
+  int res = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"	/* Primer parametre */
+			"movl 12(%%ebp),%%ecx\n"	/* Segon parametre */
+			"movl $35,%%eax\n" "int $0x80\n"	/* TRAP */
+			"movl %%eax, %0\n":"=g" (res)	/* resultat a res */
+			::"%ebx");
 
-   return check_errno (res);
+  return check_errno (res);
 }
 
-int nice(int quantum)
+int
+nice (int quantum)
 {
-  /*Retorna el val del quantum anterior i -1 si no ha anat be*/
+  /*Retorna el val del quantum anterior i -1 si no ha anat be */
   int val = -1;
-  __asm__ __volatile__(
-		       "movl 8(%%ebp),%%ebx\n" 
-		       "movl $34,%%eax\n"
-		       "int $0x80\n"
-		       "movl %%eax,%0\n"
-		       :"=g" (val)
-		       :
-		       :"%ebx"
-		       );
-  return check_errno(val);
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $34,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
 }
 
 
-int sem_init(int n_sem, unsigned int value)
-{
- int val = -1;
-  __asm__ __volatile__(
-		       "movl 8(%%ebp),%%ebx\n"
-		       "movl 12(%%ebp),%%ecx\n"
-		       "movl $21,%%eax\n"
-		       "int $0x80\n"
-		       "movl %%eax,%0\n"
-		       :"=g" (val)
-		       :
-		       :"%ebx"
-		       );
-  return check_errno(val);
-}
-
-int sem_wait(int n_sem)
-{
- int val = -1;
-  __asm__ __volatile__(
-		       "movl 8(%%ebp),%%ebx\n"
-		       "movl $22,%%eax\n"
-		       "int $0x80\n"
-		       "movl %%eax,%0\n"
-		       :"=g" (val)
-		       :
-		       :"%ebx"
-		       );
-  return check_errno(val);
-}
-int sem_signal(int n_sem)
-{
- int val = -1;
-  __asm__ __volatile__(
-		       "movl 8(%%ebp),%%ebx\n"
-		       "movl $23,%%eax\n"
-		       "int $0x80\n"
-		       "movl %%eax,%0\n"
-		       :"=g" (val)
-		       :
-		       :"%ebx"
-		       );
-  return check_errno(val);
-}
-
-int sem_destroy(int n_sem)
+int
+sem_init (int n_sem, unsigned int value)
 {
   int val = -1;
-  __asm__ __volatile__(
-		       "movl 8(%%ebp),%%ebx\n"
-		       "movl $24,%%eax\n"
-		       "int $0x80\n"
-		       "movl %%eax,%0\n"
-		       :"=g" (val)
-		       :
-		       :"%ebx"
-		       );
-  return check_errno(val);
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl 12(%%ebp),%%ecx\n"
+			"movl $21,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
+
+int
+sem_wait (int n_sem)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $22,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
+
+int
+sem_signal (int n_sem)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $23,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
+
+int
+sem_destroy (int n_sem)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $24,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
 }
 
 int
@@ -206,11 +162,11 @@ perror ()
   switch (errno)
     {
     case 1:
-      write (1, "EPERM: Operation not permitted\n",31);
-	break;
-    case 3: 
-      write(1,"ESRCH: No such process \n",24); 
-      	break;
+      write (1, "EPERM: Operation not permitted\n", 31);
+      break;
+    case 3:
+      write (1, "ESRCH: No such process \n", 24);
+      break;
     case 5:
       write (1, "EIO: I/O error \n", 16);
       break;
