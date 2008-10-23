@@ -232,12 +232,54 @@ int sys_sem_init (int n_sem, unsigned int value)
 
 int sys_sem_wait (int n_sem)
 {
-return 0;
+  union task_union * old_task;
+  union task_union * new_task;
+
+  old_task = current();
+
+  if (n_sem<0 || n_sem>=SEM_VALUE_MAX || sem[n_sem].init == 0) return -EINVAL;
+  if (old_task->pid == 0) return -EPERM;
+
+  sem[n_sem].count--;
+
+  if (sem[n_sem].count <= 0)
+    {
+      /*Eliminam de la runqueue i el posem a la cua de bloqued del semafor*/
+      list_del(&(old_task->run_list));
+      list_add_tail(&(old_task->run_list),&(sem[n_sem].queue));
+      
+      /*Fem un task_switch a una nova tasca*/
+      new_task = (union task_union*) (list_head_to_task_struct(runqueue.next));
+      vida = new_task->task.quantum;
+      call_from_int = 0;
+      task_switch(new_task);
+    }
+
+  return 0;
 }
 
 int sys_sem_signal (int n_sem)
-{
-return 0;
+{ //NO ACABADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  union task_union * blocked_task;
+  union task_union * new_task;
+  
+  if (n_sem<0 || n_sem>=SEM_VALUE_MAX || sem[n_sem].init == 0) return -EINVAL;
+  
+  blocked_task = &(sem[n_sem].queue);
+
+  sem[n_sem].count++;
+  
+  if (!list_empty(&(sem[n_sem].queue)))
+    {
+      /*Hi ha que mirar que decidim; que es fa amb el proces que
+	desbloquejem? El deixem nomes a run_queue o l'executem
+	instantaniament?*/
+      //Per ara el posem nomes a run_queue
+      list_add(runqueue.
+    }
+  
+  return 0;
+  //FI NO ACABADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 }
 
 int sys_sem_destroy (int n_sem)
