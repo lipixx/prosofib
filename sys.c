@@ -226,7 +226,7 @@ int sys_sem_init (int n_sem, unsigned int value)
 	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
 	if(sem[n_sem].init!=0) return -EBUSY;			/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
 	sem[n_sem].count=value;
-	INIT_LIST_HEAD(sem[n_sem].queue);
+	INIT_LIST_HEAD(&(sem[n_sem].queue));
 	return 0;
 }
 
