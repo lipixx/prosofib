@@ -168,23 +168,25 @@ sys_fork ()
 
 void sys_exit()
 {
+	int i;
 	struct task_struct* proces_actual = current();
 	
+	/* Seguent es el punter al task_union seguent de la runqueue */
+	union task_union *seguent=(union task_union*) list_head_to_task_struct(proces_actual->run_list.next);
+	
 	if(proces_actual->pid!=1){	/* Mai podem matar el proces 1 */
+	
+		/* Alliberar les estructures del proces */
+	
+		proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
+	
+		list_del(&proces_actual->run_list);	/* Eliminem el proces de la runqueue */
 
-	int i;
-	
-	/* Alliberar les estructures del proces */
-	
-	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
-	
-	list_del(&proces_actual->run_list);	/* Eliminem el proces de la runqueue */
-
-	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
-		free_frames(proces_actual->pagines_fisiques[i],1);
+		for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
+			free_frames(proces_actual->pagines_fisiques[i],1);
 		
-	/* Posar el seguent element de la runqueue*/
-	task_switch(list_head_to_task_struct(&runqueue.next));
+		/* Posar el seguent element de la runqueue*/
+		task_switch(seguent);
 	}
 
 
