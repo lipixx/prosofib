@@ -30,16 +30,8 @@ init_task0 (int first_ph)
   task[0].task.pid = pid++;
   task[0].task.quantum = 0;
   task[0].task.tics_cpu = 0;
-  task[0].task.pagines_fisiques[0] = first_ph;
-
-  /*for (i=0;i<NUM_PAG_DATA;i++)
-     task[0].task.pagines_fisiques[i] = -1; */
-  for (i = 0; i < NUM_PAG_DATA; i++)
-    {
-      /* Mirem que hi hagi prou frames lliures */
-      task[0].task.pagines_fisiques[i] = alloc_frames (1);
-      //if (task[0].task.pagines_fisiques[i]==-1) return - EAGAIN;
-    }
+  for (i=0;i<NUM_PAG_DATA;i++)
+     task[0].task.pagines_fisiques[i] = first_ph+NUM_PAG_CODE+i;
 
   list_add (&(task[0].task.run_list), &runqueue);
 }
