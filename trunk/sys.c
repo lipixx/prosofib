@@ -221,22 +221,22 @@ int sys_get_stats(int spid, int *tics)
 	 
 }
 
-int sem_init (int n_sem, unsigned int value)
+int sys_sem_init (int n_sem, unsigned int value)
 {
 return 0;
 }
 
-int sem_wait (int n_sem)
+int sys_sem_wait (int n_sem)
 {
 return 0;
 }
 
-int sem_signal (int n_sem)
+int sys_sem_signal (int n_sem)
 {
 return 0;
 }
 
-int sem_destroy (int n_sem)
+int sys_sem_destroy (int n_sem)
 {
 return 0;
 }
