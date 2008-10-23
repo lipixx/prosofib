@@ -44,8 +44,16 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   while(1)
     {
       if (getpid() == 1) printf("p");
-      else if (getpid() == 2) printf("f");
-      else if (getpid() == 3) printf("k");
+      else if (getpid() == 2)
+	{
+	  int p;
+	  for (p=0;p<40;p++)printf("f");
+	  //exit();
+	}
+      else if (getpid() == 3) {
+	printf("kkkkk");
+	//exit();
+      }
     }
 
   return 0;
