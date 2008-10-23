@@ -223,7 +223,11 @@ int sys_get_stats(int spid, int *tics)
 
 int sys_sem_init (int n_sem, unsigned int value)
 {
-return 0;
+	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
+	if(sem[n_sem].init!=0) return -EBUSY;			/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
+	sem[n_sem].count=value;
+	INIT_LIST_HEAD(sem[n_sem].queue);
+	return 0;
 }
 
 int sys_sem_wait (int n_sem)
@@ -238,5 +242,10 @@ return 0;
 
 int sys_sem_destroy (int n_sem)
 {
-return 0;
+	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
+	if(sem[n_sem].init==0) return -1;			/* Error si el semafor no esta inicialitzat */
+	if(list_empty(&sem[n_sem].queue)) return -1;		/* Error si encara hi ha processos bloquejats a la cua */
+	
+	sem[n_sem].count=-1;
+	return 0;
 }

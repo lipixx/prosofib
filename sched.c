@@ -22,6 +22,9 @@ init_sched ()
   pid = 0;
   for(i = 0; i < NR_TASKS; i++)
     task[i].task.pid = -1;
+    
+  for(i=0;i<N_SEMAFORS;i++)
+    sem[i].init=0;
 }
 
 void
