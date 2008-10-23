@@ -13,7 +13,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   printf("\nRetorn des fork: ");
   printint(i);
 
-  if (i==2)
+  if (i==1)
     {
       printf("\nSoc el pare i el meu fill te PID: ");
       printint(i);
@@ -29,7 +29,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       else{
         printf("\nSoc el fill 3er\n");
 	int ntics;
-        get_stats(0,&ntics);
+        get_stats(2,&ntics);
         printf("Nombre de tics:");
         printint(ntics);
         printf("\n");
@@ -52,14 +52,14 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
  
   while(1)
     {
-      if (getpid() == 1) printf("p");
-      else if (getpid() == 2)
+      if (getpid() == 0) printf("p");
+      else if (getpid() == 1)
 	{
 	  int p;
 	  for (p=0;p<40;p++)printf("f");
 	  //exit();
 	}
-      else if (getpid() == 3) {
+      else if (getpid() == 2) {
 	printf("kkkkk");
 	//printint(nice(300));
 	//exit();

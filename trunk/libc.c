@@ -124,6 +124,7 @@ int nice(int quantum)
 		       );
   return check_errno(val);
 }
+
 int
 check_errno (val)
 {
