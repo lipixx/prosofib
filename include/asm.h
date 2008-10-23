@@ -11,4 +11,4 @@
     .align 0; \
   name:
 
-#endif  /* __ASM_H__ */
+#endif /* __ASM_H__ */

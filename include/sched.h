@@ -12,7 +12,8 @@
 #include <list.h>
 #include <mm_address.h>
 
-struct task_struct {
+struct task_struct
+{
   int pid;
   int quantum;
   int tics_cpu;
@@ -24,15 +25,17 @@ struct list_head runqueue;
 int pid;
 char call_from_int;
 
-union task_union {
+union task_union
+{
   struct task_struct task;
-  unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
+  unsigned long stack[KERNEL_STACK_SIZE];	/* pila de sistema, per procés */
 };
 
-struct semafor {
-	char init; 
-	int count;
-	struct list_head queue; 
+struct semafor
+{
+  char init;
+  int count;
+  struct list_head queue;
 };
 
 struct semafor sem[SEM_VALUE_MAX];
@@ -40,13 +43,11 @@ struct semafor sem[SEM_VALUE_MAX];
 extern union task_union task[NR_TASKS];
 
 /* Inicialitza les dades del proces inicial */
-void init_task0();
-void init_sched();
-int search_free_task();
-void task_switch(union task_union *t);
-struct task_struct* current();
-struct task_struct * list_head_to_task_struct(struct list_head * l);
+void init_task0 ();
+void init_sched ();
+int search_free_task ();
+void task_switch (union task_union *t);
+struct task_struct *current ();
+struct task_struct *list_head_to_task_struct (struct list_head *l);
 
-#endif  /* __SCHED_H__ */
-
-
+#endif /* __SCHED_H__ */
