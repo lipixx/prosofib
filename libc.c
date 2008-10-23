@@ -92,6 +92,23 @@ __asm__ __volatile__(
 
 }
 
+int get_stats(int pid, int *tics)
+{
+int res = -1;
+  __asm__ __volatile__ (
+			"movl 8(%%ebp),%%ebx\n" 	/* Primer parametre */
+			"movl 12(%%ebp),%%ecx\n" 	/* Segon parametre */
+			"movl $35,%%eax\n" 
+			"int $0x80\n" 			/* TRAP */
+			"movl %%eax, %0\n"		
+			:"=g" (res)			/* resultat a res */
+			:	
+			:"%ebx"	
+    );
+
+   return check_errno (res);
+}
+
 int nice(int quantum)
 {
   /*Retorna el val del quantum anterior i -1 si no ha anat be*/
@@ -129,6 +146,9 @@ perror ()
     case 1:
       write (1, "EPERM: Operation not permitted\n",31);
 	break;
+    case 3: 
+      write(1,"ESRCH: No such process \n",24); 
+      	break;
     case 5:
       write (1, "EIO: I/O error \n", 16);
       break;
