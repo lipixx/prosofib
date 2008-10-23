@@ -2,6 +2,7 @@
 #define _ASM_GENERIC_ERRNO_H
 
 #define EPERM            1      /* Operation not permitted */
+#define	ESRCH		 3	/* No such process */
 #define	EIO		 5	/* I/O error */
 #define	EBADF		 9	/* Bad file number */
 #define	EAGAIN		11	/* Try again */
