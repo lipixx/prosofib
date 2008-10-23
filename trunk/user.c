@@ -28,7 +28,8 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	}
       else{
         printf("\nSoc el fill 3er");
-    	printf(0x0234);
+	//Page fault:
+    	//__asm__ __volatile__ ("movl 0x0, %esp");
     }
     }
   
