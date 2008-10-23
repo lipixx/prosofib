@@ -20,6 +20,7 @@ init_sched ()
   int i;
   INIT_LIST_HEAD (&runqueue);
   pid = 0;
+  call_from_int = 0;
   for(i = 0; i < NR_TASKS; i++)
     task[i].task.pid = -1;
     
@@ -114,10 +115,13 @@ task_switch (union task_union *t)
   /* Haurem de fer un EOI nomes si venim de una interrupcio,
      ja que sino no podrem rebre futures interrupcions.*/
 
+  if (call_from_int == 1){
   __asm__ __volatile__(
 		       "movb $0x20,%al\n"
 		       "outb %al, $0x20\n"
 		       );
+  call_from_int = 0;
+  }
 
  /*Restaurar els registres per sortir del sistema i tornar
   al fork*/

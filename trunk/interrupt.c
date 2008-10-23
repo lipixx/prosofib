@@ -305,6 +305,7 @@ clock_routine ()
       list_add_tail(&(old_task->run_list),&runqueue);
       new_task = (union task_union*) (list_head_to_task_struct(runqueue.next));
       vida = new_task->task.quantum;
+      call_from_int = 1;
       task_switch(new_task);
     }
   
