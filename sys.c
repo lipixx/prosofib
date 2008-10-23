@@ -178,12 +178,13 @@ void sys_exit()
 	
 	proces_actual->pid=-1;	/* Marcam la posició del vector task com a lliure */
 	
-	//list_del(proces_actual->run_list.prev,proces_actual.run_list->next);
+	list_del(&proces_actual->run_list);	/* Eliminem el proces de la runqueue */
 
 	for(i=0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
 		free_frames(proces_actual->pagines_fisiques[i],1);
 		
-	task_switch(&task[i]); /* Posar el seguent element de la runqueue*/
+	/* Posar el seguent element de la runqueue*/
+	task_switch(list_head_to_task_struct(&runqueue.next));
 	}
 
 
