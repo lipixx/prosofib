@@ -7,6 +7,8 @@
 
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
+#define SEM_VALUE_MAX 25
+
 #include <list.h>
 #include <mm_address.h>
 
@@ -26,6 +28,14 @@ union task_union {
   struct task_struct task;
   unsigned long stack[KERNEL_STACK_SIZE];    /* pila de sistema, per procés */
 };
+
+struct semafor {
+	char init; 
+	int count;
+	list_head queue; 
+};
+
+struct semafor sem[SEM_VALUE_MAX];
 
 extern union task_union task[NR_TASKS];
 
