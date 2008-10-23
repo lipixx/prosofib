@@ -99,7 +99,7 @@ set_user_pages (int first_ph_page)
 void
 set_cr3 ()
 {
-  asm volatile ("movl %0,%%cr3"::"r" (dir_pages));
+  __asm__ __volatile__ ("movl %0,%%cr3"::"r" (dir_pages));
 }
 
 /* Macros for reading/writing the CR0 register, where is shown the paging status */
@@ -137,7 +137,6 @@ void
 del_ss_pag (unsigned pagina_logica)
 {
   pagusr_table[pagina_logica].entry = 0;
-  set_cr3 ();
 }
 
 /* Initializes paging an the process 0 address space */

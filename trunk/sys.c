@@ -137,13 +137,15 @@ sys_fork ()
 		 (char *) (PAGE_SIZE * (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA)),
 		 PAGE_SIZE);
       
+      
       /* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
       task[fill].task.pagines_fisiques[i] = frames[i];
     }
   
   /* Alliberem les pagines fisiques */
   del_ss_pag(PAG_LOG_INIT_DATA_P0+NUM_PAG_DATA);
-  
+  set_cr3();
+
   /* Modifiquem el 'PID' del fill mitjancant l'eax, que sera el valor que retornara 
      quan el proces restauri el seu context. -10 perque quan entrem al sistema 
      s'apila ss,esp,eflags,cs,eip i llavors tots els registres de la macro SAVE_ALL 
