@@ -75,7 +75,7 @@ fork (void)
 			"movl %%eax, %0\n"
 			:"=g" (val)
 			:
-			:"%ebx"
+			://"%ebx" CANVIAT!!
 			);
   return check_errno (val);
 }
@@ -91,6 +91,21 @@ __asm__ __volatile__(
 
 }
 
+int nice(int quantum)
+{
+  /*Retorna el val del quantum anterior i -1 si no ha anat be*/
+  int val = -1;
+  __asm__ __volatile__(
+		       "movl 8(%%ebp),%%ebx\n" 
+		       "movl $34,%%eax\n"
+		       "int $0x80\n"
+		       "movl %%eax,%0\n"
+		       :"=g" (val)
+		       :
+		       :"%ebx"
+		       );
+  return check_errno(val);
+}
 int
 check_errno (val)
 {
