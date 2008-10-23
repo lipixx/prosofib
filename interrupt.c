@@ -9,6 +9,7 @@
 #include <entry.h>
 #include <sched.h>
 
+
 Gate idt[IDT_ENTRIES];
 Register idtR;
 int temps;
@@ -248,8 +249,14 @@ general_protection_routine ()
 void
 page_fault_routine ()
 {
-  printk ("PAGE FAULT");
-  while (1);
+  int pid_fault=current()->pid;
+  
+  printk ("PAGE FAULT:");
+  printk ("Ha fallat el proces amb PID=");
+  printc ('0' + pid_fault);
+  
+  if (pid_fault!=0) sys_exit();
+  else while (1);
 
 }
 
