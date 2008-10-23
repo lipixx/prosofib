@@ -174,7 +174,7 @@ void sys_exit()
 	/* Seguent es el punter al task_union seguent de la runqueue */
 	union task_union *seguent=(union task_union*) list_head_to_task_struct(proces_actual->run_list.next);
 	
-	if(proces_actual->pid!=1){	/* Mai podem matar el proces 1 */
+	if(proces_actual->pid!=0){	/* Mai podem matar el proces 1 */
 	
 		/* Alliberar les estructures del proces */
 	
