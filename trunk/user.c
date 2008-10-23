@@ -29,10 +29,12 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       else{
         printf("\nSoc el fill 3er\n");
 	int ntics;
-        get_stats(2,&ntics);
+	int error=get_stats(3,&ntics);
         printf("Nombre de tics:");
         printint(ntics);
         printf("\n");
+        printf("error?");
+        printint(-error);
 	//Page fault:
     	//__asm__ __volatile__ ("movl 0x0, %esp");
     }
