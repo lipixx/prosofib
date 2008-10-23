@@ -223,6 +223,7 @@ int sys_get_stats(int spid, int *tics)
 
 int sys_sem_init (int n_sem, unsigned int value)
 {
+	/* inicialitzam el comptador del semafor n_sem a value */
 	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
 	if(sem[n_sem].init!=0) return -EBUSY;			/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
 	sem[n_sem].count=value;
@@ -275,7 +276,7 @@ int sys_sem_signal (int n_sem)
 	desbloquejem? El deixem nomes a run_queue o l'executem
 	instantaniament?*/
       //Per ara el posem nomes a run_queue
-      list_add(runqueue.
+      list_add(runqueue);
     }
   
   return 0;
@@ -284,10 +285,11 @@ int sys_sem_signal (int n_sem)
 
 int sys_sem_destroy (int n_sem)
 {
+	/* destrueim el semafor n_sem si aquest esta inicialitzat */
 	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
-	if(sem[n_sem].init==0) return -1;			/* Error si el semafor no esta inicialitzat */
-	if(list_empty(&sem[n_sem].queue)) return -1;		/* Error si encara hi ha processos bloquejats a la cua */
+	if(sem[n_sem].init==0) return -EPERM;			/* Error si el semafor no esta inicialitzat */
+	if(list_empty(&sem[n_sem].queue)) return -EPERM;	/* Error si encara hi ha processos bloquejats a la cua */
 	
-	sem[n_sem].count=-1;
+	sem[n_sem].init=0;
 	return 0;
 }
