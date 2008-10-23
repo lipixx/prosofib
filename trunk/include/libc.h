@@ -11,5 +11,6 @@ int getpid(void);
 int fork(void);
 void perror();
 int check_errno(int i);
+void exit();
 
 #endif  /* __LIBC_H__ */
