@@ -69,7 +69,7 @@
 	outb %al, $0x20
 
 #define MINSTAB 0
-#define MAXSTAB 20
+#define MAXSTAB 34
 	
 ENTRY(divide_error_handler)
 	SAVE_ALL
@@ -264,8 +264,10 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall
-	.long sys_ni_syscall
-	.long sys_ni_syscall
+	.long sys_ni_syscall	
+	.long sys_ni_syscall	
 	.long sys_ni_syscall	/*@ system call #30*/
 	.long sys_ni_syscall
-	.long sys_nice	 	/*@ Crida al sistema nice #32*/
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_nice		/*@ Crida al sistema nice #34*/

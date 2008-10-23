@@ -75,8 +75,9 @@ fork (void)
 			"movl %%eax, %0\n"
 			:"=g" (val)
 			:
-			://"%ebx" CANVIAT!!
+			:"%ebx"
 			);
+
   return check_errno (val);
 }
 
@@ -125,6 +126,9 @@ perror ()
 
   switch (errno)
     {
+    case 1:
+      write (1, "EPERM: Operation not permitted\n",31);
+	break;
     case 5:
       write (1, "EIO: I/O error \n", 16);
       break;
