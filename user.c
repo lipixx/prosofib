@@ -20,6 +20,13 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       printf("\nJo tenc PID:");
       k = getpid();
       printint(k);
+      i=fork();
+      if (i!=0)
+	{
+	  printf("\nCreant un nou fill amb pid:");
+	  printint(i);
+	}
+      else printf("\nSoc el fill 3er");
     }
   
   if (i==0)
@@ -38,6 +45,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
     {
       if (getpid() == 1) printf("p");
       else if (getpid() == 2) printf("f");
+      else if (getpid() == 3) printf("k");
     }
 
   return 0;

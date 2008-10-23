@@ -12,7 +12,7 @@
 Gate idt[IDT_ENTRIES];
 Register idtR;
 int temps;
-int debug;
+
 
 char char_map[] = {
   '\0', '\0', '1', '2', '3', '4', '5', '6',
@@ -115,7 +115,6 @@ void
 iniTemps ()
 {
   temps = -1;
-  debug = 0;
 }
 
 /* IDT # 0 */
@@ -277,8 +276,8 @@ clock_routine ()
   int minuts;
   int segons;
   char hora[6] = { '0', '0', ':', '0', '0', '\0' };
-  temps++;
-  // vida--;
+  struct task_struct * old_task;
+  union task_union * new_task;
 
   /* Aqui hauria de ser un 18 tics/segon, pero els IPS del fitxer
    * de configuracio del .bochsrc que esta a 600000 fa que el rellotge
@@ -289,13 +288,40 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-  if (pid > 2) //aprox cada mig segon
+  
+  vida--;
+  old_task = current();
+  old_task->tics_cpu++;
+  if (vida == 0)
+    {
+      list_del(&(old_task->run_list));
+      list_add_tail(&(old_task->run_list),&runqueue);
+      new_task = (union task_union*) (list_head_to_task_struct(runqueue.next));
+      vida = new_task->task.quantum;
+      task_switch(new_task);
+    }
+  
+
+
+  /*
+  if (pid > 3) //aprox cada mig segon
     {
       debug = current()->pid;
-      if (debug == 2) debug = 0;
-      else debug = 1;
-      task_switch(&task[debug]);
-    }
+
+      switch (debug)
+	{
+      case 1:
+      task_switch(&task[1]);
+      break;
+      case 2:
+	task_switch(&task[2]);
+	break;
+      case 3: 
+	task_switch(&task[0]);
+	break;
+	default: break;
+	}
+    }*/
 
   if (temps % 18 == 0)
     {
