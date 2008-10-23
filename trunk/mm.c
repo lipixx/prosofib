@@ -258,23 +258,28 @@ initialize_P0_frames (void)
 int
 alloc_frames (int nframes)
 {
-	/* Crec que aixi com ho tenim implementat, que cada vegada cercam un unic frame lliure, tot aixo que feim aqui no te cap sentit... */
-	
-    int i, j, ok=0;
-    for (i=0; i<TOTAL_PAGES && ok!=nframes && TOTAL_PAGES-i > nframes; i++) {
-    	ok=0;
-    	for(j=i; j < i+nframes && phys_mem[j]==FREE_FRAME; j++) ok++;
+  /* Crec que aixi com ho tenim implementat, que cada vegada cercam un unic frame lliure, tot aixo que feim aqui no te cap sentit... */
 
-    	if (ok==nframes){
-    	/* Si hem trobar nframes consecutius els marquem com a USED */
-		for(j=j-1; j>=i; j--) phys_mem[j]=USED_FRAME;
-	
-	return i;
-    	}
+  int i, j, ok = 0;
+  for (i = 0; i < TOTAL_PAGES && ok != nframes && TOTAL_PAGES - i > nframes;
+       i++)
+    {
+      ok = 0;
+      for (j = i; j < i + nframes && phys_mem[j] == FREE_FRAME; j++)
+	ok++;
+
+      if (ok == nframes)
+	{
+	  /* Si hem trobar nframes consecutius els marquem com a USED */
+	  for (j = j - 1; j >= i; j--)
+	    phys_mem[j] = USED_FRAME;
+
+	  return i;
+	}
     }
-return -1;
+  return -1;
 }
-	
+
   /* Crec que aixi com ho tenim implementat, que cada vegada cercam un unic frame lliure, tot aixo que feim aqui no te cap sentit... */
 /* FELIP
   int i, j=0, ok=0;
@@ -293,32 +298,32 @@ return -1;
 	
 	}
 */
-	
-  
-  /*
-      for (j = i; j < i + nframes; j++)
-	{
-	  if (phys_mem[j] == FREE_FRAME)
-	    ok++;
-	  else
-	    break;
-	}
-      if (ok == nframes)
-	{
-      Si hem trobat nframes consecutius els marquem com a USED
-    while (j >= i)
-	    {
-	      phys_mem[j] = USED_FRAME;
-	      j--;
-	    }
-	  return i;
-	}
-    
 
-  
-  return -1;
-  //return ok==nframes ? i : -1;
-}*/
+
+  /*
+     for (j = i; j < i + nframes; j++)
+     {
+     if (phys_mem[j] == FREE_FRAME)
+     ok++;
+     else
+     break;
+     }
+     if (ok == nframes)
+     {
+     Si hem trobat nframes consecutius els marquem com a USED
+     while (j >= i)
+     {
+     phys_mem[j] = USED_FRAME;
+     j--;
+     }
+     return i;
+     }
+
+
+
+     return -1;
+     //return ok==nframes ? i : -1;
+     } */
 
 /* free_frames - Mark as FREE_FRAME 'nframes' consecutive pages from the initial  'frame'.*/
 void
