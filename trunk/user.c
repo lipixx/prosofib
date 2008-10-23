@@ -7,69 +7,94 @@ void runjp ();
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
 
+  int ret_fork1, ret_fork2, ret_fork3,aux1;
+
   printf ("\nBenvinguts a ZeOS!");
-  int k;
-  int i = fork ();
-  printf("\nRetorn des fork: ");
-  printint(i);
-
-  if (i==1)
-    {
-      printf("\nSoc el pare i el meu fill te PID: ");
-      printint(i);
-      printf("\nJo tenc PID:");
-      k = getpid();
-      printint(k);
-      i=fork();
-      if (i!=0)
-	{
-	  printf("\nCreant un nou fill amb pid:");
-	  printint(i);
-	}
-      else{
-        printf("\nSoc el fill 3er\n");
-	int ntics;
-	int error=get_stats(3,&ntics);
-        printf("Nombre de tics:");
-        printint(ntics);
-        printf("\n");
-        printf("error?");
-        printint(-error);
-	//Page fault:
-    	//__asm__ __volatile__ ("movl 0x0, %esp");
-    }
-    }
-  
-  if (i==0)
-    {
-      printf("\nSoc el fill i tenc PID: ");
-      k = getpid();
-      printint(k);
-    }
-  
-
-//Jocs de proves:
-  // runjp(); 
-  // run2_jp();
  
-  while(1)
+  ret_fork1 = fork ();
+  switch (ret_fork1)
     {
-      if (getpid() == 0) printf("p");
-      else if (getpid() == 1)
+    case 0:
+      printf("\nTASK1> fill de TASK0, return fork hauria de ser 0 -> ");
+      printint(ret_fork1);
+      printf(",tinc pid:");
+      printint(getpid());
+      
+      ret_fork2 = fork();
+      switch (ret_fork2)
 	{
-	  int p;
-	  for (p=0;p<40;p++)printf("f");
-	  //exit();
-	}
-      else if (getpid() == 2) {
-	printf("kkkkk");
-	//printint(nice(300));
-	//exit();
-      }
-    }
+      case 0:
+	printf("\nTASK2> fill de TASK1, return fork hauria de ser 0 -> ");
+	printint(ret_fork2);
+	printf(",tinc pid:");
+	printint(getpid());
+	/*Codi de T2*/
+	sem_init(0,1);
+	nice(20);
+	for(aux1=0;aux1<1000000;aux1++);
+	while(1) printf("T2");
+	break;
+	/*Fi Codi T2*/
 
+      default:
+	 printf("\nTASK1> nou fill amb pid:");
+	 printint(ret_fork2);
+	 printf(", el meu pid es:");
+	 printint(getpid());
+	 
+	 ret_fork3=fork();
+	 switch(ret_fork3)
+	   {
+	   case 0:
+	     printf("\nTASK3> fill de TASK1, return fork hauria de ser 0 -> ");
+	     printint(ret_fork3);
+	     printf(",tinc pid:");
+	     printint(getpid());
+	     /*Codi de T3*/
+	     sem_signal(0);
+	     nice(30);
+	     while(1) printf("T3");
+	     break;
+	     /*Fi Codi T3*/
+
+	   default:
+	      printf("\nTASK1> nou fill amb pid:");
+	      printint(ret_fork3);
+	      printf(", el meu pid es:");
+	      printint(getpid());
+	      /*Codi de T1*/
+	      nice(10);
+	      while(1) printf("T1");
+	      break;
+	      /*Fi Codi T1*/
+	   }
+	
+	 break;
+	}
+      break;
+
+    default:
+      printf("\nTASK0> nou fill amb pid:");
+      printint(ret_fork1);
+      printf(", el meu pid es:");
+      printint(getpid());
+      /*Codi de T0*/
+      nice(5);
+      while(1) printf("T0");
+      break;    
+      /*Fi Codi T0*/
+    }
   return 0;
 }
+
+/*
+  Arbre de processos actual:
+              T0
+               |
+	       T1---->T2
+	           |
+                   T3
+ */
 
 void
 run2_jp ()

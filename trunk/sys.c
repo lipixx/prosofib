@@ -9,7 +9,7 @@
 #include <sched.h>
 #include <mm_address.h>
 #include <mm.h>
-
+#include <interrupt.h>
 
 #define LECTURA 0
 #define ESCRIPTURA 1
@@ -226,14 +226,17 @@ int sys_sem_init (int n_sem, unsigned int value)
 	/* inicialitzam el comptador del semafor n_sem a value */
 	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
 	if(sem[n_sem].init!=0) return -EBUSY;			/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
-	sem[n_sem].count=value;
+	
+	sem[n_sem].count = value;
+	sem[n_sem].init = 1;
 	INIT_LIST_HEAD(&(sem[n_sem].queue));
+	
 	return 0;
 }
 
 int sys_sem_wait (int n_sem)
 {
-  union task_union * old_task;
+  struct task_struct * old_task;
   union task_union * new_task;
 
   old_task = current();
@@ -260,36 +263,34 @@ int sys_sem_wait (int n_sem)
 }
 
 int sys_sem_signal (int n_sem)
-{ //NO ACABADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-  union task_union * blocked_task;
-  union task_union * new_task;
+{
+  struct list_head * blocked_task;
   
   if (n_sem<0 || n_sem>=SEM_VALUE_MAX || sem[n_sem].init == 0) return -EINVAL;
-  
-  blocked_task = &(sem[n_sem].queue);
 
   sem[n_sem].count++;
   
   if (!list_empty(&(sem[n_sem].queue)))
     {
+       blocked_task = sem[n_sem].queue.next;
+       list_del(blocked_task);
+       list_add(blocked_task,&runqueue);
+
       /*Hi ha que mirar que decidim; que es fa amb el proces que
 	desbloquejem? El deixem nomes a run_queue o l'executem
 	instantaniament?*/
       //Per ara el posem nomes a run_queue
-      list_add(runqueue);
     }
   
   return 0;
-  //FI NO ACABADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 }
 
 int sys_sem_destroy (int n_sem)
 {
-	/* destrueim el semafor n_sem si aquest esta inicialitzat */
-	if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
-	if(sem[n_sem].init==0) return -EPERM;			/* Error si el semafor no esta inicialitzat */
-	if(list_empty(&sem[n_sem].queue)) return -EPERM;	/* Error si encara hi ha processos bloquejats a la cua */
-	
-	sem[n_sem].init=0;
-	return 0;
+  /* destrueim el semafor n_sem si aquest esta inicialitzat */
+  if(n_sem<0 || n_sem>=SEM_VALUE_MAX) return -EINVAL;	/* Error si l'identificador m_sem es invalid */
+  if(sem[n_sem].init==0 || !list_empty(&sem[n_sem].queue)) return -EPERM;	/* Error si el semafor no esta inicialitzat,
+										   Error si encara hi ha processos bloquejats a la cua */
+  sem[n_sem].init=0;
+  return 0;
 }
