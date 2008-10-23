@@ -20,6 +20,7 @@ struct task_struct {
 
 struct list_head runqueue;
 int pid;
+char call_from_int;
 
 union task_union {
   struct task_struct task;
