@@ -40,7 +40,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 //Jocs de proves:
   // runjp(); 
   // run2_jp();
-
+ 
   while(1)
     {
       if (getpid() == 1) printf("p");
@@ -52,6 +52,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	}
       else if (getpid() == 3) {
 	printf("kkkkk");
+	//printint(nice(300));
 	//exit();
       }
     }

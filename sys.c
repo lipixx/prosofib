@@ -95,6 +95,19 @@ comprova_fd (int fd, int operacio)
 }
 
 int
+sys_nice(int quantum)
+{
+  int old = -EPERM;
+  struct task_struct * current_task = current();
+  if (quantum > 0)
+    {
+      old = current_task->quantum;
+      current_task->quantum = quantum;
+    }
+  return old; 
+}
+
+int
 sys_getpid ()
 {
   struct task_struct *p = current ();
@@ -174,7 +187,7 @@ void sys_exit()
 	/* Seguent es el punter al task_union seguent de la runqueue */
 	union task_union *seguent=(union task_union*) list_head_to_task_struct(proces_actual->run_list.next);
 	
-	if(proces_actual->pid!=0){	/* Mai podem matar el proces 1 */
+	if(proces_actual->pid!=0){	/* Mai podem matar el proces 0 */
 	
 		/* Alliberar les estructures del proces */
 	
