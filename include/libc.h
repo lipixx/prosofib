@@ -9,7 +9,7 @@
 int write(int fd, char *buffer, int size);
 int getpid(void);
 int fork(void);
-int sys_nice(int quantum);
+int nice(int quantum);
 void exit();
 
 void perror();
