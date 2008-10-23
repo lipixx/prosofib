@@ -10,6 +10,7 @@
 #include <mm.h>
 #include <errno.h>
 #include <segment.h>
+#include <interrupt.h>
 
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
@@ -28,8 +29,9 @@ init_task0 (int first_ph)
 {
   int i = 0;
   task[0].task.pid = pid++;
-  task[0].task.quantum = 0;
+  task[0].task.quantum = 500;
   task[0].task.tics_cpu = 0;
+  vida = task[0].task.quantum;
   for (i=0;i<NUM_PAG_DATA;i++)
      task[0].task.pagines_fisiques[i] = first_ph+NUM_PAG_CODE+i;
 
