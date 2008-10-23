@@ -32,7 +32,7 @@ union task_union {
 struct semafor {
 	char init; 
 	int count;
-	list_head queue; 
+	struct list_head queue; 
 };
 
 struct semafor sem[SEM_VALUE_MAX];
