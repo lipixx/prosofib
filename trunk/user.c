@@ -21,6 +21,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   
   get_stats(getpid(),&i);
   printint(i);
+  while(1);
   return 0;
 
 #else
