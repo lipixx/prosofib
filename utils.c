@@ -37,6 +37,12 @@ copy_from_user (void *start, void *dest, int size)
 int
 copy_to_user (void *start, void *dest, int size)
 {
+  if ((char *) dest <
+      (char *) (int *) (L_USER_START + (NUM_PAG_CODE * 4096)))
+    return -EFAULT;
+  if ((char *) dest + (size * 4) >= (char *) (int *) USER_ESP)
+    return -EFAULT;
+    
   DWord *p = start, *q = dest;
   while (size > 0)
     {
