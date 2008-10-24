@@ -225,10 +225,8 @@ if(spid<0 || spid > NR_TASKS) return -ESRCH;		/* No such process */
 
   /* Si hi ha el proces amb PID=spid */
 
-  if (copy_to_user (&(task[i].task.tics_cpu), tics, 4) < 0)
-    return -EFAULT;		/* Bad address */
-  return 0;
-
+  return copy_to_user (&(task[i].task.tics_cpu), tics, 4);
+ 
 }
 
 int
