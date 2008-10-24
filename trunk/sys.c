@@ -214,14 +214,16 @@ int
 sys_get_stats (int spid, int *tics)
 {
   int i = 0;
+	
+if(spid<0 || spid > NR_TASKS) return -ESRCH;		/* No such process */
 
-  /* Cercam el proces amb PID=pid */
+  /* Cercam el proces amb PID=spid */
   for (i = 0; i < NR_TASKS && task[i].task.pid != spid; i++);
 
-  if (task[i].task.pid != spid || spid == -1)
+  if (task[i].task.pid != spid)
     return -ESRCH;		/* No such process */
 
-  /* Si hi ha el proces amb PID=pid */
+  /* Si hi ha el proces amb PID=spid */
 
   if (copy_to_user (&(task[i].task.tics_cpu), tics, 4) < 0)
     return -EFAULT;		/* Bad address */
