@@ -1,16 +1,24 @@
 #include <libc.h>
 #include <stdio.h>
-
+#include <jp.h>
+#include <../userProc.c>
 void run2_jp ();
 void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
 
-  int ret_fork1, ret_fork2, ret_fork3, aux1;
+ // int ret_fork1, ret_fork2, ret_fork3, aux1;
 
   printf ("\nBenvinguts a ZeOS!");
 
+	//jpProcessos();
+	printf("get_stats de my pid:");
+	int i=-1;
+	get_stats(getpid(),&i);
+	printint(i);
+
+/*
   ret_fork1 = fork ();
   switch (ret_fork1)
     {
@@ -21,7 +29,8 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       printint (getpid ());
       /*Codi de T1-AF */
       /*Fi Codi T1-AF */
-      ret_fork2 = fork ();
+ 
+ /*     ret_fork2 = fork ();
       switch (ret_fork2)
 	{
 	case 0:
@@ -30,13 +39,13 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	  printf (",tinc pid:");
 	  printint (getpid ());
 	  /*Codi de T2 */
-	  nice (20);
+/*	  nice (20);
 	  while (1)
 	    printf ("T2");
 	  break;
 	  /*Fi Codi T2 */
 
-	default:
+/*	default:
 	  printf ("\nTASK1> nou fill amb pid:");
 	  printint (ret_fork2);
 	  printf (", el meu pid es:");
@@ -52,24 +61,24 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	      printf (",tinc pid:");
 	      printint (getpid ());
 	      /*Codi de T3 */
-	      nice (30);
+/*	      nice (30);
 	      while (1)
 		printf ("T3");
 	      break;
 	      /*Fi Codi T3 */
 
-	    default:
+/*	    default:
 	      printf ("\nTASK1> nou fill amb pid:");
 	      printint (ret_fork3);
 	      printf (", el meu pid es:");
 	      printint (getpid ());
 	      /*Codi de T1 */
-	      nice (10);
+/*	      nice (10);
 	      while (1)
 		printf ("T1");
 	      break;
 	      /*Fi Codi T1 */
-	    }
+/*	    }
 
 	  break;
 	}
@@ -81,7 +90,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       printf (", el meu pid es:");
       printint (getpid ());
       /*Codi de T0 */
-      nice (5);
+/*      nice (5);
       while (1)
 	{
 	  get_stats (getpid (), &aux1);
@@ -90,7 +99,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 	}
       break;
       /*Fi Codi T0 */
-    }
+ //   }
   return 0;
 }
 
