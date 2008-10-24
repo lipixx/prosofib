@@ -14,7 +14,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
 	//jpProcessos();
 	printf("get_stats de my pid:");
-	int i=-1;
+	int i=100;
 	get_stats(getpid(),&i);
 	printint(i);
 
