@@ -1,7 +1,7 @@
 #include <libc.h>
 #include <stdio.h>
-#include <jp.h>
-#include <../userProc.c>
+//#include <jp.h>
+//#include <../userProc.c>
 
 #define CODE 1
 
@@ -15,7 +15,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   
 #if CODE
 
-  int i=100;
+  int i=5;
   //jpProcessos();
   printf("get_stats de my pid:");
   

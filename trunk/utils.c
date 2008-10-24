@@ -18,10 +18,16 @@ copy_data (void *start, void *dest, int size)
 int
 copy_from_user (void *start, void *dest, int size)
 {
-  if ((char *) start <
-      (char *) (int *) (L_USER_START + (NUM_PAG_CODE * 4096)))
-    return -EFAULT;
-  if ((char *) start + (size * 4) >= (char *) (int *) USER_ESP)
+  unsigned int min_usr_address, max_usr_address, bytes_to_copy, max_bytes;
+  
+  max_bytes = (NUM_PAG_CODE+NUM_PAG_DATA) * PAGE_SIZE; 
+  min_usr_address = L_USER_START;
+  max_usr_address =  L_USER_START + max_bytes;
+  bytes_to_copy = (unsigned int) size;
+  
+  if ((unsigned int) start < min_usr_address
+      || (unsigned int) start > max_usr_address
+      || bytes_to_copy > max_bytes)
     return -EFAULT;
 
   DWord *p = start, *q = dest;
@@ -37,18 +43,22 @@ copy_from_user (void *start, void *dest, int size)
 int
 copy_to_user (void *start, void *dest, int size)
 {
- /* if ((char *) dest <
-      (char *) (int *) (L_USER_START + (NUM_PAG_CODE * 4096)))
-    return -EFAULT;
-  if ((char *) dest + (size * 4) >= (char *) (int *) USER_ESP)
-    return -EFAULT;
-    */
-     if ((char *) dest <
-      (char *) (int *) (L_USER_START))
-    return -EFAULT;
-  if ((char *) dest + (size * 4) >= (char *) (int *) USER_ESP)
-    return -EFAULT;
-    
+
+  unsigned int min_usr_address, max_usr_address, bytes_to_copy, max_bytes;
+
+  max_bytes = (NUM_PAG_CODE+NUM_PAG_DATA) * PAGE_SIZE; 
+  min_usr_address = L_USER_START;
+  max_usr_address =  L_USER_START + max_bytes;
+  bytes_to_copy = (unsigned int) size;
+
+
+  if (size < 0) return -EINVAL;
+
+  if ((unsigned int) dest < min_usr_address
+     || (unsigned int) dest > max_usr_address
+     || bytes_to_copy > max_bytes)
+        return -EFAULT;
+
   DWord *p = start, *q = dest;
   while (size > 0)
     {
