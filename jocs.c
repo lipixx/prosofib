@@ -113,7 +113,7 @@ provar_switch (void)
   switch (ret_fork1)
     {
     case 0:
-      printf (" \ nTASK1 > fill de TASK0, return fork hauria de ser 0->");
+      printf (" \nTASK1 > fill de TASK0, return fork hauria de ser 0->");
       printint (ret_fork1);
       printf (", tinc pid: ");
       printint (getpid ());
@@ -124,7 +124,7 @@ provar_switch (void)
 	switch (ret_fork2)
 	  {
 	case 0:
-	  printf (" \ nTASK2 > fill de TASK1, return fork hauria de ser 0->");
+	  printf (" \nTASK2 > fill de TASK1, return fork hauria de ser 0->");
 	  printint (ret_fork2);
 	  printf (", tinc pid: ");
 	  printint (getpid ());
@@ -136,7 +136,7 @@ provar_switch (void)
 	      /*Fi Codi T2 */
 	      
 	  default:
-	    printf (" \ nTASK1 > nou fill amb pid: ");
+	    printf (" \nTASK1 > nou fill amb pid: ");
 	    printint (ret_fork2);
 	    printf (", el meu pid es: ");
 	    printint (getpid ());
@@ -146,7 +146,7 @@ provar_switch (void)
 	      {
 	      case 0:
 		printf
-		  (" \ nTASK3 > fill de TASK1, return fork hauria de ser 0->");
+		  (" \nTASK3 > fill de TASK1, return fork hauria de ser 0->");
 		printint (ret_fork3);
 		printf (", tinc pid: ");
 		printint (getpid ());
@@ -158,7 +158,7 @@ provar_switch (void)
 		    /*Fi Codi T3 */
 		    
 	      default:
-		printf (" \ nTASK1 > nou fill amb pid: ");
+		printf (" \nTASK1 > nou fill amb pid: ");
 		printint (ret_fork3);
 		printf (", el meu pid es: ");
 		printint (getpid ());
@@ -175,7 +175,7 @@ provar_switch (void)
 	break;
 	
     default:
-      printf (" \ nTASK0 > nou fill amb pid: ");
+      printf (" \nTASK0 > nou fill amb pid: ");
       printint (ret_fork1);
       printf (", el meu pid es: ");
       printint (getpid ());
