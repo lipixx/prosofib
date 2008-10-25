@@ -2,17 +2,6 @@
 #include <stdio.h>
 #include <jocs.h>
 
-/*
-int
-joc (void)
-{
-
-  int provar_fork ();
-
-  while (1);
-  return 0;
-}
-*/
 
 int
 provar_fork (void)
@@ -32,6 +21,29 @@ provar_fork (void)
       printint (p);
       exit ();
     }
+  return 0;
+}
+
+int
+provar_fork2 (void)
+{
+  int i, p;
+  for (i = 0; i < 10; i++)
+    int fill = fork ();
+  if (fill = 0)
+    {
+      printf ("\nPID pare:");
+      p = getpid ();
+      printint (p);
+    }
+  else
+    {
+      printf ("\nPID fill:");
+      p = getpid ();
+      printint (p);
+      exit ();
+    }
+  printf ("Total fills creats = 10");
   return 0;
 }
 
@@ -78,3 +90,109 @@ provar_exit ()
     }
   return 0;
 }
+
+int
+provar_nice (void)
+{
+
+  printf ("\nProvar nice correcte = 12 ");
+  nice (12);
+
+  printf ("\nProvar nice incorrecte = -1");
+  nice (-1);
+
+printf ("\nProvar nice incorrecte = 0);
+nice(0);
+}
+
+int
+provar_switch (void)
+{
+  int ret_fork1, ret_fork2, ret_fork3, aux1;	
+  ret_fork1 = fork ();
+  switch (ret_fork1)
+    {
+    case 0:
+      printf (" \ nTASK1 > fill de TASK0, return fork hauria de ser 0->");
+      printint (ret_fork1);
+      printf (", tinc pid: ");
+      printint (getpid ());
+	/*Codi de T1-AF */
+	/*Fi Codi T1-AF */
+	
+	ret_fork2 = fork ();
+	switch (ret_fork2)
+	  {
+	case 0:
+	  printf (" \ nTASK2 > fill de TASK1, return fork hauria de ser 0->");
+	  printint (ret_fork2);
+	  printf (", tinc pid: ");
+	  printint (getpid ());
+	    /*Codi de T2 */
+	    nice (20);
+	    while (1)
+	      printf (" T2 ");
+	    break;
+	      /*Fi Codi T2 */
+	      
+	  default:
+	    printf (" \ nTASK1 > nou fill amb pid: ");
+	    printint (ret_fork2);
+	    printf (", el meu pid es: ");
+	    printint (getpid ());
+	    
+	    ret_fork3 = fork ();
+	    switch (ret_fork3)
+	      {
+	      case 0:
+		printf
+		  (" \ nTASK3 > fill de TASK1, return fork hauria de ser 0->");
+		printint (ret_fork3);
+		printf (", tinc pid: ");
+		printint (getpid ());
+		  /*Codi de T3 */
+		  nice (30);
+		  while (1)
+		    printf (" T3 ");
+		  break;
+		    /*Fi Codi T3 */
+		    
+	      default:
+		printf (" \ nTASK1 > nou fill amb pid: ");
+		printint (ret_fork3);
+		printf (", el meu pid es: ");
+		printint (getpid ());
+		  /*Codi de T1 */
+		  nice (10);
+		  while (1)
+		    printf (" T1 ");
+		  break;
+		    /*Fi Codi T1 */
+		    }
+	    
+	    break;
+	  }
+	break;
+	
+    default:
+      printf (" \ nTASK0 > nou fill amb pid: ");
+      printint (ret_fork1);
+      printf (", el meu pid es: ");
+      printint (getpid ());
+	/*Codi de T0 */
+	nice (5);
+	while (1)
+	  {
+	    get_stats (getpid (), &aux1);
+	    printf (" T0 > tics:");
+	    printint (aux1);
+	  }
+	break;
+	  /*Fi Codi T0 */
+	  }
+  return 0;
+  
+}
+
+
+
