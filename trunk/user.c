@@ -9,12 +9,23 @@ void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  
+
   printf ("\nBenvinguts a ZeOS!");
-  provar_semafors();
+
+  //provar_fork (4);
+
+  provar_get_stats ();
+
+  //provar_exit ();
+
+  //provar_nice ();
+
+  //provar_switch ();
+
+  //provar_semafors ();
 
 #if CODE
-
+/*
   int i=5;
   printf("get_stats de my pid:");
   
@@ -22,10 +33,10 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   printint(i);
   while(1);
   return 0;
-
+*/
 #else
 
-  int ret_fork1, ret_fork2, ret_fork3, aux1;	
+  int ret_fork1, ret_fork2, ret_fork3, aux1;
   ret_fork1 = fork ();
   switch (ret_fork1)
     {
@@ -34,83 +45,83 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
       printint (ret_fork1);
       printf (",tinc pid:");
       printint (getpid ());
-	/*Codi de T1-AF */
-	/*Fi Codi T1-AF */
-	
-	ret_fork2 = fork ();
-	switch (ret_fork2)
-	  {
+      /*Codi de T1-AF */
+      /*Fi Codi T1-AF */
+
+      ret_fork2 = fork ();
+      switch (ret_fork2)
+	{
 	case 0:
 	  printf ("\nTASK2> fill de TASK1, return fork hauria de ser 0 -> ");
 	  printint (ret_fork2);
 	  printf (",tinc pid:");
 	  printint (getpid ());
-	    /*Codi de T2 */
-	    nice (20);
-	    while (1)
-	      printf ("T2");
-	    break;
-	      /*Fi Codi T2 */
-	      
-	  default:
-	    printf ("\nTASK1> nou fill amb pid:");
-	    printint (ret_fork2);
-	    printf (", el meu pid es:");
-	    printint (getpid ());
-	    
-	    ret_fork3 = fork ();
-	    switch (ret_fork3)
-	      {
-	      case 0:
-		printf
-		  ("\nTASK3> fill de TASK1, return fork hauria de ser 0 -> ");
-		printint (ret_fork3);
-		printf (",tinc pid:");
-		printint (getpid ());
-		  /*Codi de T3 */
-		  nice (30);
-		  while (1)
-		    printf ("T3");
-		  break;
-		    /*Fi Codi T3 */
-		    
-	      default:
-		printf ("\nTASK1> nou fill amb pid:");
-		printint (ret_fork3);
-		printf (", el meu pid es:");
-		printint (getpid ());
-		  /*Codi de T1 */
-		  nice (10);
-		  while (1)
-		    printf ("T1");
-		  break;
-		    /*Fi Codi T1 */
-		    }
-	    
-	    break;
-	  }
-	break;
-	
+	  /*Codi de T2 */
+	  nice (20);
+	  while (1)
+	    printf ("T2");
+	  break;
+	  /*Fi Codi T2 */
+
+	default:
+	  printf ("\nTASK1> nou fill amb pid:");
+	  printint (ret_fork2);
+	  printf (", el meu pid es:");
+	  printint (getpid ());
+
+	  ret_fork3 = fork ();
+	  switch (ret_fork3)
+	    {
+	    case 0:
+	      printf
+		("\nTASK3> fill de TASK1, return fork hauria de ser 0 -> ");
+	      printint (ret_fork3);
+	      printf (",tinc pid:");
+	      printint (getpid ());
+	      /*Codi de T3 */
+	      nice (30);
+	      while (1)
+		printf ("T3");
+	      break;
+	      /*Fi Codi T3 */
+
+	    default:
+	      printf ("\nTASK1> nou fill amb pid:");
+	      printint (ret_fork3);
+	      printf (", el meu pid es:");
+	      printint (getpid ());
+	      /*Codi de T1 */
+	      nice (10);
+	      while (1)
+		printf ("T1");
+	      break;
+	      /*Fi Codi T1 */
+	    }
+
+	  break;
+	}
+      break;
+
     default:
       printf ("\nTASK0> nou fill amb pid:");
       printint (ret_fork1);
       printf (", el meu pid es:");
       printint (getpid ());
-	/*Codi de T0 */
-	nice (5);
-	while (1)
-	  {
-	    get_stats (getpid (), &aux1);
-	    printf (" T0> tics:");
-	    printint (aux1);
-	  }
-	break;
-	  /*Fi Codi T0 */
-	  }
+      /*Codi de T0 */
+      nice (5);
+      while (1)
+	{
+	  get_stats (getpid (), &aux1);
+	  printf (" T0> tics:");
+	  printint (aux1);
+	}
+      break;
+      /*Fi Codi T0 */
+    }
   return 0;
-  
+
 #endif
-  
+
 }
 
 /*
