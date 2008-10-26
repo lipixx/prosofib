@@ -14,7 +14,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   //provar_fork (4);
 
-  provar_get_stats ();
+  //provar_get_stats ();
 
   //provar_exit ();
 
@@ -22,7 +22,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   //provar_switch ();
 
-  //provar_semafors ();
+  provar_semafors ();
 
 #if CODE
 /*
