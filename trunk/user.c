@@ -10,7 +10,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   printf ("\nBenvinguts a ZeOS!");
 
-  //provar_fork (4);
+  //provar_fork (9); //No sobrepassar NR_TASKS
 
   //provar_get_stats ();
 
@@ -24,7 +24,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  //runjp ();
+  //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
   
   //run2_jp();
 
