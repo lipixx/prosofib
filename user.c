@@ -24,8 +24,8 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  runjp ();
-
+  //runjp ();
+  
   //run2_jp();
 
   while (1);

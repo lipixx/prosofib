@@ -8,36 +8,37 @@
 void
 provar_fork (int num_fills)
 {
-  int i, p, pare = 0, fill[num_fills];
+  int i, p, fill[num_fills];
   for (i = 0; i < num_fills; i++)
     {
       fill[i] = fork ();
+      printf ("\nReturn del fork: ");
+      printint (fill[i]);
 
       if (fill[i] == 0)
 	{
-	  printf ("\nSoc el fill, tinc PID:");
+	  printf (" -> Soc el fill, tinc PID:");
 	  p = getpid ();
 	  printint (p);
 	  exit ();
 	}
-      else if (pare == 0)
+      else
 	{
-	  pare = 1;
-	  printf ("\nSoc el pare, tinc PID:");
+	  printf (" -> Soc el pare, tinc PID:");
 	  p = getpid ();
 	  printint (p);
 	}
     }
   printf ("\nTotal fills creats: ");
   printint (i);
-  printf("\n");
+  printf ("\n");
   while (1);
 }
 
 void
 provar_get_stats (void)
 {
-  int tics = 0;
+  int fill, tics = 0;
   int mipid = getpid ();
 
   printf ("\nPID incorrecte (-1): ");
@@ -56,10 +57,22 @@ provar_get_stats (void)
   get_stats (mipid, (int *) 1000);
   printint (tics);
 
-  printf ("\nNumero total de tics del proces 0: ");	/* OJOOOOOOOOOO!! */
-  get_stats (mipid, &tics);
-  printint (tics);
-  printf ("\n");
+  fill = fork ();
+  if (fill == 0)
+    {
+      printf ("\nNumero total de tics del proces 0: ");	/* OJOOOOOOOOOO!! */
+      get_stats (mipid, &tics);
+      printint (tics);
+      printf ("\n");
+    }
+  else
+    {
+
+      printf ("\nNumero total de tics del FILL: ");	/* OJOOOOOOOOOO!! */
+      get_stats (getpid (), &tics);
+      printint (tics);
+      printf ("\n");
+    }
 
   while (1);
 }
@@ -109,12 +122,12 @@ provar_nice (void)
 void
 provar_switch (void)
 {
-  int ret_fork1, ret_fork2, ret_fork3, aux1;
+  int ret_fork1, ret_fork2, ret_fork3;
   ret_fork1 = fork ();
   switch (ret_fork1)
     {
     case 0:
-      printf (" \nTASK1 > fill de TASK0, return fork hauria de ser 0->");
+      printf (" \nTASK1> fill de TASK0, return fork hauria de ser 0->");
       printint (ret_fork1);
       printf (", tinc pid: ");
       printint (getpid ());
@@ -125,7 +138,7 @@ provar_switch (void)
       switch (ret_fork2)
 	{
 	case 0:
-	  printf (" \nTASK2 > fill de TASK1, return fork hauria de ser 0->");
+	  printf (" \nTASK2> fill de TASK1, return fork hauria de ser 0->");
 	  printint (ret_fork2);
 	  printf (", tinc pid: ");
 	  printint (getpid ());
@@ -137,7 +150,7 @@ provar_switch (void)
 	  /*Fi Codi T2 */
 
 	default:
-	  printf (" \nTASK1 > nou fill amb pid: ");
+	  printf (" \nTASK1> nou fill amb pid: ");
 	  printint (ret_fork2);
 	  printf (", el meu pid es: ");
 	  printint (getpid ());
@@ -147,7 +160,7 @@ provar_switch (void)
 	    {
 	    case 0:
 	      printf
-		(" \nTASK3 > fill de TASK1, return fork hauria de ser 0->");
+		(" \nTASK3> fill de TASK1, return fork hauria de ser 0->");
 	      printint (ret_fork3);
 	      printf (", tinc pid: ");
 	      printint (getpid ());
@@ -159,7 +172,7 @@ provar_switch (void)
 	      /*Fi Codi T3 */
 
 	    default:
-	      printf (" \nTASK1 > nou fill amb pid: ");
+	      printf (" \nTASK1> nou fill amb pid: ");
 	      printint (ret_fork3);
 	      printf (", el meu pid es: ");
 	      printint (getpid ());
@@ -176,18 +189,14 @@ provar_switch (void)
       break;
 
     default:
-      printf (" \nTASK0 > nou fill amb pid: ");
+      printf (" \nTASK0> nou fill amb pid: ");
       printint (ret_fork1);
       printf (", el meu pid es: ");
       printint (getpid ());
       /*Codi de T0 */
       nice (5);
       while (1)
-	{
-	  get_stats (getpid (), &aux1);
-	  printf (" T0 > tics:");
-	  printint (aux1);
-	}
+	printf (" T0 ");
       break;
       /*Fi Codi T0 */
     }
@@ -270,7 +279,7 @@ run2_jp ()
     //  write(-10,"Hola",10);
     //k = write(1,"Hola",-10);
     //La seguent prova es surt de la consola pero ho fa be
-    /*    int k = write(1,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+    /*   int k = write(1,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n"
        "ccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\n"
        "dddddddddddddddDDDDDdddDDDdddDDDdddddddDDDDDddDDDdddDDDdd\n"
@@ -299,5 +308,5 @@ run2_jp ()
        printf("\nMida bytes escrits: ");
        printint(k);
      */
-     while(1);
+    while (1);
 }
