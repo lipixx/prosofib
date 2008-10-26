@@ -210,8 +210,8 @@ provar_semafors ()
   sem_signal (0);
   printf ("\nFent sem_destroy(0)");	/* destruim el semafor perque esta inicialitzat i no hi ha cap proces a la cua queue */
   sem_destroy (0);
-  printf ("\nCreant sem_init(0,1)");	/* tornam a inicialitzar el semafor #0, pero aquesta vegada a count=1, aixi el fill no podra esciure fins que el pare el desbloqui */
-  sem_init (0, 1);
+  printf ("\nCreant sem_init(0,0)");	/* tornam a inicialitzar el semafor #0, pero aquesta vegada a count=0, aixi el fill no podra esciure fins que el pare el desbloqui */
+  sem_init (0, 0);
 
   printf ("\nFem un fork i sem_wait al fill");
   aux = fork ();
@@ -225,8 +225,8 @@ provar_semafors ()
     }
   else
     {
-      while (list_empty (&sem[0].queue))
-	printf (".");		/* Mentre el fill no estigui parat no continuar */
+      while (list_empty (&(sem[0].queue)))
+	printf (".");		/* Mentre el fill no estigui bloquejat no continuar */
       printf ("\nEl fill esta parat");
       for (aux = 0; aux < 1000; aux++);	//Esperem
       printf ("\nIntento destruir el semafor: ");

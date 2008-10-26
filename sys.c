@@ -301,8 +301,6 @@ sys_sem_signal (int n_sem)
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
     return -EINVAL;
 
-  sem[n_sem].count++;
-
   if (!list_empty (&(sem[n_sem].queue)))
     {
       blocked_task = sem[n_sem].queue.next;
@@ -314,7 +312,7 @@ sys_sem_signal (int n_sem)
          instantaniament? */
       //Per ara el posem nomes a run_queue
       // JOSEP: Evidentment a sa run_queue
-    }
+    }else sem[n_sem].count++;
 
   return 0;
 }
