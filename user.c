@@ -1,5 +1,6 @@
 #include <libc.h>
 #include <stdio.h>
+#include <jocs.h>
 
 #define CODE 1
 
@@ -10,7 +11,8 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 {
   
   printf ("\nBenvinguts a ZeOS!");
-  
+  provar_semafors();
+
 #if CODE
 
   int i=5;
