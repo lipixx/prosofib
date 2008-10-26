@@ -3,7 +3,7 @@
 #include <jocs.h>
 #include <list.h>
 #include <sched.h>
-
+#include <interrupt.h>
 
 void
 provar_fork (int num_fills)
@@ -36,7 +36,6 @@ provar_fork (int num_fills)
 void
 provar_get_stats (void)
 {
-int i;
   int tics = 0;
   int mipid = getpid ();
 
@@ -56,8 +55,7 @@ int i;
   get_stats (mipid, (int *) 1000);
   printint (tics);
 
-for(i=0; i< 4999999999; i++){}
-  printf ("\nNumero total de tics del proces 0: ");
+  printf ("\nNumero total de tics del proces 0: ");	/* OJOOOOOOOOOO!! */
   get_stats (mipid, &tics);
   printint (tics);
   printf ("\n");
@@ -70,7 +68,16 @@ provar_exit ()
 {
   int p;
   int fill = fork ();
+
   if (fill == 0)
+    {
+      printf ("\nSoc el fill, i el meu pid es:");
+      p = getpid ();
+      printint (p);
+      printf ("\nJo com que som un matat (mai tan ben dit...) em suicidare\n");
+      exit ();
+    }
+  else
     {
       printf ("\nSoc el pare, i el meu pid es:");
       p = getpid ();
@@ -78,14 +85,7 @@ provar_exit ()
       printf ("\nAra em disposo a suicidar-me, cosa que no podria fer...");
       exit ();
     }
-  else
-    {
-      printf ("\nSoc el fill, i el meu pid es:");
-      p = getpid ();
-      printint (p);
-      printf ("\nJo com que som un matat (mai tan ben dit...) em suicidare");
-      exit ();
-    }
+  while (1);
 }
 
 void
@@ -95,11 +95,13 @@ provar_nice (void)
   printf ("\nProvar nice correcte = 12 ");
   nice (12);
 
-  printf ("\nProvar nice incorrecte = -1");
+  printf ("\nProvar nice incorrecte = -1: ");
   nice (-1);
 
-  printf ("\nProvar nice incorrecte = 0");
+  printf ("\nProvar nice incorrecte = 0: ");
   nice (0);
+
+  while(1);
 }
 
 void
@@ -208,7 +210,7 @@ provar_semafors ()
   sem_signal (0);
   printf ("\nFent sem_destroy(0)");	/* destruim el semafor perque esta inicialitzat i no hi ha cap proces a la cua queue */
   sem_destroy (0);
-  printf ("\nCreant sem_init(1,0)");	/* tornam a inicialitzar el semafor #0, pero aquesta vegada a count=0, aixi el fill no podra esciure fins que el pare el desbloqui */
+  printf ("\nCreant sem_init(0,1)");	/* tornam a inicialitzar el semafor #0, pero aquesta vegada a count=0, aixi el fill no podra esciure fins que el pare el desbloqui */
   sem_init (1, 0);
 
   printf ("\nFem un fork i sem_wait al fill");

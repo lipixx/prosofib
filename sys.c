@@ -205,7 +205,7 @@ sys_exit ()
 
       /* Posar el seguent element de la runqueue */
       task_switch (seguent);
-    }
+    }else printk("\nERROR: El pare no es pot suicidar!");
 
 
 }
