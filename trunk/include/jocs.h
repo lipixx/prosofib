@@ -6,11 +6,12 @@
 #ifndef __JOCS_H__
 #define __JOCS_H__
 
-int joc(void);
-int provar_fork (void);
-int provar_get_stats (void);
-int provar_exit(void);
-int provar_nice (void);
-int provar_switch (void);
+void joc(void);
+void provar_fork (int num_fills);
+void provar_get_stats (void);
+void provar_exit(void);
+void provar_nice (void);
+void provar_switch (void);
+void provar_semafors(void);
 
 #endif /* __JOCS_H__ */
