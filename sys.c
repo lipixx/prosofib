@@ -30,21 +30,6 @@ sys_write (int fd, char *buffer, int size)
   if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
     return -EFBIG;
 
-  /* COMPROVACIO PUNTER USUARI -
-     Desde el final del codi de l'usuari, fins a
-     l'inici de la pila d'usuari:
-     Si la &buffer < Inici_Data_Usuari 
-     || &buffer+mida a escriure >= Fi_Data_Usuari
-     (que es el mateix que on comença l'USER_ESP)
-     hi ha que retornar un error.
-   */
-
-  /*  if (buffer < (char*)(int*)(L_USER_START+(NUM_PAG_CODE*4096))) 
-     return -EFAULT;
-     if (buffer+(size*4) >= (char*)(int*)USER_ESP)
-     return -EFAULT;
-   */
-
   char buff_aux[256];
   int ncPrinted = 0, tempSize = size, writeSize = 0;
   while (tempSize > 0)
@@ -64,26 +49,6 @@ sys_write (int fd, char *buffer, int size)
     return size;
   return -EIO;
 
-  /*Altre manera...
-     while (size > 0)
-     {
-     if (size >= 256)
-     {
-     copy_from_user(buffer,buff_aux,256);
-     ncPrinted = sys_write_console(buff_aux,256);
-     }
-     else 
-     {
-     copy_from_user(buffer,buff_aux,size);
-     ncPrinted = sys_write_console(buff_aux,size);
-     }
-
-     buffer += ncPrinted;
-     size -= ncPrinted;
-     result += ncPrinted;
-     }
-     return result;
-     } */
 }
 
 int
@@ -314,7 +279,6 @@ sys_sem_signal (int n_sem)
          desbloquejem? El deixem nomes a run_queue o l'executem
          instantaniament? */
       //Per ara el posem nomes a run_queue
-      // JOSEP: Evidentment a sa run_queue
     }
   else
     sem[n_sem].count++;
