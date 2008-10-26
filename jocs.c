@@ -17,14 +17,14 @@ provar_fork (int num_fills)
 
       if (fill[i] == 0)
 	{
-	  printf (" -> Soc el fill, tinc PID:");
+	  printf (" -> Soc el fill, tinc PID: ");
 	  p = getpid ();
 	  printint (p);
 	  exit ();
 	}
       else
 	{
-	  printf (" -> Soc el pare, tinc PID:");
+	  printf (" -> Soc el pare, tinc PID: ");
 	  p = getpid ();
 	  printint (p);
 	}
@@ -53,14 +53,14 @@ provar_get_stats (void)
   get_stats (mipid, (int *) 0);
   printint (tics);		/* Si es incorrecte imprimim un 0 per pantalla, sino el numero de tics que el proces ha gastat de cpu */
 
-  printf ("\n@tics invalida: @tics=1000");
+  printf ("\n@tics invalida: @tics=1000: ");
   get_stats (mipid, (int *) 1000);
   printint (tics);
 
   fill = fork ();
   if (fill == 0)
     {
-      printf ("\nNumero total de tics del proces 0: ");	/* OJOOOOOOOOOO!! */
+      printf ("\nNumero total de tics del proces 0: ");
       get_stats (mipid, &tics);
       printint (tics);
       printf ("\n");
@@ -68,7 +68,7 @@ provar_get_stats (void)
   else
     {
 
-      printf ("\nNumero total de tics del FILL: ");	/* OJOOOOOOOOOO!! */
+      printf ("\nNumero total de tics del FILL: ");
       get_stats (getpid (), &tics);
       printint (tics);
       printf ("\n");
@@ -85,16 +85,16 @@ provar_exit ()
 
   if (fill == 0)
     {
-      printf ("\nSoc el fill, i el meu pid es:");
+      printf ("\nSoc el fill, i el meu pid es: ");
       p = getpid ();
       printint (p);
       printf
-	("\nJo com que som un matat (mai tan ben dit...) em suicidare\n");
+	("\nJo el fill, em suicidare\n");
       exit ();
     }
   else
     {
-      printf ("\nSoc el pare, i el meu pid es:");
+      printf ("\nSoc el pare, i el meu pid es: ");
       p = getpid ();
       printint (p);
       printf ("\nAra em disposo a suicidar-me, cosa que no podria fer...");
@@ -113,7 +113,7 @@ provar_nice (void)
   printf ("\nProvar nice incorrecte = -1: ");
   nice (-1);
 
-  printf ("\nProvar nice incorrecte = 0 \n");
+  printf ("Provar nice incorrecte = 0 :");
   nice (0);
 
   while (1);
@@ -209,7 +209,7 @@ provar_semafors ()
   printf ("\nCreacio,suma,resta,destruccio dels semafors: ");
   printf ("\nCreant sem_init(-1,10):");
   sem_init (-1, 10);
-  printf ("\nCreant sem_init(0,3)");	/* semafor #0 te count=3 */
+  printf ("\nCreant sem_init(0,3)");
   sem_init (0, 3);
   printf ("\nFent sem_wait(-1): ");
   sem_wait (-1);
@@ -217,12 +217,12 @@ provar_semafors ()
   sem_signal (-1);
   printf ("\nFent sem_wait(0) (soc el task0):");
   sem_wait (0);
-  printf ("\nFent sem_signal(0)");	/* semafor #0 te count=4 */
+  printf ("\nFent sem_signal(0)");
   sem_signal (0);
-  printf ("\nFent sem_destroy(0)");	/* destruim el semafor perque esta inicialitzat i no hi ha cap proces a la cua queue */
+  printf ("\nFent sem_destroy(0)");
   sem_destroy (0);
-  printf ("\nCreant sem_init(0,0)");	/* tornam a inicialitzar el semafor #0, pero aquesta vegada a count=0, aixi el fill no podra esciure fins que el pare el desbloqui */
-  sem_init (0, 0);
+  printf ("\nCreant sem_init(1,0)");
+  sem_init (1,0);
 
   printf ("\nFem un fork i sem_wait al fill");
   aux = fork ();
@@ -230,17 +230,17 @@ provar_semafors ()
     {
       printf ("\nFill> Hauria de quedarme en un bucle imprimint");
       printf (" pero ara fare sem_wait");
-      sem_wait (0);
+      sem_wait (1);
       while (1)
 	printf ("F");
     }
   else
     {
-      for (aux = 0; aux < 1100; aux++)
-	printf (".");		/* Mentre el fill no estigui bloquejat no continuar */
       printf ("\nEl fill esta parat");
       printf ("\nIntento destruir el semafor: ");
       sem_destroy (0);
+      for (aux = 0; aux < 2000000; aux++)
+	printf ("");  /* Mentre el fill no estigui bloquejat no continuar */  
       printf ("\nEl faix continuar amb sem_init, adeu.");
       sem_signal (0);
       sem_destroy (0);
