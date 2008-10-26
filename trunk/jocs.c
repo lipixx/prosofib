@@ -228,9 +228,9 @@ provar_semafors ()
       while (list_empty (&(sem[0].queue)))
 	printf (".");		/* Mentre el fill no estigui bloquejat no continuar */
       printf ("\nEl fill esta parat");
-      for (aux = 0; aux < 1000; aux++);	//Esperem
-      printf ("\nIntento destruir el semafor: ");
-      sem_destroy (0);
+      //for (aux = 0; aux < 1000; aux++);	//Esperem
+      //printf ("\nIntento destruir el semafor: ");
+      //sem_destroy (0);
       //printf("\nEl faix continuar amb sem_init, adeu.");
       //sem_signal(0);
       //sem_destroy(0);
