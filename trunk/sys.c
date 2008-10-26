@@ -248,6 +248,12 @@ sys_sem_init (int n_sem, unsigned int value)
 int
 sys_sem_wait (int n_sem)
 {
+	/* Si el comptador del semafor n_sem es mes petit o igual que zero,
+	aquesta crida bloqueja en aquest semafor el proces que la ha invocat. 
+	En cas que el comptador sigui mes gran que zero, aquesta crida decrementa 
+	el valor del semafor. El proces 0 no es pot bloquejar en cap cas, per tant
+	s’ha de considerar un error la utilització d’aquesta crida pel procés 0.*/
+  
   struct task_struct *old_task;
   union task_union *new_task;
 
@@ -280,6 +286,12 @@ sys_sem_wait (int n_sem)
 int
 sys_sem_signal (int n_sem)
 {
+
+	/* Si no hi ha cap proces bloquejat en el semafor n_sem aleshores 
+	aquesta crida incrementa el comptador del semafor n_sem. En el cas 
+	que hi hagi un o mes processos bloquejats sobre n_sem, aquesta crida
+	desbloqueja el primer proces.*/
+	
   struct list_head *blocked_task;
 
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
@@ -297,6 +309,7 @@ sys_sem_signal (int n_sem)
          desbloquejem? El deixem nomes a run_queue o l'executem
          instantaniament? */
       //Per ara el posem nomes a run_queue
+      // JOSEP: Evidentment a sa run_queue
     }
 
   return 0;
