@@ -185,7 +185,7 @@ void provar_semafors()
   printf("\nCreacio,suma,resta,destruccio dels semafors: ");
   printf("\nCreant sem_init(-1,10):");
   sem_init(-1,10);
-  printf("\nCreant sem_init(0,3)");
+  printf("\nCreant sem_init(0,3):");
   sem_init(0,3);
   printf("\nFent sem_wait(-1): ");
   sem_wait(-1);
