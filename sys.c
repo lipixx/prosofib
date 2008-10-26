@@ -235,8 +235,9 @@ sys_sem_init (int n_sem, unsigned int value)
   /* inicialitzam el comptador del semafor n_sem a value */
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
     return -EINVAL;		/* Error si l'identificador m_sem es invalid */
-  if (sem[n_sem].init != 0)
+  if (sem[n_sem].init == 1)
     return -EBUSY;		/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
+    				/* init=0 => NO inicialitzat, init=1 => SI inicialitzat */
 
   sem[n_sem].count = value;
   sem[n_sem].init = 1;
@@ -258,13 +259,15 @@ sys_sem_wait (int n_sem)
   union task_union *new_task;
 
   old_task = current ();
+  int p = sys_getpid();
 
-  if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
-    return -EINVAL;
+//  if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
+    if (n_sem < 0 ){ printk("1"); return -EINVAL; }
+    else if (n_sem >= SEM_VALUE_MAX ){ printk("2"); return -EINVAL; }
+    else if(sem[n_sem].init == 0){ printk("3"); return -EINVAL; }
+
   if (old_task->pid == 0)
     return -EPERM;
-
-  sem[n_sem].count--;
 
   if (sem[n_sem].count <= 0)
     {
@@ -279,6 +282,7 @@ sys_sem_wait (int n_sem)
       call_from_int = 0;
       task_switch (new_task);
     }
+    else sem[n_sem].count--; 
 
   return 0;
 }
