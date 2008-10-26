@@ -10,6 +10,7 @@
 #include <mm_address.h>
 #include <mm.h>
 #include <interrupt.h>
+#include <io.h>
 
 #define LECTURA 0
 #define ESCRIPTURA 1
@@ -188,8 +189,8 @@ sys_exit ()
 
   /* Seguent es el punter al task_union seguent de la runqueue */
   union task_union *seguent =
-    (union task_union *) list_head_to_task_struct (proces_actual->run_list.
-						   next);
+    (union task_union *) list_head_to_task_struct (proces_actual->
+						   run_list.next);
 
   if (proces_actual->pid != 0)
     {
@@ -205,7 +206,9 @@ sys_exit ()
 
       /* Posar el seguent element de la runqueue */
       task_switch (seguent);
-    }else printk("\nERROR: El pare no es pot suicidar!");
+    }
+  else
+    printk ("\nERROR: El pare no es pot suicidar!");
 
 
 }
@@ -214,8 +217,9 @@ int
 sys_get_stats (int spid, int *tics)
 {
   int i = 0;
-	
-if(spid<0 || spid > NR_TASKS) return -ESRCH;		/* No such process */
+
+  if (spid < 0 || spid > NR_TASKS)
+    return -ESRCH;		/* No such process */
 
   /* Cercam el proces amb PID=spid */
   for (i = 0; i < NR_TASKS && task[i].task.pid != spid; i++);
@@ -226,7 +230,7 @@ if(spid<0 || spid > NR_TASKS) return -ESRCH;		/* No such process */
   /* Si hi ha el proces amb PID=spid */
 
   return copy_to_user (&(task[i].task.tics_cpu), tics, 4);
- 
+
 }
 
 int
@@ -237,7 +241,7 @@ sys_sem_init (int n_sem, unsigned int value)
     return -EINVAL;		/* Error si l'identificador m_sem es invalid */
   if (sem[n_sem].init == 1)
     return -EBUSY;		/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
-    				/* init=0 => NO inicialitzat, init=1 => SI inicialitzat */
+  /* init=0 => NO inicialitzat, init=1 => SI inicialitzat */
 
   sem[n_sem].count = value;
   sem[n_sem].init = 1;
@@ -249,22 +253,20 @@ sys_sem_init (int n_sem, unsigned int value)
 int
 sys_sem_wait (int n_sem)
 {
-	/* Si el comptador del semafor n_sem es mes petit o igual que zero,
-	aquesta crida bloqueja en aquest semafor el proces que la ha invocat. 
-	En cas que el comptador sigui mes gran que zero, aquesta crida decrementa 
-	el valor del semafor. El proces 0 no es pot bloquejar en cap cas, per tant
-	s’ha de considerar un error la utilització d’aquesta crida pel procés 0.*/
-  
+  /* Si el comptador del semafor n_sem es mes petit o igual que zero,
+     aquesta crida bloqueja en aquest semafor el proces que la ha invocat. 
+     En cas que el comptador sigui mes gran que zero, aquesta crida decrementa 
+     el valor del semafor. El proces 0 no es pot bloquejar en cap cas, per tant
+     s’ha de considerar un error la utilització d’aquesta crida pel procés 0. */
+
   struct task_struct *old_task;
   union task_union *new_task;
 
   old_task = current ();
-  int p = sys_getpid();
 
-//  if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
-    if (n_sem < 0 ){ printk("1"); return -EINVAL; }
-    else if (n_sem >= SEM_VALUE_MAX ){ printk("2"); return -EINVAL; }
-    else if(sem[n_sem].init == 0){ printk("3"); return -EINVAL; }
+  if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
+    return -EINVAL;
+
 
   if (old_task->pid == 0)
     return -EPERM;
@@ -282,7 +284,8 @@ sys_sem_wait (int n_sem)
       call_from_int = 0;
       task_switch (new_task);
     }
-    else sem[n_sem].count--; 
+  else
+    sem[n_sem].count--;
 
   return 0;
 }
@@ -291,11 +294,11 @@ int
 sys_sem_signal (int n_sem)
 {
 
-	/* Si no hi ha cap proces bloquejat en el semafor n_sem aleshores 
-	aquesta crida incrementa el comptador del semafor n_sem. En el cas 
-	que hi hagi un o mes processos bloquejats sobre n_sem, aquesta crida
-	desbloqueja el primer proces.*/
-	
+  /* Si no hi ha cap proces bloquejat en el semafor n_sem aleshores 
+     aquesta crida incrementa el comptador del semafor n_sem. En el cas 
+     que hi hagi un o mes processos bloquejats sobre n_sem, aquesta crida
+     desbloqueja el primer proces. */
+
   struct list_head *blocked_task;
 
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
@@ -312,7 +315,9 @@ sys_sem_signal (int n_sem)
          instantaniament? */
       //Per ara el posem nomes a run_queue
       // JOSEP: Evidentment a sa run_queue
-    }else sem[n_sem].count++;
+    }
+  else
+    sem[n_sem].count++;
 
   return 0;
 }
