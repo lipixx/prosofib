@@ -335,3 +335,9 @@ free_frames (unsigned int frame, int nframes)
       phys_mem[i] = FREE_FRAME;
     }
 }
+
+void init_fat()
+{
+  int i;
+  for(i=0; i<MAX_BLOCKS; i++) fat[i]=-1;
+}

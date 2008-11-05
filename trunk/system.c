@@ -81,6 +81,8 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   /* Activem les interrupcions */
   enable_int ();
 
+  /* Inicialitzar la taula FAT*/
+  init_fat();
 
   printk ("Entrant en mode usuari...\n");
 
