@@ -292,8 +292,3 @@ free_frames (unsigned int frame, int nframes)
     }
 }
 
-void init_fat()
-{
-  int i;
-  for(i=0; i<MAX_BLOCKS; i++) fat[i]=-1;
-}
