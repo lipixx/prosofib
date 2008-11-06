@@ -13,15 +13,14 @@
 #define USED_FRAME 1
 #define PH_ADDR_TO_FRAME(address) return address >> 12
 
-#define MAX_BLOCKS 100
-#define BLOCK_SIZE 256
+
 
 /* Bytemap to mark the free physical pages */
 Byte phys_mem[TOTAL_PAGES];
 
 /* Sistema de fitxers */
 int fat[MAX_BLOCKS];
-char disk[MAX_BLOCKS][BLOCK_SIZE];
+
 
 int init_frames (void);
 int alloc_frames (int nframes);
