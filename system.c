@@ -12,6 +12,7 @@
 #include <io.h>
 #include <utils.h>
 #include <libc.h>
+#include <sf.h>
 
 int (*usr_main) (void) = (void *) PH_USER_START;
 unsigned int *p_sys_size = (unsigned int *) KERNEL_START;
