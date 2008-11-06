@@ -7,6 +7,7 @@
 
 #include <types.h>
 #include <mm_address.h>
+#include <hardware.h>
 
 
 #define FREE_FRAME 0
@@ -14,12 +15,8 @@
 #define PH_ADDR_TO_FRAME(address) return address >> 12
 
 
-
 /* Bytemap to mark the free physical pages */
 Byte phys_mem[TOTAL_PAGES];
-
-/* Sistema de fitxers */
-int fat[MAX_BLOCKS];
 
 
 int init_frames (void);

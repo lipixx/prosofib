@@ -8,6 +8,7 @@
 #define NR_TASKS      10
 #define KERNEL_STACK_SIZE	1024
 #define SEM_VALUE_MAX 25
+#define NUM_CANALS 10
 
 #include <list.h>
 #include <mm_address.h>
@@ -19,6 +20,7 @@ struct task_struct
   int tics_cpu;
   int pagines_fisiques[NUM_PAG_DATA];
   struct list_head run_list;
+  struct taula_fitxers_oberts* taula_canals[NUM_CANALS];
 };
 
 struct list_head runqueue;
