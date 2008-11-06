@@ -5,13 +5,7 @@
 #ifndef __HARDWARE_H__
 #define __HARDWARE_H__
 
-#define MAX_BLOCKS 40	/* Tindrem un disc dur de 1 MBytes */
-#define BLOCK_SIZE 256
-
 #include <types.h>
-
-/* Disc */
-char disk[MAX_BLOCKS][BLOCK_SIZE];
 
 DWord get_eflags (void);
 void set_eflags (void);
