@@ -21,7 +21,7 @@ void init_fat();
 /* Sistema de fitxers */
 Byte fat[MAX_BLOCKS];
 int bloc_de_la_llibertat;
-struct fitxers_oberts taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
+struct fitxers_oberts * taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
 
 /* Disc */
 Byte disk[MAX_BLOCKS][BLOCK_SIZE];
