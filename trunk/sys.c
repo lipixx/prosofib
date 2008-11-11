@@ -38,9 +38,16 @@ sys_write (int fd, char *buffer, int size)
 	writeSize = 256;
       else
 	writeSize = tempSize;
-
+	
       copy_from_user (buffer, buff_aux, writeSize);
-      ncPrinted += sys_write_console (buff_aux, writeSize);
+      struct task_struct* actual = current();
+      struct fitxers_oberts* tfo = actual->taula_canals[fd];
+      int f = tfo->refs;
+      //struct file* f= tfo->opened_file;
+      //struct file_operations* op= f->operations;
+      //ncPrinted +=op->sys_write_dev(buff_aux,writeSize);
+      //ncPrinted += (current()->taula_canals[fd])->file->operations.sys_write_dev(buff_aux,writeSize);  
+      //ncPrinted += sys_write_console (buff_aux, writeSize);
 
       buffer += tempSize;
       tempSize -= writeSize;
