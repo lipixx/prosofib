@@ -2,6 +2,7 @@
  * sf.h - Sistem de Fitxers: 
  */
 #include <types.h>
+#include <sched.h>
 
 #ifndef __SF_H__
 #define __SF_H__
@@ -20,6 +21,7 @@ void init_fat();
 /* Sistema de fitxers */
 Byte fat[MAX_BLOCKS];
 int bloc_de_la_llibertat;
+struct fitxers_oberts taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
 
 /* Disc */
 Byte disk[MAX_BLOCKS][BLOCK_SIZE];
@@ -30,7 +32,6 @@ int (*sys_open_dev)(const char *, int);
 int (*sys_close_dev)(int);
 int (*sys_read_dev)(int, char*, int);
 int (*sys_write_dev)(int, char*, int);
-int a;
 };
 
 struct file{
@@ -42,11 +43,11 @@ int size;
 int n_blocs;
 };
 
-struct taula_fitxers_oberts {
+struct fitxers_oberts {
 int refs;
 int mode_acces;
 int lseek;
-struct file* file;
+struct file* opened_file;
 };
 
 
