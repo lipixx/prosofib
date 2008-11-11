@@ -1,3 +1,24 @@
 Data->Memory-> Examine 270 decimal words from 0x1e000
 +breakpoint a task_switch
 
+
+Dubtes:
+- A sys_write hem definit un buffer[256] per llegir i escriure de 256
+en 256 bytes. Perquè 256?
+Felip: 256 == BLOCK_SIZE
+
+- A devices.c, operació especifica unlink
+
+- Josep: 
+  sys_open_file
+  sys_close_file
+  sys_read_file
+    
+- Felip: 
+  sys_read_keyboard
+  sys_unlink_file
+  keyboard
+
+- Falta:
+  sys_write_file
+  
