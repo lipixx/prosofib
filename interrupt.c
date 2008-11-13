@@ -303,37 +303,20 @@ clock_routine ()
   old_task->tics_cpu++;
   if (vida == 0)
     {
-      list_del (&(old_task->run_list));
-      list_add_tail (&(old_task->run_list), &runqueue);
-      new_task =
-	(union task_union *) (list_head_to_task_struct (runqueue.next));
-      vida = new_task->task.quantum;
-      call_from_int = 1;
-      task_switch (new_task);
+      //Si nomes hi ha task0 restaurar vida i res mes
+      if (list_first(&runqueue) == list_last(&runqueue))
+	  vida = old_task->quantum;
+      else
+	{
+	  list_del (&(old_task->run_list));
+	  list_add_tail (&(old_task->run_list), &runqueue);
+	  new_task =
+	    (union task_union *) (list_head_to_task_struct (runqueue.next));
+	  call_from_int = 1;
+	  task_switch (new_task);
+	}
     }
-
-
-
-  /*
-     if (pid > 3) //aprox cada mig segon
-     {
-     debug = current()->pid;
-
-     switch (debug)
-     {
-     case 1:
-     task_switch(&task[1]);
-     break;
-     case 2:
-     task_switch(&task[2]);
-     break;
-     case 3: 
-     task_switch(&task[0]);
-     break;
-     default: break;
-     }
-     } */
-
+  
   if (temps % 18 == 0)
     {
       segons = temps / 18;

@@ -126,7 +126,7 @@ set_pe_flag ()
 void
 set_ss_pag (unsigned page, unsigned frame)
 {
-  pagusr_table[page].entry = 0;
+  pagusr_table[page].entry = 1;
   pagusr_table[page].bits.pbase_addr = frame;
   pagusr_table[page].bits.user = 1;
   pagusr_table[page].bits.rw = 1;

@@ -86,6 +86,9 @@ task_switch (union task_union *t)
      f.  IRET
    */
 
+  /* Actualitzar el quantum del nou proces */
+  vida = t->task.quantum;
+
   /* Agafem la @ de la pila de la union t i actualitzem TSS
      Es un stack[KERNEL_STACK_SIZE] i no un stack, perque la stack
      esta definida com a vector.
@@ -99,7 +102,6 @@ task_switch (union task_union *t)
     set_ss_pag (PAG_LOG_INIT_DATA_P0 + i,
 		(unsigned) (t->task.pagines_fisiques[i]));
 
-
   set_cr3 ();
 
   /*Hem de moure la @ del primer valor de la pila de t, dins %esp. */
@@ -107,8 +109,6 @@ task_switch (union task_union *t)
     ("movl %0,%%esp\n"::"g" ((DWord) & (t->stack[KERNEL_STACK_SIZE - 16])));
 
 
-
-  //FALTA FER QUE ES COMPROVI SI S'HA ENTRAT AQUI PER UNA INT O PER UN KILL
   /* Haurem de fer un EOI nomes si venim de una interrupcio,
      ja que sino no podrem rebre futures interrupcions. */
 

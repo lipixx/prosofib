@@ -148,7 +148,6 @@ check_errno (val)
   if (val < 0)
     {
       errno = 0 - val;
-      perror ();
       return -1;
     }
   else
