@@ -217,8 +217,10 @@ int
 sys_sem_init (int n_sem, unsigned int value)
 {
   /* inicialitzam el comptador del semafor n_sem a value */
-  if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
-    return -EINVAL;		/* Error si l'identificador n_sem es invalid */
+  // if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
+  if (n_sem < 0)  return -EINVAL;		/* Error si l'identificador n_sem es invalid */
+  else if (n_sem >= SEM_VALUE_MAX) return -EINVAL;
+
   if (sem[n_sem].init == 1)
     return -EBUSY;		/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
   /* init=0 => NO inicialitzat, init=1 => SI inicialitzat */
