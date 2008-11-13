@@ -110,10 +110,10 @@ provar_nice (void)
   printf ("\nProvar nice correcte = 12 ");
   nice (12);
 
-  printf ("\nProvar nice incorrecte = -1: ");
+  printf ("\nProvar nice incorrecte = -1 ");
   nice (-1);
 
-  printf ("Provar nice incorrecte = 0 :");
+  printf ("\nProvar nice incorrecte = 0 ");
   nice (0);
 
   while (1);

@@ -40,13 +40,13 @@ sys_write (int fd, char *buffer, int size)
 	writeSize = tempSize;
 	
       copy_from_user (buffer, buff_aux, writeSize);
-      struct task_struct* actual = current();
-      struct fitxers_oberts* tfo = actual->taula_canals[fd];
-      struct file* f= tfo->opened_file;
-      struct file_operations* op= f->operations;
+      //struct task_struct* actual = current();
+      // struct fitxers_oberts* tfo = actual->taula_canals[fd];
+      // struct file* f= tfo->opened_file;
+      // struct file_operations* op= f->operations;
       //ncPrinted +=op->sys_write_dev(buff_aux,writeSize);
       //ncPrinted += (current()->taula_canals[fd])->file->operations.sys_write_dev(buff_aux,writeSize);  
-      //ncPrinted += sys_write_console (buff_aux, writeSize);
+      ncPrinted += sys_write_console (buff_aux, writeSize);
 
       buffer += tempSize;
       tempSize -= writeSize;
@@ -102,11 +102,17 @@ sys_fork ()
   copy_data (current (), &task[fill], 4096);
 
   /* Herencia dades usuari, mirem que hi hagi prou frames lliures */
-  for (j = 0; j < NUM_PAG_DATA && current ()->pagines_fisiques[j] != -1; j++)
+  for (j = 0; j < NUM_PAG_DATA && current()->pagines_fisiques[j] != -1; j++)
     {
       frames[j] = alloc_frames (1);
       if (frames[j] == -1)
-	return -EAGAIN;
+	{
+	  for (i = j-1; i>=0; i--)
+	    {
+	      free_frames(frames[i],1);
+	    }
+	  return -EAGAIN;
+	}
     }
 
   for (i = 0; i < NUM_PAG_DATA && i <= j; i++)
@@ -142,7 +148,7 @@ sys_fork ()
 
   /* Inicialitzar els camps del task_struct no comuns al fill */
   task[fill].task.pid = pid++;
-  task[fill].task.quantum = 60;	/* Tots els processos tindran el mateix quantum */
+  task[fill].task.quantum = current()->quantum;	/* Tots els processos tindran el mateix quantum */
   task[fill].task.tics_cpu = 0;
 
   /* Inserir el nou proces a la llista de preparats: runqueue */
@@ -168,7 +174,7 @@ sys_exit ()
       /* Mai podem matar el proces 0 */
       /* Alliberar les estructures del proces */
 
-      proces_actual->pid = -1;	/* Marcam la posició del vector task com a lliure */
+      proces_actual->pid = -1;	/* Marcam la posicio del vector task com a lliure */
 
       list_del (&proces_actual->run_list);	/* Eliminem el proces de la runqueue */
 
@@ -178,8 +184,8 @@ sys_exit ()
       /* Posar el seguent element de la runqueue */
       task_switch (seguent);
     }
-  else
-    printk ("\nERROR: El pare no es pot suicidar!");
+  // else
+  //printk ("\nERROR: El pare no es pot suicidar!");
 
 
 }
@@ -209,7 +215,7 @@ sys_sem_init (int n_sem, unsigned int value)
 {
   /* inicialitzam el comptador del semafor n_sem a value */
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
-    return -EINVAL;		/* Error si l'identificador m_sem es invalid */
+    return -EINVAL;		/* Error si l'identificador n_sem es invalid */
   if (sem[n_sem].init == 1)
     return -EBUSY;		/* Error si el semafor n_sem ja esta inicialitzat -> Device or resource busy */
   /* init=0 => NO inicialitzat, init=1 => SI inicialitzat */
@@ -228,7 +234,7 @@ sys_sem_wait (int n_sem)
      aquesta crida bloqueja en aquest semafor el proces que la ha invocat. 
      En cas que el comptador sigui mes gran que zero, aquesta crida decrementa 
      el valor del semafor. El proces 0 no es pot bloquejar en cap cas, per tant
-     s’ha de considerar un error la utilització d’aquesta crida pel procés 0. */
+     s'ha de considerar un error la utilitzacio d'aquesta crida pel proces 0. */
 
   struct task_struct *old_task;
   union task_union *new_task;
@@ -251,7 +257,6 @@ sys_sem_wait (int n_sem)
       /*Fem un task_switch a una nova tasca */
       new_task =
 	(union task_union *) (list_head_to_task_struct (runqueue.next));
-      vida = new_task->task.quantum;
       call_from_int = 0;
       task_switch (new_task);
     }
@@ -280,11 +285,6 @@ sys_sem_signal (int n_sem)
       blocked_task = sem[n_sem].queue.next;
       list_del (blocked_task);
       list_add (blocked_task, &runqueue);
-
-      /*Hi ha que mirar que decidim; que es fa amb el proces que
-         desbloquejem? El deixem nomes a run_queue o l'executem
-         instantaniament? */
-      //Per ara el posem nomes a run_queue
     }
   else
     sem[n_sem].count++;
@@ -297,7 +297,7 @@ sys_sem_destroy (int n_sem)
 {
   /* destrueim el semafor n_sem si aquest esta inicialitzat */
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
-    return -EINVAL;		/* Error si l'identificador m_sem es invalid */
+    return -EINVAL;		/* Error si l'identificador n_sem es invalid */
   if (sem[n_sem].init == 0 || !list_empty (&sem[n_sem].queue))
     return -EPERM;		/* Error si el semafor no esta inicialitzat,
 				   Error si encara hi ha processos bloquejats a la cua */
