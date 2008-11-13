@@ -1,3 +1,5 @@
+//http://es.wikipedia.org/wiki/Errno.h
+
 #ifndef _ASM_GENERIC_ERRNO_H
 #define _ASM_GENERIC_ERRNO_H
 
@@ -9,6 +11,7 @@
 #define	EFAULT		14	/* Bad address */
 #define	EBUSY		16	/* Device or resource busy */
 #define	EINVAL		22	/* Invalid argument */
+#define ENFILE          23      /* Too many open files in system */
 #define	EFBIG		27	/* File too large */
 #define	ENOSYS		38	/* Function not implemented */
 #define	EBADR		53	/* Invalid request descriptor */
