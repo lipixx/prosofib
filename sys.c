@@ -69,7 +69,8 @@ comprova_fd (int fd, int operacio)
 int
 sys_nice (int quantum)
 {
-  int old = -EPERM;
+  int old = -EINVAL; /* Invalid argument */
+  //  int old = -EPERM;
   struct task_struct *current_task = current ();
   if (quantum > 0)
     {
@@ -195,8 +196,10 @@ sys_get_stats (int spid, int *tics)
 {
   int i = 0;
 
-  if (spid < 0 || spid > NR_TASKS)
-    return -ESRCH;		/* No such process */
+  //if (spid < 0 || spid > NR_TASKS)
+  if (spid <0 ) return -EINVAL;    /* Invalid argument */
+  if (spid > NR_TASKS) return -ESRCH;  /* No such process */
+// return -ESRCH;		
 
   /* Cercam el proces amb PID=spid */
   for (i = 0; i < NR_TASKS && task[i].task.pid != spid; i++);
