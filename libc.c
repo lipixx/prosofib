@@ -181,6 +181,10 @@ perror ()
     case 22:
       write (1, "EINVAL: Invalid argument \n", 26);
       break;
+    case 23:
+      write (1, "ENFILE: Too many open files in system \n",39);
+      break;
+    case 27:
       write (1, "EFBIG: File too large \n", 23);
       break;
     case 38:
