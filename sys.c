@@ -301,9 +301,10 @@ sys_sem_destroy (int n_sem)
   /* destrueim el semafor n_sem si aquest esta inicialitzat */
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
     return -EINVAL;		/* Error si l'identificador n_sem es invalid */
-  if (sem[n_sem].init == 0 || !list_empty (&sem[n_sem].queue))
-    return -EPERM;		/* Error si el semafor no esta inicialitzat,
-				   Error si encara hi ha processos bloquejats a la cua */
+  //  if (sem[n_sem].init == 0 || !list_empty (&sem[n_sem].queue))
+  if (sem[n_sem].init==0) return -EINVAL;             		/* Error si el semafor no esta inicialitzat*/
+  else if (!list_empty (&sem[n_sem].queue)) return -EBUSY;	/* Error si encara hi ha processos bloquejats a la cua */
+  
   sem[n_sem].init = 0;
   return 0;
 }
