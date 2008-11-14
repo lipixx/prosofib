@@ -23,8 +23,7 @@ sys_write (int fd, char *buffer, int size)
 {
   /* Params: %ebx, %ecx, %edx */
 
-  int fd_cmp = comprova_fd (fd, ESCRIPTURA);
-  if (fd_cmp != 0)
+  if (comprova_fd(fd,ESCRIPTURA) != 0)
     return -EBADF;
   if (size < 0)
     return -EINVAL;
@@ -56,6 +55,43 @@ sys_write (int fd, char *buffer, int size)
     return size;
   return -EIO;
 
+}
+
+int sys_read(int fd, char *buffer, int size)
+{
+  if (comprova_fd(fd,LECTURA) != 0)
+    return -EBADF;
+
+  if (size < 0)
+    return -EINVAL;
+
+  if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
+    return -EFBIG;
+
+  char buff_aux[256];
+  int ncRead = 0;
+  int tmp_size = size;
+
+  while (tmp_size != 0)
+    {
+      if (tmp_size < 256)
+	{
+	  ncRead += sys_read_dev(buff_aux,tmp_size);////////
+	  copy_to_user(buff_aux,buffer,tmp_size);
+	  tmp_size = 0;
+	}
+      else
+	{
+	  ncRead += sys_read_dev(buff_aux,256);/////////
+	  copy_to_user(buff_aux,buffer,tmp_size);
+	  tmp_size -= 256;
+	}
+    }
+  if (ncRead == size)
+    return ncRead;
+  
+  return -EIO;
+  
 }
 
 int
