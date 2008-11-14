@@ -15,6 +15,7 @@
 #define LECTURA 0
 #define ESCRIPTURA 1
 
+
 int comprova_fd (int fd, int operacio);
 
 int
@@ -112,6 +113,7 @@ sys_fork ()
 	    {
 	      free_frames(frames[i],1);
 	    }
+	  task[fill].task.pid = -1;
 	  return -EAGAIN;
 	}
     }
@@ -310,3 +312,4 @@ sys_sem_destroy (int n_sem)
   sem[n_sem].init = 0;
   return 0;
 }
+
