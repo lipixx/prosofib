@@ -14,8 +14,24 @@ write (int fd, char *buffer, int size)
   __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" "movl 12(%%ebp),%%ecx\n" "movl 16(%%ebp),%%edx\n" "movl $4,%%eax\n" "int $0x80\n" "movl %%eax, %0\n":"=g" (val)	/*bind %0 */
 			:	/*bind %1,%2,%3 si hi fossin.. */
 			:"%ebx"	/*announce to the compiler that ebx is dirty */
-    );
+			);
 
+  return check_errno (val);
+}
+
+int
+read (int fd, char *buffer, int size)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" 
+			"movl 12(%%ebp),%%ecx\n" 
+			"movl 16(%%ebp),%%edx\n" 
+			"movl $3,%%eax\n" 
+			"int $0x80\n" "movl %%eax, %0\n"
+			:"=g" (val)	/*bind %0 */
+			:
+			:"%ebx"	/*announce to the compiler that ebx is dirty */
+			);
   return check_errno (val);
 }
 
@@ -197,7 +213,7 @@ perror ()
       write (1, "EBADFD: File descriptor in bad state \n", 38);
       break;
     default:
-      write (2, "Error desconocido\n", 18);
+      write (1, "Error desconocido\n", 18);
       break;
     }
 }
