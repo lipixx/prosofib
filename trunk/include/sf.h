@@ -25,7 +25,7 @@ struct fitxers_oberts * taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
 
 /* Disc */
 Byte disk[MAX_BLOCKS][BLOCK_SIZE];
-int directori[MAX_FILES]; 
+struct file* directori[MAX_FILES]; 
 
 struct file_operations{
 int (*sys_open_dev)(const char *, int);
