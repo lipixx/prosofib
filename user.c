@@ -7,8 +7,19 @@ void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-
+  int i;
+  int tics;
   printf ("\nBenvinguts a ZeOS!");
+
+  int k = fork();
+  if (k == 0)
+    {
+      for (i = 0; i<20; i++)
+	sem_init(i,0);
+
+      exit();
+    }
+  else
 
   //provar_fork (9); //No sobrepassar NR_TASKS
 
@@ -24,7 +35,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  runjp (); //Hi ha que posar NUM_PAG_DATA = 8
+  //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
 
   //run2_jp();
 
