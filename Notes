@@ -15,10 +15,16 @@ Felip: 256 == BLOCK_SIZE
   sys_read_file
     
 - Felip: 
-  sys_read_keyboard
-  sys_unlink_file
-  keyboard
+  sys_read_keyboard --> devices.c
+  sys_read --> sys.c
+  sys_unlink_file -->
+  keyboard --> interrupt.c?
 
 - Falta:
   sys_write_file
-  
+  init sf
+  init taula_canals task_struct
+       -stdin
+       -stdout
+       -stderr
+  crear init de /teclat /pantalla

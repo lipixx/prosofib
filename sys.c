@@ -76,13 +76,13 @@ int sys_read(int fd, char *buffer, int size)
     {
       if (tmp_size < 256)
 	{
-	  ncRead += sys_read_dev(buff_aux,tmp_size);////////
+	  //	  ncRead += sys_read_dev(buff_aux,tmp_size);////////
 	  copy_to_user(buff_aux,buffer,tmp_size);
 	  tmp_size = 0;
 	}
       else
 	{
-	  ncRead += sys_read_dev(buff_aux,256);/////////
+	  //ncRead += sys_read_dev(buff_aux,256);/////////
 	  copy_to_user(buff_aux,buffer,tmp_size);
 	  tmp_size -= 256;
 	}
@@ -319,6 +319,7 @@ sys_sem_signal (int n_sem)
      desbloqueja el primer proces. */
 
   struct list_head *blocked_task;
+  union task_union *blocked_task_union;
 
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX || sem[n_sem].init == 0)
     return -EINVAL;
@@ -327,6 +328,13 @@ sys_sem_signal (int n_sem)
     {
       blocked_task = sem[n_sem].queue.next;
       list_del (blocked_task);
+      
+      //Hem de fer que l'eax tingui el valor del return del sem_wait
+      blocked_task_union = get_task_union(list_head_to_task_struct(blocked_task));
+      if ((int) blocked_task_union == NULL)
+	return -ESRCH;
+      blocked_task_union->stack[KERNEL_STACK_SIZE - 10] = 0;
+
       list_add (blocked_task, &runqueue);
     }
   else

@@ -18,7 +18,7 @@ int sys_open_file(const char *path, int mode_acces){
 
   int i;
   for(i=0; i<MAX_FILES && path!=directori[i]; i++);
-
+  return 0;
 }
 
 int sys_close_file(int fd){
@@ -28,9 +28,11 @@ int sys_close_file(int fd){
   
   tfo->refs--;
   actual->taula_canals[fd]=-1;
-  
+  return 0;
 }
 
 int sys_read_file(int fd, char* buffer, int size){
-  
+  return 0;
 }
+
+//sys_read_keyboard

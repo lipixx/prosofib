@@ -42,6 +42,19 @@ init_task0 (int first_ph)
   list_add (&(task[0].task.run_list), &runqueue);
 }
 
+union task_union *
+get_task_union(struct task_struct * n_task)
+{
+  int i;
+
+  for (i = 0; i<NR_TASKS; i++)
+    {
+      if (task[i].task.pid == n_task->pid)
+	return (union task_union *) &task[i];
+    }
+  return (union task_union *) NULL;
+}
+
 struct task_struct *
 current ()
 {

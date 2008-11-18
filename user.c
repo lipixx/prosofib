@@ -8,7 +8,7 @@ void runjp ();
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
   int i;
-  int tics;
+  //int tics;
   printf ("\nBenvinguts a ZeOS!");
 
   int k = fork();
@@ -35,7 +35,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
+  runjp (); //Hi ha que posar NUM_PAG_DATA = 8
 
   //run2_jp();
 
