@@ -15,16 +15,29 @@ Felip: 256 == BLOCK_SIZE
   sys_read_file
     
 - Felip: 
-  sys_read_keyboard --> devices.c
-  sys_read --> sys.c
+  sys_read --> sys.c  ---- FET!
+  sys_write --> sys.c ---- FET!
   sys_unlink_file -->
+
+  sys_read_keyboard --> devices.c
   keyboard --> interrupt.c?
 
 - Falta:
+  sys_open
+	fer un strcmp per comparar amb es path!!
+	int strcmp(const char *s1, const char *s2);
+  sys_close
+  sys_dup
+  sys_unlink
   sys_write_file
-  init sf
-  init taula_canals task_struct
+  sys_write_console : s'ha d'adaptar
+
+  init sf (sf.c) -- FET
+
+  init taula_canals task_struct (sched.c)  -- FET
        -stdin
        -stdout
        -stderr
-  crear init de /teclat /pantalla
+       - (int) taula_canals[i] = NULL;
+
+  crear init de "/console" i "/keyboard" (sf.c) -- FET

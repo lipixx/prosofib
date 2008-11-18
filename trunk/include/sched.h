@@ -21,7 +21,7 @@ struct task_struct
   int tics_cpu;
   int pagines_fisiques[NUM_PAG_DATA];
   struct list_head run_list;
-  struct fitxers_oberts* taula_canals[NUM_CANALS];
+  struct fitxers_oberts * taula_canals[NUM_CANALS];
 };
 
 struct list_head runqueue;

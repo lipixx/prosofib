@@ -4,13 +4,13 @@
 
 #include <sched.h>
 #include <list.h>
-
-/* prova inicialitzacio de pagines */
 #include <utils.h>
 #include <mm.h>
 #include <errno.h>
 #include <segment.h>
 #include <interrupt.h>
+#include <types.h>
+#include <sf.h>
 
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
@@ -31,13 +31,42 @@ init_sched ()
 void
 init_task0 (int first_ph)
 {
+  struct * fitxers_oberts null_device;
   int i = 0;
+  
   task[0].task.pid = pid++;
   task[0].task.quantum = 10;
   task[0].task.tics_cpu = 0;
   vida = task[0].task.quantum;
   for (i = 0; i < NUM_PAG_DATA; i++)
     task[0].task.pagines_fisiques[i] = first_ph + NUM_PAG_CODE + i;
+
+  //Init de la Taula de Canals
+  null_device = (struct * fitxers_oberts) NULL;
+  
+  for (i=3; i<NUM_CANALS; i++)
+    {
+      task[0].task.taula_canals[i] = device;
+    }
+
+  //Init de stdin, stdout, stderr (com fer un open)
+  //stdin = 0, stdout = 1, stderr = 2
+  //directori[0] = keyboard, directori[1] = console
+  //Fem que stderr vaigi a console.
+  taula_fitxers_oberts[0]->refs = 1;
+  taula_fitxers_oberts[0]->mode_acces = O_RDONLY;
+  taula_fitxers_oberts[0]->lseek = 0;
+  taula_fitxers_oberts[0]->opened_file = directori[0];
+
+  taula_fitxers_oberts[1]->refs = 1;
+  taula_fitxers_oberts[1]->mode_acces = O_WRONLY;
+  taula_fitxers_oberts[1]->lseek = 0;
+  taula_fitxers_oberts[1]->opened_file = directori[1];
+  
+  task[0].task.taula_canals[0] = taula_fitxers_oberts[0];
+  task[0].task.taula_canals[1] = taula_fitxers_oberts[1];
+  task[0].task.taula_canals[2] = taula_fitxers_oberts[0];
+  //Fi init de la Taula de Canals
 
   list_add (&(task[0].task.run_list), &runqueue);
 }

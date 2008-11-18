@@ -75,15 +75,15 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* Inicialitzem les variables i estructures del scheduler */
   init_sched ();
+  
+  /* Inicialitzar tot el sistema de fitxers*/
+  init_filesystem();
 
   /* Initialize task 0 data */
   init_task0 (first_ph);
 
   /* Activem les interrupcions */
   enable_int ();
-
-  /* Inicialitzar la taula FAT*/
-  init_fat();
 
   printk ("Entrant en mode usuari...\n");
 
