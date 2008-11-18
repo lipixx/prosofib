@@ -31,7 +31,7 @@ char call_from_int;
 union task_union
 {
   struct task_struct task;
-  unsigned long stack[KERNEL_STACK_SIZE];	/* pila de sistema, per procés */
+  unsigned long stack[KERNEL_STACK_SIZE];	/* pila de sistema, per proces */
 };
 
 struct semafor
@@ -48,6 +48,7 @@ extern union task_union task[NR_TASKS];
 /* Inicialitza les dades del proces inicial */
 void init_task0 ();
 void init_sched ();
+union task_union * get_task_union(struct task_struct * n_task);
 int search_free_task ();
 void task_switch (union task_union *t);
 struct task_struct *current ();
