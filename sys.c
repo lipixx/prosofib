@@ -11,56 +11,64 @@
 #include <mm.h>
 #include <interrupt.h>
 #include <io.h>
-
-#define LECTURA 0
-#define ESCRIPTURA 1
-
-
-int comprova_fd (int fd, int operacio);
+#include <sf.h>
 
 int
 sys_write (int fd, char *buffer, int size)
 {
-  /* Params: %ebx, %ecx, %edx */
+  struct task_struct * current_task;
+  struct fitxers_oberts * fitxer_obert;
+  char buff_aux[256];
+  int return_write, ncWritten, writeSize;
 
-  if (comprova_fd(fd,ESCRIPTURA) != 0)
-    return -EBADF;
+  current_task = current();
+
+  if (fd < 0 || fd > NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
+    return -EBADR;
   if (size < 0)
     return -EINVAL;
   if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
     return -EFBIG;
 
-  char buff_aux[256];
-  int ncPrinted = 0, tempSize = size, writeSize = 0;
-  while (tempSize > 0)
+  fitxer_obert = current_task->taula_canals[fd];
+  
+  if (fitxer_obert->mode_acces != O_WRONLY &&
+      fitxer_obert->mode_acces != O_RDWR)
+    return -EPERM;
+  
+  ncWritten = 0;
+  writeSize = 0;
+  while (size > 0)
     {
-      if (tempSize >= 256)
+      if (size >= 256)
 	writeSize = 256;
       else
-	writeSize = tempSize;
-	
-      copy_from_user (buffer, buff_aux, writeSize);
-      //struct task_struct* actual = current();
-      // struct fitxers_oberts* tfo = actual->taula_canals[fd];
-      // struct file* f= tfo->opened_file;
-      // struct file_operations* op= f->operations;
-      //ncPrinted +=op->sys_write_dev(buff_aux,writeSize);
-      //ncPrinted += (current()->taula_canals[fd])->file->operations.sys_write_dev(buff_aux,writeSize);  
-      ncPrinted += sys_write_console (buff_aux, writeSize);
+	writeSize = size;
 
-      buffer += tempSize;
-      tempSize -= writeSize;
+      if (copy_from_user (buffer, buff_aux, writeSize)!=0) return -EFAULT;
+
+      return_write = (*(fitxer_obert->opened_file->operations->sys_write_dev))(fd,buff_aux,writeSize);
+      if (return_write == -1) return -EIO;
+      ncWritten += return_write;
+
+      buffer += size;
+      size -= writeSize;
     }
-  if (ncPrinted == size)
-    return size;
-  return -EIO;
 
+  return ncWritten;
 }
 
 int sys_read(int fd, char *buffer, int size)
 {
-  if (comprova_fd(fd,LECTURA) != 0)
-    return -EBADF;
+  struct task_struct * current_task;
+  struct fitxers_oberts * fitxer_obert;
+  char buff_aux[256];
+  int ncRead, return_read;
+
+  current_task = current();
+
+  if (fd < 0 || fd > NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
+    return -EBADR;
 
   if (size < 0)
     return -EINVAL;
@@ -68,39 +76,80 @@ int sys_read(int fd, char *buffer, int size)
   if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
     return -EFBIG;
 
-  char buff_aux[256];
-  int ncRead = 0;
-  int tmp_size = size;
+  fitxer_obert = current_task->taula_canals[fd];
+  
+  if (fitxer_obert->mode_acces != O_RDONLY &&
+      fitxer_obert->mode_acces != O_RDWR)
+    return -EPERM;
 
-  while (tmp_size != 0)
+  ncRead = 0;
+
+  while (size != 0)
     {
-      if (tmp_size < 256)
+      if (size < 256)
 	{
-	  //	  ncRead += sys_read_dev(buff_aux,tmp_size);////////
-	  copy_to_user(buff_aux,buffer,tmp_size);
-	  tmp_size = 0;
+	  return_read = (*(fitxer_obert->opened_file->operations->sys_read_dev))(fd,buff_aux,size);
+	  size = 0;
 	}
       else
 	{
-	  //ncRead += sys_read_dev(buff_aux,256);/////////
-	  copy_to_user(buff_aux,buffer,tmp_size);
-	  tmp_size -= 256;
+	  return_read = (*(fitxer_obert->opened_file->operations->sys_read_dev))(fd,buff_aux,256);
+	  size -= 256;
 	}
+      	  
+      //Farem que si hi ha error de i/o acabi la transaccio
+      if (return_read == -1) return -EIO;
+      ncRead += return_read;
+  
+      if (copy_to_user(buff_aux,buffer,size)!=0) return -EFAULT;
     }
-  if (ncRead == size)
-    return ncRead;
   
-  return -EIO;
-  
+  //Sempre hem de retornar ncRead, encara que s'hagin llegit
+  //0 bytes, ja que pot ser que haguem arribat a l'EOF
+  return ncRead; 
+
 }
 
-int
-comprova_fd (int fd, int operacio)
+int sys_open(const char *path, int flags)
 {
-  if (fd == operacio)
-    return 0;
+  int fd,file_entry,tfo_entry;
+  struct task_struct * proces = current();
+  struct file * file;
+  
+  //Comprovem que podem obrir mes fitxers
+  for (tfo_entry = 0; tfo_entry < NUM_CANALS*NR_TASKS &&
+	 taula_fitxers_oberts[tfo_entry]->refs != 0; tfo_entry++);
+  if (tfo_entry == NUM_CANALS*NR_TAKS)
+    return -ENFILE;
 
-  return -EBADR;		/* Invalid request descriptor */
+  //Comprovem que ens queden canals
+  for (fd = 0; fd < NUM_CANALS && (int) proces->taula_canals[fd] != NULL; fd++)
+    if (fd == NUM_CANALS) return -EMFILE;
+  
+  //Obtenim el fitxer del directori
+  for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry]->nom,path)); file_entry++);
+  if (file_entry == MAX_FILES) return -ENOENT;
+  
+  file = directori[file_entry];
+  
+  //Comprovem que tenim permis d'acces
+  if (flags != file->mode_acces_valid) //HI HA QUE MILLORAR ASO
+    return -EPERM;
+
+  //Nova entrada a la TFO i punter al canal
+  ---TODO
+
+  return -1;
+}
+
+int sys_close(int fd)
+{
+  return -1;
+}
+
+int dup(int fd)
+{
+  return -1;
 }
 
 int
@@ -223,10 +272,6 @@ sys_exit ()
       /* Posar el seguent element de la runqueue */
       task_switch (seguent);
     }
-  // else
-  //printk ("\nERROR: El pare no es pot suicidar!");
-
-
 }
 
 int
@@ -234,10 +279,8 @@ sys_get_stats (int spid, int *tics)
 {
   int i = 0;
 
-  //if (spid < 0 || spid > NR_TASKS)
   if (spid <0 ) return -EINVAL;    /* Invalid argument */
-  if (spid > NR_TASKS) return -ESRCH;  /* No such process */
-// return -ESRCH;		
+  if (spid > NR_TASKS) return -ESRCH;  /* No such process */		
 
   /* Cercam el proces amb PID=spid */
   for (i = 0; i < NR_TASKS && task[i].task.pid != spid; i++);
@@ -255,7 +298,6 @@ int
 sys_sem_init (int n_sem, unsigned int value)
 {
   /* inicialitzam el comptador del semafor n_sem a value */
-  // if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
   if (n_sem < 0)  return -EINVAL;		/* Error si l'identificador n_sem es invalid */
   else if (n_sem >= SEM_VALUE_MAX) return -EINVAL;
 
@@ -349,7 +391,7 @@ sys_sem_destroy (int n_sem)
   /* destrueim el semafor n_sem si aquest esta inicialitzat */
   if (n_sem < 0 || n_sem >= SEM_VALUE_MAX)
     return -EINVAL;		/* Error si l'identificador n_sem es invalid */
-  //  if (sem[n_sem].init == 0 || !list_empty (&sem[n_sem].queue))
+
   if (sem[n_sem].init==0) return -EINVAL;             		/* Error si el semafor no esta inicialitzat*/
   else if (!list_empty (&sem[n_sem].queue)) return -EBUSY;	/* Error si encara hi ha processos bloquejats a la cua */
   

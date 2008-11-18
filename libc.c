@@ -179,6 +179,9 @@ perror ()
     case 1:
       write (1, "EPERM: Operation not permitted\n", 31);
       break;
+    case 2:
+      write (1, "ENOENT: No such file or directory\n",34);
+      break;
     case 3:
       write (1, "ESRCH: No such process \n", 24);
       break;
@@ -194,11 +197,17 @@ perror ()
     case 14:
       write (1, "EFAULT: Bad address \n", 21);
       break;
+    case 19:
+      write (1, "ENODEV: No such device\n",23);
+      break;
     case 22:
       write (1, "EINVAL: Invalid argument \n", 26);
       break;
     case 23:
       write (1, "ENFILE: Too many open files in system \n",39);
+      break;
+    case 24:
+      write (1, "EMFILE: Too many open files by the proces \n",44);
       break;
     case 27:
       write (1, "EFBIG: File too large \n", 23);
@@ -213,7 +222,7 @@ perror ()
       write (1, "EBADFD: File descriptor in bad state \n", 38);
       break;
     default:
-      write (1, "Error desconocido\n", 18);
+      write (1, "Unknown Error\n", 14);
       break;
     }
 }
