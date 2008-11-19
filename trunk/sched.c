@@ -34,14 +34,13 @@ init_task0 (int first_ph)
   int i = 0;
 
   task[0].task.pid = pid++;
-  task[0].task.quantum = 10;
+  task[0].task.quantum = 60;
   task[0].task.tics_cpu = 0;
   vida = task[0].task.quantum;
   for (i = 0; i < NUM_PAG_DATA; i++)
     task[0].task.pagines_fisiques[i] = first_ph + NUM_PAG_CODE + i;
 
   //Init de la Taula de Canals
-  
   for (i=3; i<NUM_CANALS; i++)
     {
       task[0].task.taula_canals[i] = (struct fitxers_oberts *) NULL; 
@@ -73,6 +72,7 @@ init_task0 (int first_ph)
 union task_union *
 get_task_union(struct task_struct * n_task)
 {
+/*
   int i;
 
   for (i = 0; i<NR_TASKS; i++)
@@ -81,6 +81,8 @@ get_task_union(struct task_struct * n_task)
 	return (union task_union *) &task[i];
     }
   return (union task_union *) NULL;
+ */
+  return (union task_union *) n_task;
 }
 
 struct task_struct *

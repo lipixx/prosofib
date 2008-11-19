@@ -3,11 +3,12 @@
 #include <sched.h>
 #include <errno.h>
 
-//afegit fd
+
 int
 sys_write_console (int fd, char *buffer, int size)
 {
   int i;
+  //josep, pensa a sumar vufer+elesic i a cunpruvar es moda d'atses balit.
   for (i = 0; i < size; i++)
     printc (buffer[i]);
   return i;

@@ -38,7 +38,7 @@ int bloc_de_la_llibertat;
 struct fitxers_oberts * taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
 
 /* Disc */
-int disk[MAX_BLOCKS][BLOCK_SIZE];
+Byte disk[MAX_BLOCKS][BLOCK_SIZE];
 struct file * directori[MAX_FILES]; 
 
 struct file_operations{
@@ -50,9 +50,9 @@ struct file_operations{
 
 //Si mode_acces_valid = -1 file no es valid
 struct file{
-  char nom[MAX_NAME_LENGTH];
+  char * nom;//[MAX_NAME_LENGTH];
   int mode_acces_valid;
-  struct file_operations *operations;
+  struct file_operations * operations;
   int first_block;
   int size;
   int n_blocs;

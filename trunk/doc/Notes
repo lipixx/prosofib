@@ -13,34 +13,44 @@ Felip: 256 == BLOCK_SIZE
   sys_open_file
   sys_close_file
   sys_read_file
-    
-- Felip: 
-  sys_read --> sys.c  ---- FET!
-  sys_write --> sys.c ---- FET!
-  sys_unlink_file -->
-
-  sys_read_keyboard --> devices.c
-  keyboard --> interrupt.c?
-
-- Falta:
-  sys_open --> sys.c ---- FET! (falta tractar O_CREAT)
-
   sys_close
-  sys_dup --> sys.c ---- FET!
-  sys_unlink
-  sys_write_file
   sys_write_console : s'ha d'adaptar
 
+- Felip: 
+  *get_task_union, funciona??->eliminar comentaris o optimitzar
+  sys_read --> sys.c  ---- FET!
+  sys_write --> sys.c ---- FET!
+  sys_open --> sys.c ---- FET! (falta tractar O_CREAT)
+  sys_dup --> sys.c ---- FET!
   init sf (sf.c) -- FET
-
+       -directori, amb file.mode_acces_valid = -1
   init taula_canals task_struct (sched.c)  -- FET
        -stdin
        -stdout
        -stderr
        - (int) taula_canals[i] = NULL;
-
   crear init de "/console" i "/keyboard" (sf.c) -- FET
 
+
+  sys_unlink_file -->
+  sys_read_keyboard --> devices.c
+  keyboard --> interrupt.c?
+
+- Falta:
+  sys_unlink
+  sys_write_file
+  sys_exit --> controlar nrefs-- i tota le pesca
+  sys_fork --> controlar nrefs++ i tota la pesca
+  
+
+
+ 
+
+
+
+  IMPROVEMENTS:
+   - Posar una variable que digui el nº de fitxers oberts, per no haver
+   de recorrer cada vegada (p.ex a s'open), sa taula_fitxers_oberts
 
 Com s'inicialitzen les ESTRUCTURES DE DADES de tipus
 struct fitxers_oberts * taula_fitxers_oberts[N]?
