@@ -67,3 +67,35 @@ copy_to_user (void *start, void *dest, int size)
     }
   return 0;
 }
+
+/*Strcmp implementation, thanks to:
+ * P.J. Plauger, The Standard C Library, 1992
+ */
+int strcmp (const char * s1, const char * s2)
+{
+    for(; *s1 == *s2; ++s1, ++s2)
+        if(*s1 == 0)
+            return 0;
+    return *(unsigned char *)s1 < *(unsigned char *)s2 ? -1 : 1;
+}
+
+void
+itoa (int n, char *buffer)
+{
+  int ndigits = n;
+  int i = 0;
+
+  while (ndigits > 0)
+    {
+      i++;
+      ndigits /= 10;
+    }
+
+  while (i > 0)
+    {
+      buffer[i - 1] = (n % 10) + '0';
+      n /= 10;
+      i--;
+    }
+
+}

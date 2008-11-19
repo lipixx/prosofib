@@ -7,10 +7,19 @@
 #ifndef __SF_H__
 #define __SF_H__
 
-#define O_RDONLY 4	/* Basat en el sistema de permissos de UNIX */
-#define O_WRONLY 2
-#define O_RDWR 6
-#define O_CREAT 7
+/* From Linux Kernel 2.4
+ * include/asm-i386/fcntl.h
+
+ * Note that the flag value (low two bits) for sys_open means:
+ *	00 - read-only
+ *	01 - write-only
+ *	10 - read-write
+ */
+#define O_RDONLY	     00
+#define O_WRONLY	     01
+#define O_RDWR		     02
+#define O_CREAT		   0100	/* not fcntl */
+
 #define MAX_BLOCKS 40	/* Tindrem un disc dur de 1 MBytes */
 #define BLOCK_SIZE 256
 #define MAX_FILES 10
@@ -19,7 +28,7 @@
 void init_filesystem();
 
 /* Sistema de fitxers */
-Byte fat[MAX_BLOCKS];
+int fat[MAX_BLOCKS];
 
 //El bloc_de_la_llibertat sempre apunta 
 //al primer bloc lliure de la taula fat.
@@ -29,8 +38,8 @@ int bloc_de_la_llibertat;
 struct fitxers_oberts * taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
 
 /* Disc */
-Byte disk[MAX_BLOCKS][BLOCK_SIZE];
-struct file* directori[MAX_FILES]; 
+int disk[MAX_BLOCKS][BLOCK_SIZE];
+struct file * directori[MAX_FILES]; 
 
 struct file_operations{
   int (*sys_open_dev)(const char *, int);
@@ -53,7 +62,7 @@ struct fitxers_oberts {
   int refs;
   int mode_acces;
   int lseek;
-  struct file* opened_file;
+  struct file * opened_file;
 };
 
 

@@ -23,11 +23,10 @@ Felip: 256 == BLOCK_SIZE
   keyboard --> interrupt.c?
 
 - Falta:
-  sys_open
-	fer un strcmp per comparar amb es path!!
-	int strcmp(const char *s1, const char *s2);
+  sys_open --> sys.c ---- FET! (falta tractar O_CREAT)
+
   sys_close
-  sys_dup
+  sys_dup --> sys.c ---- FET!
   sys_unlink
   sys_write_file
   sys_write_console : s'ha d'adaptar
@@ -41,3 +40,7 @@ Felip: 256 == BLOCK_SIZE
        - (int) taula_canals[i] = NULL;
 
   crear init de "/console" i "/keyboard" (sf.c) -- FET
+
+
+Com s'inicialitzen les ESTRUCTURES DE DADES de tipus
+struct fitxers_oberts * taula_fitxers_oberts[N]?

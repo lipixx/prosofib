@@ -69,7 +69,7 @@
 	outb %al, $0x20
 
 #define MINSTAB 0
-#define MAXSTAB 35
+#define MAXSTAB 41
 	
 ENTRY(divide_error_handler)
 	SAVE_ALL
@@ -241,8 +241,8 @@ ENTRY(sys_call_table)
 	.long sys_fork		/* @ Crida al sistema Fork 0x2 */
 	.long sys_read		/* @ Crida al sistema Read 0x3 */
 	.long sys_write		/* @ Crida al sistema Write 0x4 */
-	.long sys_ni_syscall
-	.long sys_ni_syscall
+	.long sys_open		/* @ Crida al sistema Open 0x5 */
+	.long sys_close		/* @ Crida al sistema Close 0x6 */
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall
@@ -272,3 +272,9 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_nice		/* @ Crida al sistema nice #34 */
 	.long sys_get_stats	/* @ Crida al sistema get_stats #35 */
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_ni_syscall
+	.long sys_dup		/* @ Crida al sistema dup #41 */

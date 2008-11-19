@@ -3,13 +3,20 @@
 #include <sched.h>
 #include <errno.h>
 
+//afegit fd
 int
-sys_write_console (char *buffer, int size)
+sys_write_console (int fd, char *buffer, int size)
 {
   int i;
   for (i = 0; i < size; i++)
     printc (buffer[i]);
   return i;
+}
+
+int
+sys_read_keyboard(int fd, char * buffer, int size)
+{
+  return 0;
 }
 
 int sys_open_file(const char *path, int mode_acces){
@@ -34,5 +41,3 @@ int sys_close_file(int fd){
 int sys_read_file(int fd, char* buffer, int size){
   return 0;
 }
-
-//sys_read_keyboard
