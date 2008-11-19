@@ -21,7 +21,7 @@ void init_tfo()
       fitxers[i].mode_acces = 0;
       fitxers[i].opened_file = NULL;
       taula_fitxers_oberts[i] = &fitxers[i];
-    }
+   }
 }
 
 void init_disk()
@@ -35,50 +35,44 @@ void init_disk()
 void init_directori()
 {
   int i;
-  struct file console;
-  struct file keyboard;
 
-  for (i=2; i<MAX_FILES; i++)
+  struct file fitxer[MAX_FILES];
+  struct file_operations ops[MAX_FILES];
+
+  for (i=0; i<MAX_FILES; i++)
     {
-      directori[i]->mode_acces_valid = -1;
+      fitxer[i].operations = &ops[i];
+      fitxer[i].nom = "";
+      fitxer[i].mode_acces_valid = -1;
+      fitxer[i].operations->sys_open_dev = NULL;
+      fitxer[i].operations->sys_close_dev = NULL;
+      fitxer[i].operations->sys_read_dev = NULL;
+      fitxer[i].operations->sys_write_dev = NULL;
+      fitxer[i].first_block = NULL;
+      fitxer[i].size = NULL;
+      fitxer[i].n_blocs = NULL;
+      directori[i] = &fitxer[i];
     }
-  
-  console.nom[0] = 'c';
-  console.nom[1] = 'o';
-  console.nom[2] = 'n';
-  console.nom[3] = 's';
-  console.nom[4] = 'o';
-  console.nom[5] = 'l';
-  console.nom[6] = 'e';
-  console.mode_acces_valid = O_WRONLY;
-  console.operations->sys_open_dev = NULL;
-  console.operations->sys_close_dev = NULL;
-  console.operations->sys_read_dev = NULL;
-  console.operations->sys_write_dev = sys_write_console;
-  console.first_block = NULL;
-  console.size = NULL;
-  console.n_blocs = NULL;
-  
-  directori[1] = &console;
-  
-  keyboard.nom[0] = 'k';
-  keyboard.nom[1] = 'e';
-  keyboard.nom[2] = 'y';
-  keyboard.nom[3] = 'b';
-  keyboard.nom[4] = 'o';
-  keyboard.nom[5] = 'a';
-  keyboard.nom[6] = 'r';
-  keyboard.nom[7] = 'd';
-  keyboard.mode_acces_valid = O_RDONLY;
-  keyboard.operations->sys_open_dev = NULL;
-  keyboard.operations->sys_close_dev = NULL;
-  keyboard.operations->sys_read_dev = sys_read_keyboard;
-  keyboard.operations->sys_write_dev = NULL;
-  keyboard.first_block = NULL;
-  keyboard.size = NULL;
-  keyboard.n_blocs = NULL;
-  
-  directori[0] = &keyboard;
+
+  directori[0]->nom = "keyboard";
+  directori[0]->mode_acces_valid = O_WRONLY;
+  directori[0]->operations->sys_open_dev = NULL;
+  directori[0]->operations->sys_close_dev = NULL;
+  directori[0]->operations->sys_read_dev = sys_read_keyboard;
+  directori[0]->operations->sys_write_dev = NULL;
+  directori[0]->first_block = NULL;
+  directori[0]->size = NULL;
+  directori[0]->n_blocs = NULL;
+ 
+  directori[1]->nom = "console";
+  directori[1]->mode_acces_valid = O_WRONLY;
+  directori[1]->operations->sys_open_dev = NULL;
+  directori[1]->operations->sys_close_dev = NULL;
+  directori[1]->operations->sys_read_dev = NULL;
+  directori[1]->operations->sys_write_dev = sys_write_console;
+  directori[1]->first_block = NULL;
+  directori[1]->size = NULL;
+  directori[1]->n_blocs = NULL; 
 }
 
 void init_fat()

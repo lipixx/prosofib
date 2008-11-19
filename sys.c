@@ -32,8 +32,7 @@ sys_write (int fd, char *buffer, int size)
 
   fitxer_obert = current_task->taula_canals[fd];
   
-  if (fitxer_obert->mode_acces != O_WRONLY &&
-      fitxer_obert->mode_acces != O_RDWR)
+  if (fitxer_obert->mode_acces == O_RDONLY)
     return -EPERM;
   
   ncWritten = 0;
@@ -48,7 +47,8 @@ sys_write (int fd, char *buffer, int size)
       if (copy_from_user (buffer, buff_aux, writeSize)!=0) return -EFAULT;
 
       return_write = (*(fitxer_obert->opened_file->operations->sys_write_dev))(fd,buff_aux,writeSize);
-      if (return_write == -1) return -EIO;
+      if (return_write == -1 || return_write != writeSize) return -EIO;
+
       ncWritten += return_write;
 
       buffer += size;
@@ -78,8 +78,7 @@ int sys_read(int fd, char *buffer, int size)
 
   fitxer_obert = current_task->taula_canals[fd];
   
-  if (fitxer_obert->mode_acces != O_RDONLY &&
-      fitxer_obert->mode_acces != O_RDWR)
+  if (fitxer_obert->mode_acces == O_WRONLY)
     return -EPERM;
 
   ncRead = 0;
@@ -134,7 +133,10 @@ int sys_open(const char *path, int flags)
   
   //Obtenim el fitxer del directori
   for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry]->nom,path)); file_entry++);
-  
+  if (file_entry == MAX_FILES) return -ENOENT;
+
+  file = directori[file_entry];
+
   /* Haurem de fer que si ens pasen O_CREAT, crear el fitxer:
    *
    if (file_entry == MAX_FILES && (flags & O_CREAT))
@@ -145,9 +147,7 @@ int sys_open(const char *path, int flags)
    *
    * De mentres no ho farem..
    */
-  if (file_entry == MAX_FILES) return -ENOENT;
-  
-  file = directori[file_entry];
+
   
   //Comprovem que tenim permis d'acces
   if (file->mode_acces_valid != O_RDWR && flags != file->mode_acces_valid)
