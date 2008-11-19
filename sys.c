@@ -110,6 +110,12 @@ int sys_read(int fd, char *buffer, int size)
 
 }
 
+/*
+ * Note that the flag value (low two bits) for sys_open means:
+ *	00 - read-only
+ *	01 - write-only
+ *	10 - read-write
+ */
 int sys_open(const char *path, int flags)
 {
   int fd,file_entry,tfo_entry;
@@ -119,7 +125,7 @@ int sys_open(const char *path, int flags)
   //Comprovem que podem obrir mes fitxers
   for (tfo_entry = 0; tfo_entry < NUM_CANALS*NR_TASKS &&
 	 taula_fitxers_oberts[tfo_entry]->refs != 0; tfo_entry++);
-  if (tfo_entry == NUM_CANALS*NR_TAKS)
+  if (tfo_entry == NUM_CANALS*NR_TASKS)
     return -ENFILE;
 
   //Comprovem que ens queden canals
@@ -128,28 +134,67 @@ int sys_open(const char *path, int flags)
   
   //Obtenim el fitxer del directori
   for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry]->nom,path)); file_entry++);
+  
+  /* Haurem de fer que si ens pasen O_CREAT, crear el fitxer:
+   *
+   if (file_entry == MAX_FILES && (flags & O_CREAT))
+   {
+       create_file();
+       open_file();
+   } else return -ENOENT;
+   *
+   * De mentres no ho farem..
+   */
   if (file_entry == MAX_FILES) return -ENOENT;
   
   file = directori[file_entry];
   
   //Comprovem que tenim permis d'acces
-  if (flags != file->mode_acces_valid) //HI HA QUE MILLORAR ASO
-    return -EPERM;
+  if (file->mode_acces_valid != O_RDWR && flags != file->mode_acces_valid)
+      return -EPERM;
 
   //Nova entrada a la TFO i punter al canal
-  ---TODO
+  taula_fitxers_oberts[tfo_entry]->refs = 1;
+  taula_fitxers_oberts[tfo_entry]->mode_acces = flags;
+  taula_fitxers_oberts[tfo_entry]->lseek = 0;
+  taula_fitxers_oberts[tfo_entry]->opened_file = file;
+  proces->taula_canals[fd] = taula_fitxers_oberts[tfo_entry];
 
-  return -1;
+  return fd;
 }
+/*
+inline int create_file(const char *path)
+{
+  struct file new_file;
+  new_file.nom = (char) path;
+  new_file.mode_acces_valid = O_RDWR; //default per fitxers
+  new_file.operations->
+  new_file.first_block = 
+  new_file.size =
+  new_file.n_blocs =
+}
+*/
 
 int sys_close(int fd)
 {
   return -1;
 }
 
-int dup(int fd)
+int sys_dup(int fd)
 {
-  return -1;
+  int new_fd;
+  struct task_struct * proces = current();
+
+  if (proces->taula_canals[fd] == NULL)
+    return -EBADR;
+  
+  for (new_fd = 0; new_fd < NUM_CANALS && (int) proces->taula_canals[new_fd] != NULL; new_fd++)
+    if (new_fd == NUM_CANALS) return -EMFILE;
+ 
+  proces->taula_canals[new_fd] = proces->taula_canals[fd];
+  proces->taula_canals[new_fd]->refs++;
+
+ return 0;
 }
 
 int

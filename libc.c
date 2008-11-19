@@ -45,35 +45,6 @@ getpid (void)
 }
 
 
-
-
-
-/* FORK
-
-RETURN VALUES
-
-     Upon successful completion, fork() returns a value of 0 to the child
-     process and returns the process ID of the child process to the parent
-     process.  Otherwise, a value of -1 is returned to the parent process, no
-     child process is created, and the global variable errno is set to indi-
-     cate the error.
-
-ERRORS
-
-     Fork() will fail and no child process will be created if:
-
-     [EAGAIN]           The system-imposed limit on the total number of pro-
-                        cesses under execution would be exceeded.  This limit
-                        is configuration-dependent.
-
-     [EAGAIN]           The system-imposed limit MAXUPRC (<sys/param.h>) on
-                        the total number of processes under execution by a
-                        single user would be exceeded.
-
-     [ENOMEM]           There is insufficient swap space for the new process.
-
-*/
-
 int
 fork (void)
 {
@@ -116,6 +87,37 @@ nice (int quantum)
   return check_errno (val);
 }
 
+int
+open (const char * path, int flags)
+{
+  int res = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl 12(%%ebp),%%ecx\n"
+			"movl $5,%%eax\n" "int $0x80\n"
+			"movl %%eax, %0\n":"=g" (res)
+			::"%ebx");
+  return check_errno (res);
+}
+
+int
+close (int fd)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $6,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
+
+int
+dup (int fd)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $41,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
 
 int
 sem_init (int n_sem, unsigned int value)

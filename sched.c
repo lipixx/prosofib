@@ -31,9 +31,8 @@ init_sched ()
 void
 init_task0 (int first_ph)
 {
-  struct * fitxers_oberts null_device;
   int i = 0;
-  
+
   task[0].task.pid = pid++;
   task[0].task.quantum = 10;
   task[0].task.tics_cpu = 0;
@@ -42,17 +41,17 @@ init_task0 (int first_ph)
     task[0].task.pagines_fisiques[i] = first_ph + NUM_PAG_CODE + i;
 
   //Init de la Taula de Canals
-  null_device = (struct * fitxers_oberts) NULL;
   
   for (i=3; i<NUM_CANALS; i++)
     {
-      task[0].task.taula_canals[i] = device;
+      task[0].task.taula_canals[i] = (struct fitxers_oberts *) NULL; 
     }
 
   //Init de stdin, stdout, stderr (com fer un open)
   //stdin = 0, stdout = 1, stderr = 2
   //directori[0] = keyboard, directori[1] = console
   //Fem que stderr vaigi a console.
+
   taula_fitxers_oberts[0]->refs = 1;
   taula_fitxers_oberts[0]->mode_acces = O_RDONLY;
   taula_fitxers_oberts[0]->lseek = 0;
@@ -62,10 +61,10 @@ init_task0 (int first_ph)
   taula_fitxers_oberts[1]->mode_acces = O_WRONLY;
   taula_fitxers_oberts[1]->lseek = 0;
   taula_fitxers_oberts[1]->opened_file = directori[1];
-  
+
   task[0].task.taula_canals[0] = taula_fitxers_oberts[0];
   task[0].task.taula_canals[1] = taula_fitxers_oberts[1];
-  task[0].task.taula_canals[2] = taula_fitxers_oberts[0];
+  task[0].task.taula_canals[2] = taula_fitxers_oberts[1];
   //Fi init de la Taula de Canals
 
   list_add (&(task[0].task.run_list), &runqueue);

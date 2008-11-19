@@ -8,7 +8,7 @@
 #include <io.h>
 #include <entry.h>
 #include <sched.h>
-
+#include <utils.h>
 
 Gate idt[IDT_ENTRIES];
 Register idtR;
@@ -347,26 +347,6 @@ clock_routine ()
     }
 }
 
-void
-itoa (int n, char *buffer)
-{
-  int ndigits = n;
-  int i = 0;
-
-  while (ndigits > 0)
-    {
-      i++;
-      ndigits /= 10;
-    }
-
-  while (i > 0)
-    {
-      buffer[i - 1] = (n % 10) + '0';
-      n /= 10;
-      i--;
-    }
-
-}
 
 void
 keyboard_routine ()
