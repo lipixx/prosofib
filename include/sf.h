@@ -46,6 +46,7 @@ struct file_operations{
   int (*sys_write_dev)(int, char*, int);
 };
 
+
 //Tenim un directori de files.
 //Si mode_acces_valid = -1, file no es valid.
 struct file{
@@ -64,7 +65,7 @@ struct fitxers_oberts {
   int mode_acces;
   int lseek;
   struct file * opened_file;
-} taula_fitxers_oberts[NUM_CANALS*NR_TASKS];
+} taula_fitxers_oberts[MAX_OPEN_FILES];
 
 
 #endif /* __SF_H__ */

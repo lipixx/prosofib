@@ -23,7 +23,7 @@ sys_write (int fd, char *buffer, int size)
 
   current_task = current();
 
-  if (fd < 0 || fd > NUM_CANALS || current_task->taula_canals[fd] == NULL)
+  if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
     return -EBADR;
   if (size < 0)
     return -EINVAL;
@@ -31,12 +31,6 @@ sys_write (int fd, char *buffer, int size)
     return -EFBIG;
 
   fitxer_obert = (current_task->taula_canals[fd]);
-  
-  //La seguent comprovacio pot ser redundant si tot es fa
-  //correctament a l'open, close, exit, etc. i no queda cap
-  //canal invalid ni cap fitxer_obert invalid.
-  if (fitxer_obert->mode_acces == -1)
-    return -EINVAL;
 
   if (fitxer_obert->mode_acces == O_RDONLY)
     return -EPERM;
@@ -73,7 +67,7 @@ int sys_read(int fd, char *buffer, int size)
 
   current_task = current();
 
-  if (fd < 0 || fd > NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
+  if (fd < 0 || fd >= NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
     return -EBADR;
 
   if (size < 0)
@@ -83,12 +77,6 @@ int sys_read(int fd, char *buffer, int size)
     return -EFBIG;
 
   fitxer_obert = (current_task->taula_canals[fd]);
-  
-  //La seguent comprovacio pot ser redundant si tot es fa
-  //correctament a l'open, close, exit, etc. i no queda cap
-  //canal invalid ni cap fitxer_obert invalid.
-  if (fitxer_obert->mode_acces == -1)
-    return -EINVAL;
 
   if (fitxer_obert->mode_acces == O_WRONLY)
     return -EPERM;
@@ -169,7 +157,7 @@ int sys_open(const char *path, int flags)
   taula_fitxers_oberts[tfo_entry].refs = 1;
   taula_fitxers_oberts[tfo_entry].mode_acces = flags;
   taula_fitxers_oberts[tfo_entry].lseek = 0;
-  taula_fitxers_oberts[tfo_entry].opened_file = &file;
+  taula_fitxers_oberts[tfo_entry].opened_file = file;
   file->n_refs++;
 
   proces->taula_canals[fd] = &taula_fitxers_oberts[tfo_entry];
@@ -191,7 +179,23 @@ inline int create_file(const char *path)
 
 int sys_close(int fd)
 {
-  return -1;
+ struct task_struct * current_task;
+ 
+ current_task = current();
+ 
+ if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
+   return -EBADR;
+  
+ //Close dependent
+ if (current_task->taula_canals[fd]->opened_file->operations->sys_close_dev != NULL)
+   (current_task->taula_canals[fd]->opened_file->operations->sys_close_dev)(fd);
+ 
+ //Close generic
+ current_task->taula_canals[fd]->refs--;
+ current_task->taula_canals[fd]->opened_file->n_refs--;
+ current_task->taula_canals[fd] = NULL;
+ 
+ return 0;
 }
 
 int sys_dup(int fd)
@@ -202,12 +206,13 @@ int sys_dup(int fd)
   if (proces->taula_canals[fd] == NULL)
     return -EBADR;
   
-  for (new_fd = 0; new_fd < NUM_CANALS && (int) proces->taula_canals[new_fd] != NULL; new_fd++)
+  for (new_fd = 0; new_fd < NUM_CANALS && proces->taula_canals[new_fd] != NULL; new_fd++)
     if (new_fd == NUM_CANALS) return -EMFILE;
  
   proces->taula_canals[new_fd] = proces->taula_canals[fd];
   proces->taula_canals[new_fd]->refs++;
   proces->taula_canals[new_fd]->opened_file->n_refs++;
+
  return 0;
 }
 
@@ -276,7 +281,7 @@ sys_fork ()
 			   (PAG_LOG_INIT_DATA_P0 + NUM_PAG_DATA + i)),
 		 PAGE_SIZE);
 
-      /* Guardar la informació sobre els nous marcs de pagines al task_struct del fill */
+      /* Guardar la informacio sobre els nous marcs de pagines al task_struct del fill */
       task[fill].task.pagines_fisiques[i] = frames[i];
 
       /*Alliberem les pagines fisiques temporals */
@@ -297,6 +302,16 @@ sys_fork ()
   task[fill].task.pid = pid++;
   task[fill].task.quantum = current()->quantum;	/* Tots els processos tindran el mateix quantum */
   task[fill].task.tics_cpu = 0;
+  
+  /* Incrementem referencies de la TFO i dels Files */
+  for (i = 0; i<NUM_CANALS; i++)
+    {
+      if (task[fill].task.taula_canals[i] != NULL)
+	{
+	  task[fill].task.taula_canals[i]->refs++;
+	  task[fill].task.taula_canals[i]->opened_file->n_refs++;
+	}
+    }
 
   /* Inserir el nou proces a la llista de preparats: runqueue */
   list_add_tail (&(task[fill].task.run_list), &runqueue);
@@ -323,6 +338,10 @@ sys_exit ()
 
       proces_actual->pid = -1;	/* Marcam la posicio del vector task com a lliure */
 
+      /* Alliberem taula de canals */
+      for (i = 0; i<NUM_CANALS; i++)
+	sys_close(i);
+      
       list_del (&proces_actual->run_list);	/* Eliminem el proces de la runqueue */
 
       for (i = 0; i < NUM_PAG_DATA; i++)	/* Alliberam les pagines fisiques */
