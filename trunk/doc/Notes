@@ -1,5 +1,3 @@
-#DEFINE PURQUERIA
-
 Data->Memory-> Examine 270 decimal words from 0x1e000
 +breakpoint a task_switch
 
@@ -45,70 +43,6 @@ Felip: 256 == BLOCK_SIZE
   sys_fork --> controlar nrefs++ i tota la pesca
   
 
-int des_gayatitzar(persona felip)
-{
-/*Com que felip es massa GAY, l'hem de desgeyatitzar*/
-struct persona desgay = felip*0;
-/**/
-return no-gay;
-a
-a
-a
-a
-a
-a
-a
-a
-a
-a
-a
-a
-a
-}
-
-int hola(){
-vañe
-vañe
-vaca
-ca 
-mosh
-int a=0;
-soc en josé.
-patates
-frites
-amb
-k
-e
-t
-c
-h
-u
-p
-h
-
-a
-r
-d
-c
-
-
-ro
-
-sosld
-}
-
-
-
-
-
- {Estic modificant sa funsio que hi ha davall tu, berae de cans
- petate frite, pis pas pis pas
- borabora
- lala
- pont aeri
- hardcore hasta morir rason de vivir.
- VARIABLE PITOTE = CERT;
- }
   IMPROVEMENTS: soc super divertit i soc en jusep i soc gey.!!(func, param)
 
    - Posar una variable que digui el nº de fitxers oberts, per no haver
