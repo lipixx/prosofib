@@ -34,6 +34,10 @@ void init_directori()
   for (i=2; i<MAX_FILES; i++)
     {
       directori[i].n_refs = -1;
+      directori[i].operations->sys_open_dev = NULL;
+      directori[i].operations->sys_close_dev = NULL;
+      directori[i].operations->sys_read_dev = NULL;
+      directori[i].operations->sys_write_dev = NULL;
     }
 
   directori[0].nom = "keyboard";
