@@ -1,5 +1,3 @@
-EN JOSEP ES GAYYYYYYYYYYYYYYY JAJAJA
-
 Data->Memory-> Examine 270 decimal words from 0x1e000
 +breakpoint a task_switch
 
@@ -60,4 +58,4 @@ struct fitxers_oberts * taula_fitxers_oberts[N]?
 
 
 
-avam si pots veure aixo
+si que puc veure eso avam si pots veure aixo
