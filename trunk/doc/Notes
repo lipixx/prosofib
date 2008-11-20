@@ -49,6 +49,7 @@ Felip: 256 == BLOCK_SIZE
 
 
 
+
   IMPROVEMENTS: soc super divertit i soc en jusep i soc gey.!!(func, param)
 
    - Posar una variable que digui el nº de fitxers oberts, per no haver
