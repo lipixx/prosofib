@@ -49,6 +49,8 @@ int des_gayatitzar(persona felip)
 {
 /*Com que felip es massa GAY, l'hem de desgeyatitzar*/
 struct persona desgay = felip*0;
+/**/
+return no-gay;
 }
 
 int hola(){
