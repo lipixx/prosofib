@@ -13,7 +13,7 @@ Felip: 256 == BLOCK_SIZE
   sys_open_file
   sys_close_file
   sys_read_file
-  sys_close
+  sys_close --- FET!
   sys_write_console --- FET!
 
 - Felip: 
