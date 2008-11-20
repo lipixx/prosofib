@@ -37,7 +37,7 @@ void init_directori()
     }
 
   directori[0].nom = "keyboard";
-  directori[0].mode_acces_valid = O_WRONLY;
+  directori[0].mode_acces_valid = O_RDONLY;
   directori[0].operations->sys_open_dev = NULL;
   directori[0].operations->sys_close_dev = NULL;
   directori[0].operations->sys_read_dev = sys_read_keyboard;

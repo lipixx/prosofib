@@ -7,8 +7,6 @@ void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  int i;
-
   printf ("\nBenvinguts a ZeOS!");
   printf ("\nBENVINGUTS 2!");
   //provar_fork (9); //No sobrepassar NR_TASKS
