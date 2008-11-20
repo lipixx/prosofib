@@ -8,7 +8,15 @@ int
 sys_write_console (int fd, char *buffer, int size)
 {
   int i;
-  //josep, pensa a sumar vufer+elesic i a cunpruvar es moda d'atses balit.
+  struct task_struct * proces_actual = current();
+
+  /* Comprovam que tenim els permisos necessaris: O_WRONLY */
+  if( proces_actual->taula_canals[fd]->mode_acces!=O_WRONLY)
+    return -EPERM;
+
+  /* Incrementam la posicio de lseek a la posicio del buffer */
+  buffer+=proces_actual->taula_canals[fd]->lseek;
+
   for (i = 0; i < size; i++)
     printc (buffer[i]);
   return i;
@@ -42,5 +50,15 @@ int sys_close_file(int fd){
 }
 
 int sys_read_file(int fd, char* buffer, int size){
+  return 0;
+}
+
+int sys_close_console(int fd)
+{
+  return 0;
+}
+
+int sys_close_keyboard(int fd)
+{
   return 0;
 }
