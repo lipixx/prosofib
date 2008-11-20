@@ -43,7 +43,7 @@ Felip: 256 == BLOCK_SIZE
   sys_fork --> controlar nrefs++ i tota la pesca
   
 
-  IMPROVEMENTS: soc super divertit i soc en jusep i soc gey.!!(func, param)
+  IMPROVEMENTS:
 
    - Posar una variable que digui el nº de fitxers oberts, per no haver
    de recorrer cada vegada (p.ex a s'open), sa taula_fitxers_oberts
