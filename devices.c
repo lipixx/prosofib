@@ -35,6 +35,8 @@ int sys_open_file(const char *path, int mode_acces){
   int i;
   for(i=0; i<MAX_FILES && path!=directori[i]; i++);
   */
+
+
   return 0;
 }
 
