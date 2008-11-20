@@ -14,7 +14,7 @@ Felip: 256 == BLOCK_SIZE
   sys_close_file
   sys_read_file
   sys_close
-  sys_write_console : s'ha d'adaptar
+  sys_write_console --- FET!
  HOLA JOSEP COM ESTAS
 - Felip: 
   *get_task_union, funciona??->eliminar comentaris o optimitzar
