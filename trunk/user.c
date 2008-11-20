@@ -1,14 +1,26 @@
 #include <libc.h>
 #include <stdio.h>
 #include <jocs.h>
-
+#include <sf.h>
 
 void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  printf ("\nBenvinguts a ZeOS!");
-  printf ("\nBENVINGUTS 2!");
+  printf ("\nBenvinguts a ZeOS!");  
+  
+  int dupx;
+  int forky;
+  int fd;
+  
+  close(0);
+  // close(1);
+  //  close(2);
+  
+  open("console",O_WRONLY);
+  perror();
+  
+  
   //provar_fork (9); //No sobrepassar NR_TASKS
 
   //provar_get_stats ();
@@ -23,7 +35,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  runjp (); //Hi ha que posar NUM_PAG_DATA = 8
+  //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
 
   //run2_jp();
 

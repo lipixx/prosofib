@@ -24,7 +24,7 @@
 #define BLOCK_SIZE 256
 #define MAX_FILES 10
 #define MAX_NAME_LENGTH 10
-#define MAX_OPEN_FILES NUM_CANALS*NR_TASKS
+#define MAX_OPEN_FILES 15 //NUM_CANALS*NR_TASKS
 
 void init_filesystem();
 

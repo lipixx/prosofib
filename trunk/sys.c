@@ -128,11 +128,12 @@ int sys_open(const char *path, int flags)
     return -ENFILE;
 
   //Comprovem que ens queden canals
-  for (fd = 0; fd < NUM_CANALS && (int) proces->taula_canals[fd] != NULL; fd++)
+  for (fd = 0; fd < NUM_CANALS && proces->taula_canals[fd] != NULL; fd++);
     if (fd == NUM_CANALS) return -EMFILE;
   
   //Obtenim el fitxer del directori
-  for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry].nom,path)); file_entry++);
+  for (file_entry = 0; file_entry < MAX_FILES &&
+	 (strcmp(directori[file_entry].nom,path)); file_entry++);
   if (file_entry == MAX_FILES) return -ENOENT;
 
   file = &directori[file_entry];
@@ -206,14 +207,14 @@ int sys_dup(int fd)
   if (proces->taula_canals[fd] == NULL)
     return -EBADR;
   
-  for (new_fd = 0; new_fd < NUM_CANALS && proces->taula_canals[new_fd] != NULL; new_fd++)
+  for (new_fd = 0; new_fd < NUM_CANALS && proces->taula_canals[new_fd] != NULL; new_fd++);
     if (new_fd == NUM_CANALS) return -EMFILE;
  
   proces->taula_canals[new_fd] = proces->taula_canals[fd];
   proces->taula_canals[new_fd]->refs++;
   proces->taula_canals[new_fd]->opened_file->n_refs++;
 
- return 0;
+ return new_fd;
 }
 
 int
