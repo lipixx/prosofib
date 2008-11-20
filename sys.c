@@ -23,15 +23,21 @@ sys_write (int fd, char *buffer, int size)
 
   current_task = current();
 
-  if (fd < 0 || fd > NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
+  if (fd < 0 || fd > NUM_CANALS || current_task->taula_canals[fd] == NULL)
     return -EBADR;
   if (size < 0)
     return -EINVAL;
   if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
     return -EFBIG;
 
-  fitxer_obert = current_task->taula_canals[fd];
+  fitxer_obert = (current_task->taula_canals[fd]);
   
+  //La seguent comprovacio pot ser redundant si tot es fa
+  //correctament a l'open, close, exit, etc. i no queda cap
+  //canal invalid ni cap fitxer_obert invalid.
+  if (fitxer_obert->mode_acces == -1)
+    return -EINVAL;
+
   if (fitxer_obert->mode_acces == O_RDONLY)
     return -EPERM;
   
@@ -46,7 +52,7 @@ sys_write (int fd, char *buffer, int size)
 
       if (copy_from_user (buffer, buff_aux, writeSize)!=0) return -EFAULT;
 
-      return_write = (*(fitxer_obert->opened_file->operations->sys_write_dev))(fd,buff_aux,writeSize);
+      return_write = (*((fitxer_obert->opened_file)->operations->sys_write_dev))(fd,buff_aux,writeSize);
       if (return_write == -1 || return_write != writeSize) return -EIO;
 
       ncWritten += return_write;
@@ -76,8 +82,14 @@ int sys_read(int fd, char *buffer, int size)
   if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
     return -EFBIG;
 
-  fitxer_obert = current_task->taula_canals[fd];
+  fitxer_obert = (current_task->taula_canals[fd]);
   
+  //La seguent comprovacio pot ser redundant si tot es fa
+  //correctament a l'open, close, exit, etc. i no queda cap
+  //canal invalid ni cap fitxer_obert invalid.
+  if (fitxer_obert->mode_acces == -1)
+    return -EINVAL;
+
   if (fitxer_obert->mode_acces == O_WRONLY)
     return -EPERM;
 
@@ -122,9 +134,9 @@ int sys_open(const char *path, int flags)
   struct file * file;
   
   //Comprovem que podem obrir mes fitxers
-  for (tfo_entry = 0; tfo_entry < NUM_CANALS*NR_TASKS &&
-	 taula_fitxers_oberts[tfo_entry]->refs != 0; tfo_entry++);
-  if (tfo_entry == NUM_CANALS*NR_TASKS)
+  for (tfo_entry = 0; tfo_entry < MAX_OPEN_FILES &&
+	 taula_fitxers_oberts[tfo_entry].refs != 0; tfo_entry++);
+  if (tfo_entry == MAX_OPEN_FILES)
     return -ENFILE;
 
   //Comprovem que ens queden canals
@@ -132,10 +144,10 @@ int sys_open(const char *path, int flags)
     if (fd == NUM_CANALS) return -EMFILE;
   
   //Obtenim el fitxer del directori
-  for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry]->nom,path)); file_entry++);
+  for (file_entry = 0; file_entry < MAX_FILES && !(strcmp(directori[file_entry].nom,path)); file_entry++);
   if (file_entry == MAX_FILES) return -ENOENT;
 
-  file = directori[file_entry];
+  file = &directori[file_entry];
 
   /* Haurem de fer que si ens pasen O_CREAT, crear el fitxer:
    *
@@ -154,11 +166,13 @@ int sys_open(const char *path, int flags)
       return -EPERM;
 
   //Nova entrada a la TFO i punter al canal
-  taula_fitxers_oberts[tfo_entry]->refs = 1;
-  taula_fitxers_oberts[tfo_entry]->mode_acces = flags;
-  taula_fitxers_oberts[tfo_entry]->lseek = 0;
-  taula_fitxers_oberts[tfo_entry]->opened_file = file;
-  proces->taula_canals[fd] = taula_fitxers_oberts[tfo_entry];
+  taula_fitxers_oberts[tfo_entry].refs = 1;
+  taula_fitxers_oberts[tfo_entry].mode_acces = flags;
+  taula_fitxers_oberts[tfo_entry].lseek = 0;
+  taula_fitxers_oberts[tfo_entry].opened_file = &file;
+  file->n_refs++;
+
+  proces->taula_canals[fd] = &taula_fitxers_oberts[tfo_entry];
 
   return fd;
 }
@@ -193,7 +207,7 @@ int sys_dup(int fd)
  
   proces->taula_canals[new_fd] = proces->taula_canals[fd];
   proces->taula_canals[new_fd]->refs++;
-
+  proces->taula_canals[new_fd]->opened_file->n_refs++;
  return 0;
 }
 
