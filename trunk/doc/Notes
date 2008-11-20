@@ -15,7 +15,7 @@ Felip: 256 == BLOCK_SIZE
   sys_read_file
   sys_close
   sys_write_console : s'ha d'adaptar
-
+ HOLA JOSEP COM ESTAS
 - Felip: 
   *get_task_union, funciona??->eliminar comentaris o optimitzar
   sys_read --> sys.c  ---- FET!
@@ -24,7 +24,6 @@ Felip: 256 == BLOCK_SIZE
   sys_dup --> sys.c ---- FET!
   init sf (sf.c) -- FET
        -directori, amb file.mode_acces_valid = -1
-
   init taula_canals task_struct (sched.c)  -- FET
        -stdin
        -stdout
