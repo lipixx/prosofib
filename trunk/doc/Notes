@@ -44,15 +44,16 @@ Felip: 256 == BLOCK_SIZE
   sys_exit --> controlar nrefs-- i tota le pesca
   sys_fork --> controlar nrefs++ i tota la pesca
   
+
 int des_gayatitzar(persona felip)
 {
 /*Com que felip es massa GAY, l'hem de desgeyatitzar*/
 struct persona desgay = felip*0;
 }
 
- 
-
-
+int hola(){
+int a=0;
+}
 
 
 
