@@ -1,3 +1,5 @@
+#DEFINE PURQUERIA
+
 Data->Memory-> Examine 270 decimal words from 0x1e000
 +breakpoint a task_switch
 
@@ -50,6 +52,13 @@ Felip: 256 == BLOCK_SIZE
 
 
 
+ {Estic modificant sa funsio que hi ha davall tu, berae de cans
+ petate frite, pis pas pis pas
+ borabora
+ lala
+ pont aeri
+ hardcore hasta morir rason de vivir.
+ }
   IMPROVEMENTS: soc super divertit i soc en jusep i soc gey.!!(func, param)
 
    - Posar una variable que digui el nº de fitxers oberts, per no haver
