@@ -43,7 +43,7 @@ init_task0 (int first_ph)
   //Init de la Taula de Canals
   for (i=3; i<NUM_CANALS; i++)
     {
-      task[0].task.taula_canals[i] = (struct fitxers_oberts *) NULL; 
+      task[0].task.taula_canals[i] = NULL; 
     }
 
   //Init de stdin, stdout, stderr (com fer un open)
@@ -51,19 +51,21 @@ init_task0 (int first_ph)
   //directori[0] = keyboard, directori[1] = console
   //Fem que stderr vaigi a console.
 
-  taula_fitxers_oberts[0]->refs = 1;
-  taula_fitxers_oberts[0]->mode_acces = O_RDONLY;
-  taula_fitxers_oberts[0]->lseek = 0;
-  taula_fitxers_oberts[0]->opened_file = directori[0];
+  taula_fitxers_oberts[0].refs = 1;
+  taula_fitxers_oberts[0].mode_acces = O_RDONLY;
+  taula_fitxers_oberts[0].lseek = 0;
+  taula_fitxers_oberts[0].opened_file = &directori[0];
+  taula_fitxers_oberts[0].opened_file->n_refs = 1;
 
-  taula_fitxers_oberts[1]->refs = 1;
-  taula_fitxers_oberts[1]->mode_acces = O_WRONLY;
-  taula_fitxers_oberts[1]->lseek = 0;
-  taula_fitxers_oberts[1]->opened_file = directori[1];
+  taula_fitxers_oberts[1].refs = 1;
+  taula_fitxers_oberts[1].mode_acces = O_WRONLY;
+  taula_fitxers_oberts[1].lseek = 0;
+  taula_fitxers_oberts[1].opened_file = &directori[1];
+  taula_fitxers_oberts[1].opened_file->n_refs = 1;
 
-  task[0].task.taula_canals[0] = taula_fitxers_oberts[0];
-  task[0].task.taula_canals[1] = taula_fitxers_oberts[1];
-  task[0].task.taula_canals[2] = taula_fitxers_oberts[1];
+  task[0].task.taula_canals[0] = &taula_fitxers_oberts[0];
+  task[0].task.taula_canals[1] = &taula_fitxers_oberts[1];
+  task[0].task.taula_canals[2] = &taula_fitxers_oberts[1];
   //Fi init de la Taula de Canals
 
   list_add (&(task[0].task.run_list), &runqueue);
@@ -88,11 +90,14 @@ get_task_union(struct task_struct * n_task)
 struct task_struct *
 current ()
 {
-  struct task_struct *p;
+  struct task_struct * p;
 
   __asm__ __volatile__ ("movl $0xfffff000, %%ecx\n"
 			"andl %%esp, %%ecx\n"
-			"movl %%ecx, %0\n":"=g" (p)::"%ecx");
+			"movl %%ecx, %0\n"
+			:"=g" (p)
+			:
+			:"%ecx");
   return p;
 }
 

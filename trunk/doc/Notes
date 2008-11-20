@@ -24,6 +24,7 @@ Felip: 256 == BLOCK_SIZE
   sys_dup --> sys.c ---- FET!
   init sf (sf.c) -- FET
        -directori, amb file.mode_acces_valid = -1
+
   init taula_canals task_struct (sched.c)  -- FET
        -stdin
        -stdout
