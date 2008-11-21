@@ -28,18 +28,22 @@ sys_write (int fd, char *buffer, int size)
   int return_write, ncWritten, writeSize;
 
   current_task = current();
-
-  if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
-    return -EBADR;
+  fitxer_obert = (current_task->taula_canals[fd]);
+  
+  if (fd < 0 || fd >= NUM_CANALS || fitxer_obert->mode_acces == O_RDONLY || current_task->taula_canals[fd] == NULL)
+    return -EBADF;
+  
+  //  if(current_task->taula_canals[fd] == NULL)
+  // return -EINVAL;
   if (size < 0)
     return -EINVAL;
-  if (size > (NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE)
+  if (size > ((NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE))
     return -EFBIG;
-
-  fitxer_obert = (current_task->taula_canals[fd]);
-
-  if (fitxer_obert->mode_acces == O_RDONLY)
-    return -EPERM;
+  
+  //  fitxer_obert = (current_task->taula_canals[fd]);
+  
+  // if (fitxer_obert->mode_acces == O_RDONLY)
+  // return -EPERM;
   
   ncWritten = 0;
   writeSize = 0;
