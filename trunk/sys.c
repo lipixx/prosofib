@@ -14,6 +14,12 @@
 #include <sf.h>
 
 int
+sys_ni_syscall()
+{
+  return -ENOSYS;
+}
+
+int
 sys_write (int fd, char *buffer, int size)
 {
   struct task_struct * current_task;

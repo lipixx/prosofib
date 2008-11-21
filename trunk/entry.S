@@ -227,13 +227,12 @@ ENTRY(system_call_handler)
 	iret
 
 out_of_bounds:
-	movl $-1,24(%esp)
 	movl $-ENOSYS,24(%esp)
 	RESTORE_ALL
 	iret
 	
-ENTRY(sys_ni_syscall)
-	jmp out_of_bounds
+//ENTRY(sys_ni_syscall)
+//	jmp out_of_bounds
 	
 ENTRY(sys_call_table)
 	.long sys_ni_syscall	/* @ system call #0 */
