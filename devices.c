@@ -8,18 +8,17 @@ int
 sys_write_console (int fd, char *buffer, int size)
 {
   int i;
-  struct task_struct * proces_actual = current();
-
-  /* Comprovam que tenim els permisos necessaris: O_WRONLY */
-  if( proces_actual->taula_canals[fd]->mode_acces!=O_WRONLY)
-    return -EPERM;
-
-  /* Incrementam la posicio de lseek a la posicio del buffer */
-  buffer+=proces_actual->taula_canals[fd]->lseek;
-
   for (i = 0; i < size; i++)
     printc (buffer[i]);
   return i;
+}
+
+int
+sys_write_file (int fd, char * buffer, int size)
+{
+  //escriure al fitxer
+  
+  /* Incrementam la posicio de lseek per cada caracter escrit*/
 }
 
 int
