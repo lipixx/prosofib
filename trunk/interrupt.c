@@ -297,7 +297,7 @@ clock_routine ()
    *    0:        227   IO-APIC-edge      timer
    *
    */
-
+  temps++;
   vida--;
   old_task = current ();
   old_task->tics_cpu++;
@@ -317,10 +317,10 @@ clock_routine ()
 	}
     }
   
-  if (temps % 18 == 0)
+  if (temps % 650 == 0) //18 == 0)
     {
-      segons = temps / 18;
-      minuts = segons / 60;
+      segons = temps/650; // / 18;
+      minuts = segons/60; // / 60;
       segons = segons % 60;
 
       /* Si fa mes de 100 minuts, reiniciarem el comptador de temps.
@@ -346,7 +346,6 @@ clock_routine ()
       printk_xy (70, 10, hora);
     }
 }
-
 
 void
 keyboard_routine ()
