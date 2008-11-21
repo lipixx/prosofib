@@ -19,6 +19,7 @@ sys_write_file (int fd, char * buffer, int size)
   //escriure al fitxer
   
   /* Incrementam la posicio de lseek per cada caracter escrit*/
+  return 0;
 }
 
 int

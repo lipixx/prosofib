@@ -4,6 +4,66 @@
 #include <list.h>
 #include <sched.h>
 #include <interrupt.h>
+#include <sf.h>
+
+void
+provar_open()
+{
+  int i,k;
+
+  k = fork();
+  if (k == 0)
+    {
+      printf("\nProvem canals fill:");
+      open("keyboard",O_RDONLY);
+      open("keyboard",O_WRONLY);
+      perror();
+      open("console",O_RDWR);
+      perror();
+      
+      for (i=0;i<NUM_CANALS;i++)
+	{
+	  open("keyboard",O_RDONLY);
+	}
+      perror();
+    }
+  else
+    {
+      printf("\nProvem canals pare:");
+      open("keyboard",O_RDONLY);
+      open("keyboard",O_WRONLY);
+      perror();
+      open("console",O_RDWR);
+      perror();
+      
+      for (i=0;i<NUM_CANALS;i++)
+	{
+	  open("keyboard",O_RDONLY);
+	}
+      perror();
+    }
+}
+
+void provar_dup()
+{
+  //TODO
+}
+
+void provar_close()
+{
+  //TODO
+}
+
+void provar_write_disp()
+{
+  //TODO
+}
+
+void provar_read_disp()
+{
+  //TODO
+}
+
 
 void
 provar_fork (int num_fills)
