@@ -135,7 +135,7 @@ int sys_open(const char *path, int flags)
     if (fd == NUM_CANALS) return -EMFILE;
   
   //Obtenim el fitxer del directori
-  for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
+    for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
   
   if (file_entry == MAX_FILES)
     if (flags < O_CREAT) return -ENOENT;

@@ -30,19 +30,25 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
-  //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
+  //  runjp (); //Hi ha que posar NUM_PAG_DATA = 8
 
   // int fd = open("patata",O_WRONLY|O_CREAT);
 
   //run2_jp();
-  struct dir_ent buffer;
+ struct dir_ent buffer;
   int fd;
-  for (fd = 0; fd < 10; fd++)
-    { 
+  
+  open ("patata",O_RDWR|O_CREAT);
+  open ("nonara",O_RDWR);
+
+  for (fd = 0; fd < MAX_FILES; fd++)
+    {
       readdir(&buffer,fd);
+      printf("\nnom: ");
       printf(buffer.nom);
-    }
-  printint(buffer.size);
+      printf("\nsize: ");
+      printint(buffer.size);
+      }
   while (1);
   return 0;
 }

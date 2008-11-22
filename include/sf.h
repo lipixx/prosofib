@@ -51,8 +51,7 @@ struct file_operations{
   int (*sys_close_dev)(int);
   int (*sys_read_dev)(int, char*, int);
   int (*sys_write_dev)(int, char*, int);
-};
-
+} ops[MAX_FILES];
 
 //Tenim un directori de files.
 //Si n_refs = -1, file no es valid.
