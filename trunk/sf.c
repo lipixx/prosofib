@@ -92,18 +92,19 @@ int freed(int ibloc0)
 struct file * create_file(const char * path)
 {
   int i, size, fblock;
+
   for (i=0; directori[i].n_refs != -1 && i < MAX_FILES;i++);
   if (i == MAX_FILES) return (struct file *) -ENFILE;
   
-  for (size=0; *path != 0; ++path, ++size);
+  for (size=0; path[size] != '\0'; ++size);
   if (size >= MAX_NAME_LENGTH) return (struct file *) -EINVAL;
   
   fblock = balloc(1);
   if (fblock < 0)
     return (struct file *) -EIO;
 
-  copy_from_user((char *)path,directori[i].nom,size);
-
+  //copy_from_user((char *)path,directori[i].nom,size);
+  directori[i].nom = (char *) path;
   directori[i].mode_acces_valid = O_RDWR; //default per fitxers
   directori[i].operations->sys_open_dev = sys_open_file;
   directori[i].operations->sys_close_dev = sys_close_file;
@@ -112,7 +113,7 @@ struct file * create_file(const char * path)
   directori[i].first_block = fblock;
   directori[i].size = 0;
   directori[i].n_blocs = 1;
-  
+  directori[i].n_refs = 0;
   return &directori[i];
 }
 
@@ -141,21 +142,19 @@ void init_directori()
 {
   int i;
 
-  for (i=2; i<MAX_FILES; i++)
+  for (i=0; i<MAX_FILES; i++)
     {
       directori[i].n_refs = -1;
-      directori[i].operations->sys_open_dev = NULL;
-      directori[i].operations->sys_close_dev = NULL;
-      directori[i].operations->sys_read_dev = NULL;
-      directori[i].operations->sys_write_dev = NULL;
+      ops[i].sys_open_dev = NULL;
+      ops[i].sys_close_dev = NULL;
+      ops[i].sys_read_dev = NULL;
+      ops[i].sys_write_dev = NULL;
+      directori[i].operations = &ops[i];
     }
 
   directori[0].nom = "keyboard";
   directori[0].mode_acces_valid = O_RDONLY;
-  directori[0].operations->sys_open_dev = NULL;
-  directori[0].operations->sys_close_dev = NULL;
   directori[0].operations->sys_read_dev = sys_read_keyboard;
-  directori[0].operations->sys_write_dev = NULL;
   directori[0].first_block = NULL;
   directori[0].size = NULL;
   directori[0].n_blocs = NULL;
@@ -163,9 +162,6 @@ void init_directori()
  
   directori[1].nom = "console";
   directori[1].mode_acces_valid = O_WRONLY;
-  directori[1].operations->sys_open_dev = NULL;
-  directori[1].operations->sys_close_dev = NULL;
-  directori[1].operations->sys_read_dev = NULL;
   directori[1].operations->sys_write_dev = sys_write_console;
   directori[1].first_block = NULL;
   directori[1].size = NULL;
