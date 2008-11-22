@@ -123,7 +123,10 @@ int sys_open(const char *path, int flags)
   int fd,file_entry,tfo_entry;
   struct task_struct * proces = current();
   struct file * file;
-  
+  //////////////ENAMETOOLONG, ENOSPC, ESPIPE, EROFS, EMLINK
+  //////////////////////////
+  ///////////////////////
+  ///////////////////////
   //Comprovem que podem obrir mes fitxers
   for (tfo_entry = 0; tfo_entry < MAX_OPEN_FILES &&
 	 taula_fitxers_oberts[tfo_entry].refs != 0; tfo_entry++);
