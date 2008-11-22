@@ -28,14 +28,12 @@ sys_read_keyboard(int fd, char * buffer, int size)
   return 0;
 }
 
-int sys_open_file(const char *path, int mode_acces){
-  /*
+int sys_open_file(const char *path, int mode_acces)
+{
   if(path<0) return -EINVAL;
 
-  int i;
-  for(i=0; i<MAX_FILES && path!=directori[i]; i++);
-  */
-
+  // int i;
+  //  for(i=0; i<MAX_FILES && path != directori[i]; i++);
 
   return 0;
 }

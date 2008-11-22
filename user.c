@@ -1,4 +1,5 @@
 #include <libc.h>
+#include <types.h>
 #include <stdio.h>
 #include <jocs.h>
 #include <sf.h>
@@ -31,8 +32,17 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
 
-  //run2_jp();
+  // int fd = open("patata",O_WRONLY|O_CREAT);
 
+  //run2_jp();
+  struct dir_ent buffer;
+  int fd;
+  for (fd = 0; fd < 10; fd++)
+    { 
+      readdir(&buffer,fd);
+      printf(buffer.nom);
+    }
+  printint(buffer.size);
   while (1);
   return 0;
 }

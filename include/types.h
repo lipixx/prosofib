@@ -5,6 +5,7 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+
 /** System types definition **/
 /*****************************/
 
@@ -17,6 +18,7 @@ typedef unsigned long DWord;
 #define midByte(address) (Byte)(((address) >> 16) & 0xFF)
 #define highByte(address) (Byte)(((address) >> (16 + 8)) & 0xFF)
 #define high4Bits(limit) (Byte)(((limit) >> 16) & 0x0F)
+
 
 typedef struct			/* Segment Descriptor */
 {

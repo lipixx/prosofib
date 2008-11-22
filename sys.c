@@ -135,27 +135,26 @@ int sys_open(const char *path, int flags)
     if (fd == NUM_CANALS) return -EMFILE;
   
   //Obtenim el fitxer del directori
-  for (file_entry = 0; file_entry < MAX_FILES &&
-	 (strcmp(directori[file_entry].nom,path)); file_entry++);
-  if (file_entry == MAX_FILES) return -ENOENT;
-
-  file = &directori[file_entry];
-
-  /* Haurem de fer que si ens pasen O_CREAT, crear el fitxer:
-   *
-   if (file_entry == MAX_FILES && (flags & O_CREAT))
-   {
-       create_file();
-       open_file();
-   } else return -ENOENT;
-   *
-   * De mentres no ho farem..
-   */
-
+  for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
   
+  if (file_entry == MAX_FILES)
+    if (flags < O_CREAT) return -ENOENT;
+    else
+      {
+	//Crear nou file:
+	file = create_file(path);
+	if (file < 0) return (int) file;
+      }
+  else
+    file = &directori[file_entry];
+  
+  (*(file->operations->sys_open_dev))(path,flags);
+
   //Comprovem que tenim permis d'acces
   if (file->mode_acces_valid != O_RDWR && flags != file->mode_acces_valid)
-      return -EPERM;
+    return -EPERM;
+  
+ 
 
   //Nova entrada a la TFO i punter al canal
   taula_fitxers_oberts[tfo_entry].refs = 1;
@@ -168,18 +167,6 @@ int sys_open(const char *path, int flags)
 
   return fd;
 }
-/*
-inline int create_file(const char *path)
-{
-  struct file new_file;
-  new_file.nom = (char) path;
-  new_file.mode_acces_valid = O_RDWR; //default per fitxers
-  new_file.operations->
-  new_file.first_block = 
-  new_file.size =
-  new_file.n_blocs =
-}
-*/
 
 int sys_close(int fd)
 {
@@ -218,6 +205,25 @@ int sys_dup(int fd)
   proces->taula_canals[new_fd]->opened_file->n_refs++;
 
  return new_fd;
+}
+
+int 
+sys_readdir(struct dir_ent *buffer, int offset)
+{
+  int size = 0;
+  char *s1 = directori[offset].nom;
+ 
+  if (offset < 0 || offset >= MAX_FILES)
+    return -ENOENT;
+  if(directori[offset].n_refs == -1)
+    return -ENOENT;
+  
+  for (; *s1 != 0; ++s1, ++size);
+  copy_to_user(directori[offset].nom,buffer,size);
+
+  buffer->size = directori[offset].size;
+  
+  return 0;
 }
 
 int
