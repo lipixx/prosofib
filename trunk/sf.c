@@ -6,6 +6,116 @@
 #include <types.h>
 #include <sched.h>
 #include <devices.h>
+#include <errno.h>
+#include <utils.h>
+
+/* Retorna el primer bloc lliure de nblocks encadenats
+ * a la fat. -1 si no hi ha prou espai.
+ */
+int balloc (int nblocks)
+{
+  int total, primer, anterior;
+  
+  
+  if (bloc_de_la_llibertat == -1 || nblocks < 1) 
+    return -1;
+  
+  if (fat[bloc_de_la_llibertat] == -1)
+    {
+      if (nblocks == 1)
+	{
+	  anterior = bloc_de_la_llibertat;
+	  bloc_de_la_llibertat = -1;
+	  return anterior;
+	}
+	  return -1;
+    }
+  
+  anterior = bloc_de_la_llibertat;
+  primer = bloc_de_la_llibertat;
+  bloc_de_la_llibertat = fat[bloc_de_la_llibertat];
+  total = 1; 
+
+  while (total != nblocks && fat[bloc_de_la_llibertat] != -1)
+    {
+      anterior = bloc_de_la_llibertat;
+      bloc_de_la_llibertat = fat[bloc_de_la_llibertat];
+      total++;
+    }
+  
+  if (fat[bloc_de_la_llibertat] == -1)
+    {
+      if (nblocks - total == 1)
+	{
+	  anterior = bloc_de_la_llibertat;
+	  bloc_de_la_llibertat = -1;
+	}
+      else
+	{
+	  if (nblocks - total > 1)
+	    {
+	      bloc_de_la_llibertat = primer;
+	      return -1;
+	    }
+	}
+    }
+  
+  fat[anterior] = -1;
+  
+  return primer;
+}
+
+/*
+ * Allibera espai ocupat per un fitxer.
+ * Pre: no s'intenta esborrar espai lliure i ibloc0 es necessariament el primer bloc
+ * d'un fitxer.
+ */
+int freed(int ibloc0)
+{
+  int i;
+
+  if (ibloc0 >= MAX_BLOCKS || ibloc0 < 0 || ibloc0 == bloc_de_la_llibertat)
+    return -1;
+
+  if (bloc_de_la_llibertat == -1)
+    {
+      bloc_de_la_llibertat = ibloc0;
+      return 0;
+    }
+
+  for (i = bloc_de_la_llibertat; fat[i] != -1; i++);
+  fat[i] = ibloc0;
+
+  return 0;
+}
+
+struct file * create_file(const char * path)
+{
+  int i, size, fblock;
+  for (i=0; directori[i].n_refs != -1 && i < MAX_FILES;i++);
+  if (i == MAX_FILES) return (struct file *) -ENFILE;
+  
+  for (size=0; *path != 0; ++path, ++size);
+  if (size >= MAX_NAME_LENGTH) return (struct file *) -EINVAL;
+  
+  fblock = balloc(1);
+  if (fblock < 0)
+    return (struct file *) -EIO;
+
+  copy_from_user((char *)path,directori[i].nom,size);
+
+  directori[i].mode_acces_valid = O_RDWR; //default per fitxers
+  directori[i].operations->sys_open_dev = sys_open_file;
+  directori[i].operations->sys_close_dev = sys_close_file;
+  directori[i].operations->sys_read_dev = sys_read_file;
+  directori[i].operations->sys_write_dev = sys_write_file;
+  directori[i].first_block = fblock;
+  directori[i].size = 0;
+  directori[i].n_blocs = 1;
+  
+  return &directori[i];
+}
+
 
 void init_tfo()
 {

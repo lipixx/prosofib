@@ -27,6 +27,13 @@
 #define MAX_OPEN_FILES 15 //NUM_CANALS*NR_TASKS
 
 void init_filesystem();
+struct file * create_file(const char * path);
+int balloc (int nblocks);
+
+struct dir_ent {
+  char nom[MAX_NAME_LENGTH];
+  short int size;
+};
 
 /* Fat */
 int fat[MAX_BLOCKS];
@@ -48,13 +55,13 @@ struct file_operations{
 
 
 //Tenim un directori de files.
-//Si mode_acces_valid = -1, file no es valid.
+//Si n_refs = -1, file no es valid.
 struct file{
   char * nom;
   int mode_acces_valid;
   struct file_operations * operations;
   int first_block;
-  int size;
+  short int size;
   int n_blocs;
   int n_refs;
 } directori[MAX_FILES];

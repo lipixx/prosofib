@@ -3,6 +3,7 @@
  */
 
 #include <libc.h>
+#include <sf.h>
 
 int errno = 0;
 
@@ -117,6 +118,18 @@ dup (int fd)
 			"movl $41,%%eax\n"
 			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
   return check_errno (val);
+}
+
+int
+readdir (struct dir_ent * buffer, int offset)
+{
+  int res = -1;
+    __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl 12(%%ebp),%%ecx\n"
+			"movl $141,%%eax\n" "int $0x80\n"
+			"movl %%eax, %0\n":"=g" (res)
+			::"%ebx");
+  return check_errno (res);
 }
 
 int
