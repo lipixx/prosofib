@@ -16,6 +16,11 @@
 #define ENFILE          23      /* Too many open files in system */
 #define EMFILE          24      /* Too many open files by the process */
 #define	EFBIG		27	/* File too large */
+#define	ENOSPC		28	/* No space left on device */
+#define	ESPIPE		29	/* Illegal seek */
+#define	EROFS		30	/* Read-only file system */
+#define	EMLINK		31	/* Too many links */
+#define ENAMETOOLONG    36      /* File name too long */
 #define	ENOSYS		38	/* Function not implemented */
 #define	EBADR		53	/* Invalid request descriptor */
 #define	EBADFD		77	/* File descriptor in bad state */

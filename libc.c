@@ -227,6 +227,21 @@ perror ()
     case 27:
       write (1, "EFBIG: File too large \n", 23);
       break;
+    case 28:
+       write (1, "ENOSPC: No space left on device\n",32);
+      break;
+    case 29:
+      write (1, "ESPIPE: Illegal Seek\n", 21);
+      break;
+    case 30:
+      write (1, "EROFS: RO File System\n", 22);
+      break;
+    case 31:
+      write (1, "EMLINK: Too many links\n", 23);
+      break;
+    case 36:
+      write (1, "ENAMETOOLONG: File name too long\n", 33);
+      break;
     case 38:
       write (1, "ENOSYS: Function not implemented \n", 34);
       break;
