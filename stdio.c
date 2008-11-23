@@ -41,14 +41,6 @@ printint (int i)
   printf (buffer);
 }
 
-/*int strlen(char *buffer)
-{
-  int i=0;
-   while (buffer[i] != '\0')
-    i++;
-   return i;
-   }*/
-
 void
 itoa (int n, char *buffer)
 {
