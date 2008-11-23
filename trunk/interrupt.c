@@ -364,16 +364,16 @@ keyboard_routine ()
     {
       printc(c);
 
+      buffer_circular[pos]=c;
       avanzar (); 
       circ_chars++;
-      buffer_circular[pos]=c;
-      
+            
       if(!list_empty(&keyboard_queue)){
 	/* Hi ha algun proces bloquejat */
 	/* Volem llegir = hem fet un sys_read_keyboard */
 	
 	bloq=list_head_to_task_struct(list_first(&keyboard_queue));    
-	bloq->chars_pendents--;
+		bloq->chars_pendents--;
 	
 	
 	if(bloq->chars_pendents<=0){
@@ -389,8 +389,9 @@ keyboard_routine ()
 	  
 	  anar_al_circ(bloq,CIRCULAR_SIZE);  /* Copiem les dades */
 	  
-	  bloq->chars_pendents-=circ_chars;
+	  //bloq->chars_pendents-=circ_chars;
 	  bloq->size-=circ_chars;
+	  bloq->buffer+=circ_chars;
 	  circ_chars=0;
 	  avanzar();
 	  inici=pos;

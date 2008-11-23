@@ -158,9 +158,9 @@ void desbloquejar_teclat(struct task_struct *task ){
 
 void llegir_al_circ_es_molt_divertit(char * origen, char * desti,int size)
 {
-  int i;
-  for(i=0;size>0;size--){
-    desti[inici]=origen[(inici+i)%CIRCULAR_SIZE];
+  int i=0;
+  for(;size>0;size--,i++){
+    desti[i]=origen[(inici+i)%CIRCULAR_SIZE];
   }
 }
 
@@ -177,7 +177,7 @@ void anar_al_circ(struct task_struct *bloq, int size){
     }
   set_cr3 ();
   
-  llegir_al_circ_es_molt_divertit(buffer_circular,bloq->buffer,size);
+  llegir_al_circ_es_molt_divertit(buffer_circular,buff,size);
   
   /* Copiam els caracters del proces actual al bloquejat */ 
   copy_to_user(buff,bloq->buffer, size);
