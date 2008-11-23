@@ -381,7 +381,9 @@ keyboard_routine ()
 	     ja te tots els caracters que demanava. */
 	  
 	  anar_al_circ(bloq,bloq->size); /* Copiem les dades */
-	  
+	  circ_chars=0;
+	  avanzar();
+	  inici=pos;
 	  desbloquejar_teclat(bloq);
 	  
 	}
