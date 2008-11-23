@@ -17,6 +17,7 @@ int get_stats (int pid, int *tics);
 int open (const char * path, int flags);
 int close (int fd);
 int dup (int fd);
+int unlink (const char * path);
 int readdir (struct dir_ent * buffer, int offset);
 int sem_init (int n_sem, unsigned int value);
 int sem_wait (int n_sem);

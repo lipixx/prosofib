@@ -85,7 +85,7 @@ int balloc (int nblocks)
  * Pre: no s'intenta esborrar espai lliure i ibloc0 es necessariament el primer bloc
  * d'un fitxer.
  */
-int freed(int ibloc0)
+int freeb(int ibloc0)
 {
   int i;
 
@@ -133,12 +133,12 @@ struct file * create_file(const char * path)
     return (struct file *) -ENOSPC;
   
   copy_from_user((char *)path,directori[i].nom,size);
-  // directori[i].nom = nom;
   directori[i].mode_acces_valid = O_RDWR; //default per fitxers
   directori[i].operations->sys_open_dev = NULL;
-  directori[i].operations->sys_close_dev = sys_close_file;
+  directori[i].operations->sys_close_dev = NULL;
   directori[i].operations->sys_read_dev = sys_read_file;
   directori[i].operations->sys_write_dev = sys_write_file;
+  directori[i].operations->sys_release_dev = sys_release_file;
   directori[i].first_block = fblock;
   directori[i].size = 0;
   directori[i].n_blocs = 1;
@@ -178,6 +178,7 @@ void init_directori()
       ops[i].sys_close_dev = NULL;
       ops[i].sys_read_dev = NULL;
       ops[i].sys_write_dev = NULL;
+      ops[i].sys_release_dev = NULL;
       directori[i].operations = &ops[i];
     }
 
