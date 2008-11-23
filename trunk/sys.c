@@ -72,7 +72,9 @@ int sys_read(int fd, char * buffer, int size)
   char buff_aux[256];
   int ncRead, return_read, k, i;
 
-  current_task = current();
+   for(k=0; k < 256 && k<size; k++) buff_aux[k]='\0';
+
+   current_task = current();
 
   if (fd < 0 || fd >= NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
     return -EBADR;
@@ -89,7 +91,8 @@ int sys_read(int fd, char * buffer, int size)
     return -EPERM;
 
   ncRead = 0;
-
+  current_task->buffer=buffer;
+  
   while (size != 0)
     {
       if (size < 256)
