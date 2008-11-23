@@ -8,8 +8,12 @@ void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  // printf ("\nBenvinguts a ZeOS!");  
+  printf ("\nBenvinguts a ZeOS!");  
  
+  char buffer[10];
+  read(0,buffer,10);
+  write(1,buffer,10);
+
   /* __asm__ __volatile__ ("movl $40,%%eax\n"
 			"int $0x80\n"
 			:

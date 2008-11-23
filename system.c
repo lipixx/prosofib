@@ -13,6 +13,7 @@
 #include <utils.h>
 #include <libc.h>
 #include <sf.h>
+#include <devices.h>
 
 int (*usr_main) (void) = (void *) PH_USER_START;
 unsigned int *p_sys_size = (unsigned int *) KERNEL_START;
@@ -75,6 +76,9 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /* Inicialitzem les variables i estructures del scheduler */
   init_sched ();
+  
+  /* Inicialitzem els dispositius */
+  init_devices();
   
   /* Inicialitzar tot el sistema de fitxers*/
   init_filesystem();

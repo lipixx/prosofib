@@ -11,6 +11,7 @@
 #include <interrupt.h>
 #include <types.h>
 #include <sf.h>
+#include <keyboard.h>
 
 union task_union task[NR_TASKS] __attribute__ ((__section__ (".data.task")));
 
@@ -19,6 +20,7 @@ init_sched ()
 {
   int i;
   INIT_LIST_HEAD (&runqueue);
+  INIT_LIST_HEAD(&keyboard_queue);
   pid = 0;
   call_from_int = 0;
   for (i = 0; i < NR_TASKS; i++)
@@ -37,6 +39,10 @@ init_task0 (int first_ph)
   task[0].task.quantum = 60;
   task[0].task.tics_cpu = 0;
   vida = task[0].task.quantum;
+  task[0].task.chars_pendents=0;
+  task[0].task.size=0;
+  task[0].task.buffer=0;
+
   for (i = 0; i < NUM_PAG_DATA; i++)
     task[0].task.pagines_fisiques[i] = first_ph + NUM_PAG_CODE + i;
 
