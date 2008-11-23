@@ -2,8 +2,14 @@
 #include <devices.h>
 #include <sched.h>
 #include <errno.h>
+#include <keyboard.h>
+#include <utils.h>
+#include <list.h>
+#include <segment.h>
+#include <mm.h>
+#include <mm_address.h>
 
-<<<<<<< devices.c
+
 #define EAX KERNEL_STACK_SIZE - 10
 
 
@@ -14,9 +20,6 @@ void init_devices()
   inici=0;
 }
 
-=======
-
->>>>>>> ./devices.c.r217
 int
 sys_write_console (int fd, char *buffer, int size)
 {
@@ -38,12 +41,82 @@ sys_write_file (int fd, char * buffer, int size)
 int
 sys_read_keyboard(int fd, char * buffer, int size)
 {
-  return 0;
+  union task_union *proces_seguent;
+  int escriure;
+
+  if((circ_chars==size || current()->chars_pendents>= size )&& list_empty(&keyboard_queue)){
+    /* Hi ha suficients caracters al buffer i no hi ha cap proces esperant dades */    
+    
+    if(circ_chars==size) escriure = size; /* Si esta ple ho escrivim tot */
+    else escriure = current()->chars_pendents; /* Si ja tenim tots els caracters que voliem els escrivim */
+    /* Copiam les dades del buffer circular al buffer on hem de guardar els caracters llegits */
+    anar_al_circ(current(),escriure);    
+    //    copy_to_user(&buffer_circular[inici],buffer,escriure);    
+    avanzar();
+    circ_chars=0;   /* Actualtizam el nombre de caracters valids que conte el buffer circular */
+    
+    return escriure;    /* Retornam el nombre de caracters que hem llegit del teclat */
+
+  }else if(current()->pid!=0){ /* El proces 0 no es pot bloquejar */ 
+
+    inici=pos; /* Actualitzem la posicio inicial, indicant on es troben els caracters valids */
+
+    /* Bloquegem el proces i apliquem la politica de planificacio per
+       passar a executar el proces que toqui: */
+    
+    /* Inserir el nou proces a la llista de bloquejats: keyboard_queue: */
+    bloquejar_teclat((struct task_struct *) current());
+       
+  
+    /* Actualitzam les dades necessaries */
+    //list_last(keyboard_queue.queue)->chars_pendets=size-circ_chars;
+    list_head_to_task_struct(list_first(&keyboard_queue))->size=size;
+    list_head_to_task_struct(list_first(&keyboard_queue))->buffer=buffer;
+    
+    /* Actualitzem el retorn de la crida del read */ 
+    ((union task_union *)(list_first(&keyboard_queue)))->stack[EAX] = size;
+     
+    
+    /* Passam a executar el seguent proces de la runqueue mitjançant la politica de planificacio */
+    proces_seguent =(union task_union *) (list_head_to_task_struct (runqueue.next));
+    call_from_int = 1;
+    task_switch (proces_seguent);
+    
+
+    return size;    
+    
+  }
+  
+  return -EPERM; /*Error si el proces 0 es vol bloquejar */
+  
 }
 
-int sys_open_file(const char *path, int mode_acces)
+
+void avanzar(){
+  /* Funcio per simular el comportament d'una cua FIFO */
+
+  if (pos==CIRCULAR_SIZE-1) pos=0;
+  else pos++;
+}
+
+void bloquejar_teclat(struct task_struct *task){
+  
+/* Inserir el nou proces a la llista de bloquejats: keyboard_queue: */
+    list_del (&(task->run_list));   /* Eliminam el proces de la runqueue */
+    list_add_tail (&(task->run_list), &keyboard_queue); 
+/* Sera desbloquejat per la rutina d’atencio a la interrupcio de teclat.*/
+
+}
+
+void desbloquejar_teclat(struct task_struct *task ){
+  
+  list_del (&keyboard_queue);   /* Eliminam el proces de la cua de bloquejats pel teclat */
+  list_add_tail (&(task->run_list), &runqueue); /* Inserim el proces de nou a la runqueue.*/
+  
+}
+
+void llegir_al_circ_es_molt_divertit(char * origen, char * desti,int size)
 {
-<<<<<<< devices.c
   int i;
   for(i=0;size>0;size--){
     desti[inici]=origen[(inici+i)%CIRCULAR_SIZE];
@@ -80,14 +153,12 @@ void anar_al_circ(struct task_struct *bloq, int size){
 
 int sys_open_file(const char *path, int mode_acces){
   /*
-int sys_open_file(const char *path, int mode_acces)
-{
-=======
->>>>>>> ./devices.c.r217
   if(path<0) return -EINVAL;
 
-  // int i;
-  //  for(i=0; i<MAX_FILES && path != directori[i]; i++);
+  int i;
+  for(i=0; i<MAX_FILES && path!=directori[i]; i++);
+  */
+
 
   return 0;
 }
