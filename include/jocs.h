@@ -14,4 +14,12 @@ void provar_switch (void);
 void provar_semafors(void);
 void run2_jp (void);
 
+void provar_open();
+void provar_dup();
+void provar_close();
+void provar_write_disp();
+void provar_read_disp();
+void provar_unlink();
+void provar_readdir();
+
 #endif /* __JOCS_H__ */
