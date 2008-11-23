@@ -2,7 +2,7 @@
 #define __KEYBOARD_H__
 
 
-#define CIRCULAR_SIZE 256
+#define CIRCULAR_SIZE 5
 
 #include <list.h>
 
