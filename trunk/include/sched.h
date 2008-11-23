@@ -20,6 +20,11 @@ struct task_struct
   int quantum;
   int tics_cpu;
   int pagines_fisiques[NUM_PAG_DATA];
+  /* keyboard */
+  int chars_pendents;
+  int size;
+  char *buffer;
+  /**/
   struct list_head run_list;
   struct fitxers_oberts * taula_canals[NUM_CANALS];
 };
