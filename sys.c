@@ -58,7 +58,7 @@ sys_write (int fd, char *buffer, int size)
 
       if (return_write != writeSize) return ncWritten;
 
-      buffer += size;
+      buffer += writeSize;
       size -= writeSize;
     }
 
@@ -70,7 +70,7 @@ int sys_read(int fd, char * buffer, int size)
   struct task_struct * current_task;
   struct fitxers_oberts * fitxer_obert;
   char buff_aux[256];
-  int ncRead, return_read, k;
+  int ncRead, return_read, k, i;
 
   current_task = current();
 
@@ -105,11 +105,11 @@ int sys_read(int fd, char * buffer, int size)
       	  
       //Farem que si hi ha error de i/o acabi la transaccio
       if (return_read == -1) return -EIO;
+      
+      for (k = ncRead, i=0; k < ncRead+return_read; k++, i++)
+	buffer[k] = buff_aux[i];
+
       ncRead += return_read;
-  
-     //if (copy_to_user(buff_aux,buffer,return_read)!=0) return -EFAULT; <-- copia 2 mas
-      for (k = 0; k < return_read; k++, buffer++)
-	*buffer = buff_aux[k];
     }
   
   //Sempre hem de retornar ncRead, encara que s'hagin llegit

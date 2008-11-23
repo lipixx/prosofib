@@ -29,7 +29,7 @@ LINKFLAGS = -g
 SYSOBJ = interrupt.o entry.o io.o sys.o sched.o mm.o devices.o utils.o hardware.o sf.o
 
 #add to USROBJ the object files required to complete the user program
-USROBJ = libc.o stdio.o libjp2.a jocs.o #libjp1.a libjp_linux.o
+USROBJ = libc.o stdio.o libjp2.a jocs.o #libjp2.a libjp_linux.o
 
 all:zeos.bin
 

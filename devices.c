@@ -47,7 +47,7 @@ sys_write_file (int fd, char * buffer, int size)
   for (i=0; i<size; i++)
     {
       //Si es necessari, incrementem nblocks
-      if (fitxer->size % BLOCK_SIZE == 0 && destByte != 0)
+      if (fitxer->size % BLOCK_SIZE == 0 && fitxer->size != 0)
 	{
 	  bloc0 = balloc(1);
 	  if (bloc0 == -1) return i;
@@ -223,11 +223,12 @@ int sys_read_file(int fd, char * buffer, int size)
    for (i=0; i<size; i++)
     {
       //Si es necessari, incrementem nblocks
-      if (byte0 % BLOCK_SIZE == 0 && bloc0 != fitxer->first_block)
+      if (byte0 % BLOCK_SIZE == 0 && byte0 != 0 && bloc0 != fitxer->first_block)
 	{
 	  if (opened_file->lseek == size) return i;
 	  //Seguim a partir del seguent bloc
-	  bloc0 = fat[bloc0];
+	  if (fat[bloc0] != -1)
+	      bloc0 = fat[bloc0];
 	  byte0 = 0;
 	}
       //Copiem dades

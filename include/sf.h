@@ -60,7 +60,7 @@ struct file_operations{
 //Tenim un directori de files.
 //Si n_refs = -1, file no es valid.
 struct file{
-  char * nom;
+  char nom[MAX_NAME_LENGTH];
   int mode_acces_valid;
   struct file_operations * operations;
   int first_block;
