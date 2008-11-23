@@ -291,4 +291,3 @@ free_frames (unsigned int frame, int nframes)
       phys_mem[i] = FREE_FRAME;
     }
 }
-

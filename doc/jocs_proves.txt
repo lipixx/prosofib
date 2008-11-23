@@ -6,8 +6,24 @@
 #     # #                    #      #      #     # #     # 
  #####  #                   ####### ###### #######  #####  
  
+
  
- 
+Tercera Entrega:
+
+A la tercera entrega hem seguit el mateix sistema que a la segona. S'ha de descomentar la linia del joc que es vulgui provar al fitxer user.c.
+Per veure el funcionament mirar els comentaris de jocs.c.
+
+void provar_open();
+void provar_dup();
+void provar_close();
+void provar_write_disp();
+void provar_read_disp();
+void provar_unlink();
+void provar_readdir();
+
+-------------------------------------------------------------
+
+
 En aquesta segona entrega hem incluït un fitxer jocs.c i un jocs.h que contenen el codi i els prototipus de les funcions. S'han hagut de fer les modificacions pertinents al Makefile per tal que aquests formessin part de user.c.
 
 Les funcions que proporcionem per provar el còdi són:

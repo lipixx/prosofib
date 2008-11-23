@@ -9,16 +9,17 @@
 #include <errno.h>
 #include <utils.h>
 
-int freespace()
+int
+freespace ()
 {
-  int i,espai_lliure;
- 
+  int i, espai_lliure;
+
   espai_lliure = 0;
 
   if (bloc_de_la_llibertat != -1)
     {
-    i = bloc_de_la_llibertat;
-    for (;fat[i] != -1; ++espai_lliure, i++);
+      i = bloc_de_la_llibertat;
+      for (; fat[i] != -1; ++espai_lliure, i++);
     }
 
   return espai_lliure;
@@ -27,14 +28,15 @@ int freespace()
 /* Retorna el primer bloc lliure de nblocks encadenats
  * a la fat. -1 si no hi ha prou espai.
  */
-int balloc (int nblocks)
+int
+balloc (int nblocks)
 {
   int total, primer, anterior;
-  
-  
-  if (bloc_de_la_llibertat == -1 || nblocks < 1) 
+
+
+  if (bloc_de_la_llibertat == -1 || nblocks < 1)
     return -1;
-  
+
   if (fat[bloc_de_la_llibertat] == -1)
     {
       if (nblocks == 1)
@@ -43,13 +45,13 @@ int balloc (int nblocks)
 	  bloc_de_la_llibertat = -1;
 	  return anterior;
 	}
-	  return -1;
+      return -1;
     }
-  
+
   anterior = bloc_de_la_llibertat;
   primer = bloc_de_la_llibertat;
   bloc_de_la_llibertat = fat[bloc_de_la_llibertat];
-  total = 1; 
+  total = 1;
 
   while (total != nblocks && fat[bloc_de_la_llibertat] != -1)
     {
@@ -57,7 +59,7 @@ int balloc (int nblocks)
       bloc_de_la_llibertat = fat[bloc_de_la_llibertat];
       total++;
     }
-  
+
   if (fat[bloc_de_la_llibertat] == -1)
     {
       if (nblocks - total == 1)
@@ -74,9 +76,9 @@ int balloc (int nblocks)
 	    }
 	}
     }
-  
+
   fat[anterior] = -1;
-  
+
   return primer;
 }
 
@@ -85,7 +87,8 @@ int balloc (int nblocks)
  * Pre: no s'intenta esborrar espai lliure i ibloc0 es necessariament el primer bloc
  * d'un fitxer.
  */
-int freeb(int ibloc0)
+int
+freeb (int ibloc0)
 {
   int i;
 
@@ -104,37 +107,41 @@ int freeb(int ibloc0)
   return 0;
 }
 
-void add_block(int blocLast, int blocAdded)
+void
+add_block (int blocLast, int blocAdded)
 {
   fat[blocLast] = blocAdded;
   fat[blocAdded] = -1;
 }
 
-int last_block(int bloc0)
+int
+last_block (int bloc0)
 {
   while (fat[bloc0] != -1)
-      bloc0 = fat[bloc0];
-    
+    bloc0 = fat[bloc0];
+
   return bloc0;
 }
 
-struct file * create_file(const char * path)
+struct file *
+create_file (const char *path)
 {
   int i, fblock, size;
 
-  for (i=0; directori[i].n_refs != -1 && i < MAX_FILES;i++);
-  if (i == MAX_FILES) return (struct file *) -ENFILE;
-  
+  for (i = 0; directori[i].n_refs != -1 && i < MAX_FILES; i++);
+  if (i == MAX_FILES)
+    return (struct file *) -ENFILE;
+
   size = strlen (path);
   if (size > MAX_NAME_LENGTH)
     return (struct file *) -ENAMETOOLONG;
-  
-  fblock = balloc(1);
+
+  fblock = balloc (1);
   if (fblock < 0)
     return (struct file *) -ENOSPC;
-  
-  copy_from_user((char *)path,directori[i].nom,size);
-  directori[i].mode_acces_valid = O_RDWR; //default per fitxers
+
+  copy_from_user ((char *) path, directori[i].nom, size);
+  directori[i].mode_acces_valid = O_RDWR;	//default per fitxers
   directori[i].operations->sys_open_dev = NULL;
   directori[i].operations->sys_close_dev = NULL;
   directori[i].operations->sys_read_dev = sys_read_file;
@@ -148,31 +155,34 @@ struct file * create_file(const char * path)
 }
 
 
-void init_tfo()
+void
+init_tfo ()
 {
   int i;
-  for (i=0; i<MAX_OPEN_FILES; i++)
+  for (i = 0; i < MAX_OPEN_FILES; i++)
     {
       taula_fitxers_oberts[i].refs = 0;
       taula_fitxers_oberts[i].mode_acces = 0;
       taula_fitxers_oberts[i].lseek = 0;
       taula_fitxers_oberts[i].opened_file = NULL;
-   }
+    }
 }
 
-void init_disk()
+void
+init_disk ()
 {
-  int i,j;
-   for (i=0; i<MAX_BLOCKS; i++)
-     for (j=0; j<BLOCK_SIZE; j++)
-     disk[i][j] = 0;
+  int i, j;
+  for (i = 0; i < MAX_BLOCKS; i++)
+    for (j = 0; j < BLOCK_SIZE; j++)
+      disk[i][j] = 0;
 }
 
-void init_directori()
+void
+init_directori ()
 {
   int i;
 
-  for (i=0; i<MAX_FILES; i++)
+  for (i = 0; i < MAX_FILES; i++)
     {
       directori[i].n_refs = -1;
       ops[i].sys_open_dev = NULL;
@@ -183,15 +193,15 @@ void init_directori()
       directori[i].operations = &ops[i];
     }
 
-  copy_data("keyboard",directori[0].nom,8);
+  copy_data ("keyboard", directori[0].nom, 8);
   directori[0].mode_acces_valid = O_RDONLY;
   directori[0].operations->sys_read_dev = sys_read_keyboard;
   directori[0].first_block = NULL;
   directori[0].size = NULL;
   directori[0].n_blocs = NULL;
   directori[0].n_refs = 0;
- 
-  copy_data("console",directori[1].nom,7);
+
+  copy_data ("console", directori[1].nom, 7);
   directori[1].mode_acces_valid = O_WRONLY;
   directori[1].operations->sys_write_dev = sys_write_console;
   directori[1].first_block = NULL;
@@ -200,21 +210,23 @@ void init_directori()
   directori[1].n_refs = 0;
 }
 
-void init_fat()
+void
+init_fat ()
 {
   int i;
-  bloc_de_la_llibertat=0;
-  
-  for(i=0; i<MAX_BLOCKS-1; i++) 
-    fat[i]=i+1;
-  
-  fat[MAX_BLOCKS-1] = -1;
+  bloc_de_la_llibertat = 0;
+
+  for (i = 0; i < MAX_BLOCKS - 1; i++)
+    fat[i] = i + 1;
+
+  fat[MAX_BLOCKS - 1] = -1;
 }
 
-void init_filesystem()
+void
+init_filesystem ()
 {
-  init_directori();
-  init_tfo();
-  init_disk();
-  init_fat();
+  init_directori ();
+  init_tfo ();
+  init_disk ();
+  init_fat ();
 }

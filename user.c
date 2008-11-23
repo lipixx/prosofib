@@ -7,38 +7,43 @@
 void runjp ();
 
 
-int strlen(char * buffer)
-{int i;
-	for (i=0; buffer[i] != 0; i++);
-	return i;
+int
+strlen (char *buffer)
+{
+  int i;
+  for (i = 0; buffer[i] != 0; i++);
+  return i;
 }
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  printf ("\nBenvinguts a ZeOS!");  
- 
+  printf ("\nBenvinguts a ZeOS!");
+
+  /* Prova KBD -
   char buffer[512];
-  
+
   int f, llegits;
 
-  f = fork();
-  
+  f = fork ();
+
   if (f == 0)
     {
-      llegits = read(0,buffer,257);
-      printf("\nRead ens retorna: ");
-      printint(llegits);
-      write (1, buffer, 257);
-      exit();
+      llegits = read (0, buffer, 256);
+      printf ("\nRead ens retorna: ");
+      printint (llegits);
+      write (1, buffer, 256);
+      exit ();
     }
+  */
+
 
   //JOCS DE PROVES DE LA SEGONA ENTREGA:
   /* __asm__ __volatile__ ("movl $40,%%eax\n"
-			"int $0x80\n"
-			:
-			:
-			);
-  */
+     "int $0x80\n"
+     :
+     :
+     );
+   */
   //provar_fork (9); //No sobrepassar NR_TASKS
   //provar_get_stats ();
   //provar_exit ();
@@ -47,10 +52,10 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   //provar_semafors ();
 
   /*JOCS DE PROVES DE LA TERCERA ENTREGA. DESCOMENTAR EL
-    QUE INTERESSI:*/
+     QUE INTERESSI: */
   //provar_open();
   //provar_dup();
-  //provar_close();
+  provar_close();
   //provar_write_disp();
   //provar_read_disp();
   //provar_unlink();
@@ -63,8 +68,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   // int fd = open("patata",O_WRONLY|O_CREAT);
 
   //run2_jp();
-  
+
   while (1);
   return 0;
 }
-

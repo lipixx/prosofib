@@ -7,174 +7,187 @@
 #include <sf.h>
 
 void
-provar_open()
+provar_open ()
 {
-  int i,k;
+  int i, k;
 
-  k = fork();
+  k = fork ();
   if (k == 0)
     {
-      open("keyboard",O_RDONLY);
+      open ("keyboard", O_RDONLY);
 
-      open("keyboard",O_WRONLY);
-      printf("\nResult == EPERM?:");
-      perror();
+      open ("keyboard", O_WRONLY);
+      printf ("\nResult == EPERM?:");
+      perror ();
 
-      open("console",O_RDWR);
-      printf("\nResult == EPERM?:");
-      perror();
-      
-      for (i=0;i<NUM_CANALS;i++)
+      open ("console", O_RDWR);
+      printf ("\nResult == EPERM?:");
+      perror ();
+
+      for (i = 0; i < NUM_CANALS; i++)
 	{
-	  open("keyboard",O_RDONLY);
+	  open ("keyboard", O_RDONLY);
 	}
-      printf("\nMAX_OP_FILES REACHED?:");
-      perror();
+      printf ("\nMAX_OP_FILES REACHED?:");
+      perror ();
     }
   else
     {
-      printf("\nProvem a crear 3 nous fitxers, error?:");
-      open("patata",O_RDWR|O_CREAT);
-      open("comino",O_RDWR|O_CREAT);
-      open("patata",O_RDWR|O_CREAT);
-      perror();
+      printf ("\nProvem a crear 3 nous fitxers, error?:");
+      open ("patata", O_RDWR | O_CREAT);
+      open ("comino", O_RDWR | O_CREAT);
+      open ("patata", O_RDWR | O_CREAT);
+      perror ();
     }
 }
 
-void provar_dup()
+void
+provar_dup ()
 {
-  
+
   int i;
-  dup(0);
-  dup(1);
-  dup(2);
-  printf("\nNo error al dup 0 1 i 2:");
-  perror();
-  for (i = 0; i<20; i++)
+  dup (0);
+  dup (1);
+  dup (2);
+  printf ("\nNo error al dup 0 1 i 2:");
+  perror ();
+  for (i = 0; i < 20; i++)
     {
-      dup(i);
+      dup (i);
     }
-  printf("\nMassa canals: ");
-  perror();
+  printf ("\nMassa canals: ");
+  perror ();
 }
 
-void provar_close()
+void
+provar_close ()
 {
   int fd;
   fd = 0;
-  close(0);
-  printf("\nTanquem el kbd (no error):");
-  perror();
-  close(5);
-  printf("\nIntent de tancar canal no obert: ");
-  perror();
-  close(100);
-  printf("\nIntent de tancar canal out of range:");
-  perror();
-  fd = open("patata",O_RDWR|O_CREAT);
+  fd = open ("patata", O_RDWR | O_CREAT);
   close (fd);
-  printf("\nObrim nou fitxer i el tanquem (no error..):");
-  perror();
+  printf ("\nObrim nou fitxer i el tanquem (no error..):");
+  perror ();
+  close (0);
+  printf ("\nTanquem el kbd (prova d'escriure..) -> no error:");
+  perror ();
+  close (5);
+  printf ("\nIntent de tancar canal no obert: ");
+  perror ();
+  close (100);
+  printf ("\nIntent de tancar canal out of range:");
+  perror ();
 }
 
-void provar_write_disp()
+void
+provar_write_disp ()
 {
-  int fd,fd2;
-  fd = open ("patata", O_RDWR|O_CREAT);
-  write(fd,"CADENA",6);
-  write(fd,"Kontinuacio",11);
-  write(fd,"12345678901234567890",20);
-  fd2 = open("comino", O_RDWR | O_CREAT);
-  write (fd2, "INICI678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678900FINAL",256);
-  write (fd2, "INICI67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890FINAL",255);
-  write (fd2, "INICI67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890FINALTOTAL",260);
+  int fd, fd2;
+  fd = open ("patata", O_RDWR | O_CREAT);
+  write (fd, "CADENA", 6);
+  write (fd, "Kontinuacio", 11);
+  write (fd, "12345678901234567890", 20);
+  fd2 = open ("comino", O_RDWR | O_CREAT);
+  write (fd2,
+	 "INICI678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678900FINAL",
+	 256);
+  write (fd2,
+	 "INICI67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890FINAL",
+	 255);
+  write (fd2,
+	 "INICI67890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890FINALTOTAL",
+	 260);
   close (fd);
   close (fd2);
 }
 
-void provar_read_disp()
+void
+provar_read_disp ()
 {
-  printf("/nHan de sortir 3 inicis 2 finals i 1 final total\n");
+  printf ("/nHan de sortir 3 inicis 2 finals i 1 final total\n");
   int fd;
-  char buffer[256+255+260];
-  provar_write_disp();
+  char buffer[256 + 255 + 260];
+  provar_write_disp ();
   fd = open ("comino", O_RDONLY);
-  read (fd,buffer,256);
-  read (fd,buffer+256,255);
-  read (fd,buffer+256+255,260);
-  write(1,buffer,256+255+260);
+  read (fd, buffer, 256);
+  read (fd, buffer + 256, 255);
+  read (fd, buffer + 256 + 255, 260);
+  write (1, buffer, 256 + 255 + 260);
   close (fd);
 }
 
-void provar_unlink()
+void
+provar_unlink ()
 {
   int fd;
-  printf("\nProvam write i read per provar UNLINK\n");
-  printf("\n-------------------------------------\n");
-  provar_write_disp();
-  provar_read_disp();
-  fd = open("comino", O_RDWR);
-  unlink("comino");
-  unlink("patata");
-  printf("\n-------------------------------------\n");
-  printf("\nError BUSY:");
-  perror();
-  printf("\nProva OK!");
-  close(fd);
+  printf ("\nProvam write i read per provar UNLINK\n");
+  printf ("\n-------------------------------------\n");
+  provar_write_disp ();
+  provar_read_disp ();
+  fd = open ("comino", O_RDWR);
+  unlink ("comino");
+  unlink ("patata");
+  printf ("\n-------------------------------------\n");
+  printf ("\nError BUSY:");
+  perror ();
+  printf ("\nProva OK!");
+  close (fd);
 
 }
 
-void provar_readdir()
+void
+provar_readdir ()
 {
   struct dir_ent buffer;
-  int fd,fd2,i;
-  
-  fd = open ("patata",O_RDWR|O_CREAT);
-  fd2 = open ("cuminu",O_RDWR|O_CREAT);
-  printf("\nAtencio, les repeticions son normals! nomes mirar noms diferents");
-  printf("\n\nDIRECTORI amb 4 fitxers");
-  for (i = 0; i<MAX_FILES; i++)
-    {
-      readdir(&buffer, i);
-      printf("\nfile:   ");
-      printf(buffer.nom);
-      printf("      ");
-      printint(buffer.size);
-    }
-  close(fd);
+  int fd, fd2, i;
 
-  printf("\nTancat patata, pero no eliminat");
-  for (i = 0; i<MAX_FILES; i++)
+  fd = open ("patata", O_RDWR | O_CREAT);
+  fd2 = open ("cuminu", O_RDWR | O_CREAT);
+  printf
+    ("\nAtencio, les repeticions son normals! nomes mirar noms diferents");
+  printf ("\n\nDIRECTORI amb 4 fitxers");
+  for (i = 0; i < MAX_FILES; i++)
     {
-      readdir(&buffer, i);
-      printf("\nFile/Dev: ");
-      printf(buffer.nom);
-      printf("      ");
-      printint(buffer.size);
+      readdir (&buffer, i);
+      printf ("\nfile:   ");
+      printf (buffer.nom);
+      printf ("      ");
+      printint (buffer.size);
     }
-  unlink("patata");
+  close (fd);
 
-  printf("\n\nEliminat patata");
-  for (i = 0; i<MAX_FILES; i++)
+  printf ("\nTancat patata, pero no eliminat");
+  for (i = 0; i < MAX_FILES; i++)
     {
-      readdir(&buffer, i);
-      printf("\nFile/Dev: ");
-      printf(buffer.nom);
-      printf("      ");
-      printint(buffer.size);
+      readdir (&buffer, i);
+      printf ("\nFile/Dev: ");
+      printf (buffer.nom);
+      printf ("      ");
+      printint (buffer.size);
     }
-  printf("\n\nEscrivim 20b a cuminu:");
-  write(fd2,"12345678901234567890",20);
-    for (i = 0; i<MAX_FILES; i++)
+  unlink ("patata");
+
+  printf ("\n\nEliminat patata");
+  for (i = 0; i < MAX_FILES; i++)
     {
-      readdir(&buffer, i);
-      printf("\nFile/Dev: ");
-      printf(buffer.nom);
-      printf("      ");
-      printint(buffer.size);
+      readdir (&buffer, i);
+      printf ("\nFile/Dev: ");
+      printf (buffer.nom);
+      printf ("      ");
+      printint (buffer.size);
+    }
+  printf ("\n\nEscrivim 20b a cuminu:");
+  write (fd2, "12345678901234567890", 20);
+  for (i = 0; i < MAX_FILES; i++)
+    {
+      readdir (&buffer, i);
+      printf ("\nFile/Dev: ");
+      printf (buffer.nom);
+      printf ("      ");
+      printint (buffer.size);
     }
 
-    printf("\n\n PROVA OK!");
+  printf ("\n\n PROVA OK!");
 }
 
 void
@@ -260,8 +273,7 @@ provar_exit ()
       printf ("\nSoc el fill, i el meu pid es: ");
       p = getpid ();
       printint (p);
-      printf
-	("\nJo el fill, em suicidare\n");
+      printf ("\nJo el fill, em suicidare\n");
       exit ();
     }
   else
@@ -394,7 +406,7 @@ provar_semafors ()
   printf ("\nFent sem_destroy(0)");
   sem_destroy (0);
   printf ("\nCreant sem_init(1,0)");
-  sem_init (1,0);
+  sem_init (1, 0);
 
   printf ("\nFem un fork i sem_wait al fill");
   aux = fork ();
@@ -412,7 +424,7 @@ provar_semafors ()
       printf ("\nIntento destruir el semafor: ");
       sem_destroy (0);
       for (aux = 0; aux < 2000000; aux++)
-	printf ("");  /* Mentre el fill no estigui bloquejat no continuar */  
+	printf ("");		/* Mentre el fill no estigui bloquejat no continuar */
       printf ("\nEl faix continuar amb sem_init, adeu.");
       sem_signal (0);
       sem_destroy (0);
