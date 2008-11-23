@@ -89,6 +89,16 @@ nice (int quantum)
 }
 
 int
+unlink (const char * path)
+{
+  int val = -1;
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+			"movl $10,%%eax\n"
+			"int $0x80\n" "movl %%eax,%0\n":"=g" (val)::"%ebx");
+  return check_errno (val);
+}
+
+int
 open (const char * path, int flags)
 {
   int res = -1;
@@ -211,6 +221,9 @@ perror ()
       break;
     case 14:
       write (1, "EFAULT: Bad address \n", 21);
+      break;
+    case 16:
+      write (1, "EBUSY: Device or resource busy\n",31);
       break;
     case 19:
       write (1, "ENODEV: No such device\n",23);

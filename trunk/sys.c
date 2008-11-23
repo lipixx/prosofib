@@ -218,6 +218,35 @@ int sys_dup(int fd)
  return new_fd;
 }
 
+int
+sys_unlink(const char * path)
+{
+  struct file * fitxer;
+  int file_entry;
+
+  for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
+  if (file_entry == MAX_FILES) return -ENOENT;
+
+  fitxer = &directori[file_entry];
+  
+  if (fitxer->n_refs == 0)
+    {
+      fitxer->n_refs = -1;
+      if (fitxer->operations->sys_release_dev != NULL)
+	(fitxer->operations->sys_release_dev) (file_entry);
+
+      fitxer->operations->sys_open_dev = NULL;
+      fitxer->operations->sys_close_dev = NULL;
+      fitxer->operations->sys_read_dev = NULL;
+      fitxer->operations->sys_write_dev = NULL;
+      fitxer->operations->sys_release_dev = NULL;
+      fitxer->n_refs = -1;
+      fitxer->nom[0] = 0;
+    }
+  return -EBUSY;
+  
+}
+
 int 
 sys_readdir(struct dir_ent *buffer, int offset)
 {

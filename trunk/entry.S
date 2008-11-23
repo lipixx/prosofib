@@ -245,7 +245,7 @@ ENTRY(sys_call_table)
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall
-	.long sys_ni_syscall	/*@ system call #10*/
+	.long sys_unlink	/*@ Crida al sistema  Unlink #10*/
 	.long sys_ni_syscall
 	.long sys_ni_syscall
 	.long sys_ni_syscall

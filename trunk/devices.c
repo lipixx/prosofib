@@ -191,30 +191,6 @@ void anar_al_circ(struct task_struct *bloq, int size){
   set_cr3(); 
 }
 
-
-int sys_open_file(const char *path, int mode_acces){
-  /*
-  if(path<0) return -EINVAL;
-
-  int i;
-  for(i=0; i<MAX_FILES && path!=directori[i]; i++);
-  */
-
-
-  return 0;
-}
-
-int sys_close_file(int fd){
-  /*
-  struct task_struct* actual = current();
-  struct fitxers_oberts* tfo = actual->taula_canals[fd];
-  
-  tfo->refs--;
-  actual->taula_canals[fd]=-1;
-  */
-  return 0;
-}
-
 int sys_read_file(int fd, char * buffer, int size)
 {
   int bloc0,byte0,i,lseekBloc;
@@ -252,12 +228,11 @@ int sys_read_file(int fd, char * buffer, int size)
   return i;
 }
 
-int sys_close_console(int fd)
+int sys_release_file(int dir_entry)
 {
-  return 0;
-}
-
-int sys_close_keyboard(int fd)
-{
+  freeb(directori[dir_entry].first_block);
+  directori[dir_entry].n_blocs = 0;
+  directori[dir_entry].size = 0;
+ 
   return 0;
 }

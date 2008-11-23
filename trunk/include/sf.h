@@ -30,7 +30,7 @@ void init_filesystem();
 struct file * create_file(const char * path);
 int freespace();
 int balloc (int nblocks);
-int freed (int ibloc0);
+int freeb (int ibloc0);
 void add_block (int blocLast, int blocAdded);
 int last_block (int bloc0);
 
@@ -55,6 +55,7 @@ struct file_operations{
   int (*sys_close_dev)(int);
   int (*sys_read_dev)(int, char*, int);
   int (*sys_write_dev)(int, char*, int);
+  int (*sys_release_dev) (int dir_entry);
 } ops[MAX_FILES];
 
 //Tenim un directori de files.
