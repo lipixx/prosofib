@@ -71,53 +71,65 @@ int
 sys_read_keyboard(int fd, char * buffer, int size)
 {
   union task_union *proces_seguent;
-  int escriure;
-
-  if((circ_chars==size || current()->chars_pendents>= size )&& list_empty(&keyboard_queue)){
-    /* Hi ha suficients caracters al buffer i no hi ha cap proces esperant dades */    
-    
+  int escriure, pid;
+  struct task_struct *actual;
+  actual=current();
+  actualitzar_pendents(size);
+  pid = actual->pid;
+  
+  if((circ_chars==size || actual->chars_pendents<= 0 )&& list_empty(&keyboard_queue))
+    {
+      /* Hi ha suficients caracters al buffer i no hi ha cap proces esperant dades */    
+      
     if(circ_chars==size) escriure = size; /* Si esta ple ho escrivim tot */
-    else escriure = current()->chars_pendents; /* Si ja tenim tots els caracters que voliem els escrivim */
+    else escriure = actual->chars_pendents; /* Si ja tenim tots els caracters que voliem els escrivim */
     /* Copiam les dades del buffer circular al buffer on hem de guardar els caracters llegits */
-    anar_al_circ(current(),escriure);    
+    anar_al_circ(actual,escriure);    
     //    copy_to_user(&buffer_circular[inici],buffer,escriure);    
     avanzar();
     circ_chars=0;   /* Actualtizam el nombre de caracters valids que conte el buffer circular */
     
     return escriure;    /* Retornam el nombre de caracters que hem llegit del teclat */
-
-  }else if(current()->pid!=0){ /* El proces 0 no es pot bloquejar */ 
-
-    inici=pos; /* Actualitzem la posicio inicial, indicant on es troben els caracters valids */
-
-    /* Bloquegem el proces i apliquem la politica de planificacio per
-       passar a executar el proces que toqui: */
     
-    /* Inserir el nou proces a la llista de bloquejats: keyboard_queue: */
-    bloquejar_teclat((struct task_struct *) current());
-       
-  
-    /* Actualitzam les dades necessaries */
-    //list_last(keyboard_queue.queue)->chars_pendets=size-circ_chars;
-    list_head_to_task_struct(list_first(&keyboard_queue))->size=size;
-    list_head_to_task_struct(list_first(&keyboard_queue))->buffer=buffer;
-    
-    /* Actualitzem el retorn de la crida del read */ 
-    ((union task_union *)(list_first(&keyboard_queue)))->stack[EAX] = size;
-     
-    
-    /* Passam a executar el seguent proces de la runqueue mitjançant la politica de planificacio */
-    proces_seguent =(union task_union *) (list_head_to_task_struct (runqueue.next));
-    call_from_int = 1;
-    task_switch (proces_seguent);
-    
-
-    return size;    
-    
-  }
+    }
+  else 
+    if(pid != 0)
+      { /* El proces 0 no es pot bloquejar */ 
+	
+	inici=pos; /* Actualitzem la posicio inicial, indicant on es troben els caracters valids */
+	
+	/* Bloquegem el proces i apliquem la politica de planificacio per
+	   passar a executar el proces que toqui: */
+	
+	/* Inserir el nou proces a la llista de bloquejats: keyboard_queue: */
+	bloquejar_teclat((struct task_struct *) actual);
+	
+	
+	/* Actualitzam les dades necessaries */
+	//list_last(keyboard_queue.queue)->chars_pendets=size-circ_chars;
+	list_head_to_task_struct(list_first(&keyboard_queue))->size=size;
+	//	list_head_to_task_struct(list_first(&keyboard_queue))->buffer=buffer;
+	
+	/* Actualitzem el retorn de la crida del read */ 
+	((union task_union *)(list_first(&keyboard_queue)))->stack[EAX] = size;
+	
+	
+	/* Passam a executar el seguent proces de la runqueue mitjançant la politica de planificacio */
+	proces_seguent =(union task_union *) (list_head_to_task_struct (runqueue.next));
+	call_from_int = 1;
+	task_switch (proces_seguent);
+	
+	
+	return size;    
+	
+      }
   
   return -EPERM; /*Error si el proces 0 es vol bloquejar */
-  
+}
+
+void actualitzar_pendents(int size){
+  struct task_struct * task = current();
+  task->chars_pendents = size - circ_chars;
 }
 
 
@@ -139,7 +151,7 @@ void bloquejar_teclat(struct task_struct *task){
 
 void desbloquejar_teclat(struct task_struct *task ){
   
-  list_del (&keyboard_queue);   /* Eliminam el proces de la cua de bloquejats pel teclat */
+  list_del (&(task->run_list));   /* Eliminam el proces de la cua de bloquejats pel teclat */
   list_add_tail (&(task->run_list), &runqueue); /* Inserim el proces de nou a la runqueue.*/
   
 }

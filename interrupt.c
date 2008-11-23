@@ -355,46 +355,47 @@ keyboard_routine ()
   Byte b = inb (0x60);
   char c;
   struct task_struct *bloq;
-  circ_chars++;
   c = char_map[b & 0x7f];
- 
-  avanzar (); 
-  circ_chars++;
-  buffer_circular[pos]=c;
   
+    
   /* Si el buffer esta ple, aquest caracter es perd.*/
   
-  if (!(b & 0x80) && char_map[b]!= '\0')		//Make
+  if (!(b & 0x80) )//&& char_map[b]!= '\0')		//Make
     {
-      printc(c);	
-    }  
-  
-  if(!list_empty(&keyboard_queue)){
-    /* Hi ha algun proces bloquejat */
-    /* Volem llegir = hem fet un sys_read_keyboard */
-    
-    bloq=list_head_to_task_struct(list_first(&keyboard_queue));    
-    bloq->chars_pendents--;
-    
+      printc(c);
 
-   if(bloq->chars_pendents<=0){
-      /* El buffer no esta ple pero el primer proces de la cua de bloquejats
-	 ja te tots els caracters que demanava. */
-     
-     anar_al_circ(bloq,bloq->chars_pendents);
-
-     desbloquejar_teclat(bloq);
-
+      avanzar (); 
+      circ_chars++;
+      buffer_circular[pos]=c;
+      
+      if(!list_empty(&keyboard_queue)){
+	/* Hi ha algun proces bloquejat */
+	/* Volem llegir = hem fet un sys_read_keyboard */
+	
+	bloq=list_head_to_task_struct(list_first(&keyboard_queue));    
+	bloq->chars_pendents--;
+	
+	
+	if(bloq->chars_pendents<=0){
+	  /* El buffer no esta ple pero el primer proces de la cua de bloquejats
+	     ja te tots els caracters que demanava. */
+	  
+	  anar_al_circ(bloq,bloq->size); /* Copiem les dades */
+	  
+	  desbloquejar_teclat(bloq);
+	  
+	}
+	else if (circ_chars>=CIRCULAR_SIZE){
+	  
+	  anar_al_circ(bloq,CIRCULAR_SIZE);  /* Copiem les dades */
+	  
+	  bloq->chars_pendents-=circ_chars;
+	  bloq->size-=circ_chars;
+	  circ_chars=0;
+	  avanzar();
+	  inici=pos;
+	}  
+      }
     }
-   else if (circ_chars>=CIRCULAR_SIZE){
-     
-     anar_al_circ(bloq,CIRCULAR_SIZE);
-
-     bloq->chars_pendents-=circ_chars;
-     circ_chars=0;
-     avanzar();
-     inici=pos;
-   }  
-}
   
 }
