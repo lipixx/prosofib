@@ -74,10 +74,11 @@ int sys_read(int fd, char * buffer, int size)
 {
   struct task_struct * current_task;
   struct fitxers_oberts * fitxer_obert;
-  char buff_aux[256];
+  char buff_aux[256]; //[size] ..
   int ncRead, return_read, k, i;
 
    current_task = current();
+   current_task->size = size; //KBD
 
  if (fd < 0 || fd >= NUM_CANALS)
     return -ECHRNG;

@@ -17,6 +17,20 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 {
   printf ("\nBenvinguts a ZeOS!");  
  
+  char buffer[512];
+  
+  int f, llegits;
+
+  f = fork();
+  
+  if (f == 0)
+    {
+      llegits = read(0,buffer,257);
+      printf("\nRead ens retorna: ");
+      printint(llegits);
+      write (1, buffer, 257);
+      exit();
+    }
 
   //JOCS DE PROVES DE LA SEGONA ENTREGA:
   /* __asm__ __volatile__ ("movl $40,%%eax\n"
