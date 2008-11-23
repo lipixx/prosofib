@@ -258,6 +258,9 @@ perror ()
     case 38:
       write (1, "ENOSYS: Function not implemented \n", 34);
       break;
+    case 44:
+      write (1, "ECHRNG: Channel number out of range\n",36);
+      break;
     case 53:
       write (1, "EBADR: Invalid request descriptor \n", 35);
       break;

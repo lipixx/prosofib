@@ -30,12 +30,17 @@ sys_write (int fd, char *buffer, int size)
   current_task = current();
   fitxer_obert = (current_task->taula_canals[fd]);
   
-  if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
+  if (fd < 0 || fd >= NUM_CANALS)
+    return -ECHRNG;
+  if (current_task->taula_canals[fd] == NULL)
     return -EBADF;
+
   if (fitxer_obert->mode_acces == O_RDONLY)
     return -EROFS;
+
   if (size < 0)
     return -EINVAL;
+
   if (size > ((NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE))
     return -EFBIG;
 
@@ -76,8 +81,10 @@ int sys_read(int fd, char * buffer, int size)
 
    current_task = current();
 
-  if (fd < 0 || fd >= NUM_CANALS || (int) current_task->taula_canals[fd] == NULL)
-    return -EBADR;
+ if (fd < 0 || fd >= NUM_CANALS)
+    return -ECHRNG;
+  if (current_task->taula_canals[fd] == NULL)
+    return -EBADF;
 
   if (size < 0)
     return -EINVAL;
@@ -184,10 +191,12 @@ int sys_close(int fd)
  struct task_struct * current_task;
  
  current_task = current();
- 
- if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
-   return -EBADR;
-  
+
+  if (fd < 0 || fd >= NUM_CANALS)
+    return -ECHRNG;
+  if (current_task->taula_canals[fd] == NULL)
+    return -EBADF;
+
  //Close dependent
  if (current_task->taula_canals[fd]->opened_file->operations->sys_close_dev != NULL)
    (current_task->taula_canals[fd]->opened_file->operations->sys_close_dev)(fd);
@@ -205,8 +214,10 @@ int sys_dup(int fd)
   int new_fd;
   struct task_struct * proces = current();
 
-  if (fd < 0 || fd >= NUM_CANALS || proces->taula_canals[fd] == NULL)
-    return -EBADR;
+  if (fd < 0 || fd >= NUM_CANALS)
+    return -ECHRNG;
+  if (proces->taula_canals[fd] == NULL)
+    return -EBADF;
   
   for (new_fd = 0; new_fd < NUM_CANALS && proces->taula_canals[new_fd] != NULL; new_fd++);
     if (new_fd == NUM_CANALS) return -EMFILE;

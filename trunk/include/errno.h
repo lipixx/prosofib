@@ -22,6 +22,7 @@
 #define	EMLINK		31	/* Too many links */
 #define ENAMETOOLONG    36      /* File name too long */
 #define	ENOSYS		38	/* Function not implemented */
+#define	ECHRNG		44	/* Channel number out of range */
 #define	EBADR		53	/* Invalid request descriptor */
 #define	EBADFD		77	/* File descriptor in bad state */
 #endif
