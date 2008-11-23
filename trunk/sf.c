@@ -133,7 +133,7 @@ struct file * create_file(const char * path)
     return (struct file *) -ENOSPC;
   
   copy_from_user((char *)path,directori[i].nom,size);
-  //directori[i].nom = (char *) path;
+  // directori[i].nom = nom;
   directori[i].mode_acces_valid = O_RDWR; //default per fitxers
   directori[i].operations->sys_open_dev = NULL;
   directori[i].operations->sys_close_dev = sys_close_file;
@@ -181,7 +181,7 @@ void init_directori()
       directori[i].operations = &ops[i];
     }
 
-  directori[0].nom = "keyboard";
+  copy_data("keyboard",directori[0].nom,8);
   directori[0].mode_acces_valid = O_RDONLY;
   directori[0].operations->sys_read_dev = sys_read_keyboard;
   directori[0].first_block = NULL;
@@ -189,7 +189,7 @@ void init_directori()
   directori[0].n_blocs = NULL;
   directori[0].n_refs = 0;
  
-  directori[1].nom = "console";
+  copy_data("console",directori[1].nom,7);
   directori[1].mode_acces_valid = O_WRONLY;
   directori[1].operations->sys_write_dev = sys_write_console;
   directori[1].first_block = NULL;
