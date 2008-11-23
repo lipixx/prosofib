@@ -74,7 +74,7 @@ sys_read_keyboard(int fd, char * buffer, int size)
   int escriure, pid;
   struct task_struct *actual;
   actual=current();
-  actualitzar_pendents(size);
+  actual->chars_pendents = size - circ_chars;
   pid = actual->pid;
   
   if((circ_chars==size || actual->chars_pendents<= 0 )&& list_empty(&keyboard_queue))
@@ -107,12 +107,12 @@ sys_read_keyboard(int fd, char * buffer, int size)
 	
 	/* Actualitzam les dades necessaries */
 	//list_last(keyboard_queue.queue)->chars_pendets=size-circ_chars;
-	list_head_to_task_struct(list_first(&keyboard_queue))->size=size;
+	//list_head_to_task_struct(list_first(&keyboard_queue))->size=size;
+	actual->size=size;
 	//	list_head_to_task_struct(list_first(&keyboard_queue))->buffer=buffer;
 	
 	/* Actualitzem el retorn de la crida del read */ 
-	((union task_union *)(list_first(&keyboard_queue)))->stack[EAX] = size;
-	
+	((union task_union *)actual)->stack[EAX]=size;
 	
 	/* Passam a executar el seguent proces de la runqueue mitjançant la politica de planificacio */
 	proces_seguent =(union task_union *) (list_head_to_task_struct (runqueue.next));
@@ -127,10 +127,10 @@ sys_read_keyboard(int fd, char * buffer, int size)
   return -EPERM; /*Error si el proces 0 es vol bloquejar */
 }
 
-void actualitzar_pendents(int size){
+/*void actualitzar_pendents(int size){
   struct task_struct * task = current();
   task->chars_pendents = size - circ_chars;
-}
+  }*/
 
 
 void avanzar(){
