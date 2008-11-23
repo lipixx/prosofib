@@ -15,7 +15,7 @@ write (int fd, char *buffer, int size)
   __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" "movl 12(%%ebp),%%ecx\n" "movl 16(%%ebp),%%edx\n" "movl $4,%%eax\n" "int $0x80\n" "movl %%eax, %0\n":"=g" (val)	/*bind %0 */
 			:	/*bind %1,%2,%3 si hi fossin.. */
 			:"%ebx"	/*announce to the compiler that ebx is dirty */
-			);
+    );
 
   return check_errno (val);
 }
@@ -24,15 +24,9 @@ int
 read (int fd, char *buffer, int size)
 {
   int val = -1;
-  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" 
-			"movl 12(%%ebp),%%ecx\n" 
-			"movl 16(%%ebp),%%edx\n" 
-			"movl $3,%%eax\n" 
-			"int $0x80\n" "movl %%eax, %0\n"
-			:"=g" (val)	/*bind %0 */
-			:
-			:"%ebx"	/*announce to the compiler that ebx is dirty */
-			);
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n" "movl 12(%%ebp),%%ecx\n" "movl 16(%%ebp),%%edx\n" "movl $3,%%eax\n" "int $0x80\n" "movl %%eax, %0\n":"=g" (val)	/*bind %0 */
+			::"%ebx"	/*announce to the compiler that ebx is dirty */
+    );
   return check_errno (val);
 }
 
@@ -89,7 +83,7 @@ nice (int quantum)
 }
 
 int
-unlink (const char * path)
+unlink (const char *path)
 {
   int val = -1;
   __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
@@ -99,14 +93,13 @@ unlink (const char * path)
 }
 
 int
-open (const char * path, int flags)
+open (const char *path, int flags)
 {
   int res = -1;
   __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
 			"movl 12(%%ebp),%%ecx\n"
 			"movl $5,%%eax\n" "int $0x80\n"
-			"movl %%eax, %0\n":"=g" (res)
-			::"%ebx");
+			"movl %%eax, %0\n":"=g" (res)::"%ebx");
   return check_errno (res);
 }
 
@@ -131,14 +124,13 @@ dup (int fd)
 }
 
 int
-readdir (struct dir_ent * buffer, int offset)
+readdir (struct dir_ent *buffer, int offset)
 {
   int res = -1;
-    __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
+  __asm__ __volatile__ ("movl 8(%%ebp),%%ebx\n"
 			"movl 12(%%ebp),%%ecx\n"
 			"movl $141,%%eax\n" "int $0x80\n"
-			"movl %%eax, %0\n":"=g" (res)
-			::"%ebx");
+			"movl %%eax, %0\n":"=g" (res)::"%ebx");
   return check_errno (res);
 }
 
@@ -205,7 +197,7 @@ perror ()
       write (1, "EPERM: Operation not permitted\n", 31);
       break;
     case 2:
-      write (1, "ENOENT: No such file or directory\n",34);
+      write (1, "ENOENT: No such file or directory\n", 34);
       break;
     case 3:
       write (1, "ESRCH: No such process \n", 24);
@@ -223,25 +215,25 @@ perror ()
       write (1, "EFAULT: Bad address \n", 21);
       break;
     case 16:
-      write (1, "EBUSY: Device or resource busy\n",31);
+      write (1, "EBUSY: Device or resource busy\n", 31);
       break;
     case 19:
-      write (1, "ENODEV: No such device\n",23);
+      write (1, "ENODEV: No such device\n", 23);
       break;
     case 22:
       write (1, "EINVAL: Invalid argument \n", 26);
       break;
     case 23:
-      write (1, "ENFILE: Too many open files in system \n",39);
+      write (1, "ENFILE: Too many open files in system \n", 39);
       break;
     case 24:
-      write (1, "EMFILE: Too many open files by the proces \n",44);
+      write (1, "EMFILE: Too many open files by the proces \n", 44);
       break;
     case 27:
       write (1, "EFBIG: File too large \n", 23);
       break;
     case 28:
-       write (1, "ENOSPC: No space left on device\n",32);
+      write (1, "ENOSPC: No space left on device\n", 32);
       break;
     case 29:
       write (1, "ESPIPE: Illegal Seek\n", 21);
@@ -259,7 +251,7 @@ perror ()
       write (1, "ENOSYS: Function not implemented \n", 34);
       break;
     case 44:
-      write (1, "ECHRNG: Channel number out of range\n",36);
+      write (1, "ECHRNG: Channel number out of range\n", 36);
       break;
     case 53:
       write (1, "EBADR: Invalid request descriptor \n", 35);
@@ -268,7 +260,7 @@ perror ()
       write (1, "EBADFD: File descriptor in bad state \n", 38);
       break;
     default:
-      write (1, "Unknown Error\n", 14);
+      write (1, "Unknown Error/No error\n", 25);
       break;
     }
 }

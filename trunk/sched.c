@@ -20,7 +20,7 @@ init_sched ()
 {
   int i;
   INIT_LIST_HEAD (&runqueue);
-  INIT_LIST_HEAD(&keyboard_queue);
+  INIT_LIST_HEAD (&keyboard_queue);
   pid = 0;
   call_from_int = 0;
   for (i = 0; i < NR_TASKS; i++)
@@ -39,17 +39,17 @@ init_task0 (int first_ph)
   task[0].task.quantum = 60;
   task[0].task.tics_cpu = 0;
   vida = task[0].task.quantum;
-  task[0].task.chars_pendents=0;
-  task[0].task.size=0;
-  task[0].task.buffer=0;
+  task[0].task.chars_pendents = 0;
+  task[0].task.size = 0;
+  task[0].task.buffer = 0;
 
   for (i = 0; i < NUM_PAG_DATA; i++)
     task[0].task.pagines_fisiques[i] = first_ph + NUM_PAG_CODE + i;
 
   //Init de la Taula de Canals
-  for (i=3; i<NUM_CANALS; i++)
+  for (i = 3; i < NUM_CANALS; i++)
     {
-      task[0].task.taula_canals[i] = NULL; 
+      task[0].task.taula_canals[i] = NULL;
     }
 
   //Init de stdin, stdout, stderr (com fer un open)
@@ -78,32 +78,19 @@ init_task0 (int first_ph)
 }
 
 union task_union *
-get_task_union(struct task_struct * n_task)
+get_task_union (struct task_struct *n_task)
 {
-/*
-  int i;
-
-  for (i = 0; i<NR_TASKS; i++)
-    {
-      if (task[i].task.pid == n_task->pid)
-	return (union task_union *) &task[i];
-    }
-  return (union task_union *) NULL;
- */
   return (union task_union *) n_task;
 }
 
 struct task_struct *
 current ()
 {
-  struct task_struct * p;
+  struct task_struct *p;
 
   __asm__ __volatile__ ("movl $0xfffff000, %%ecx\n"
 			"andl %%esp, %%ecx\n"
-			"movl %%ecx, %0\n"
-			:"=g" (p)
-			:
-			:"%ecx");
+			"movl %%ecx, %0\n":"=g" (p)::"%ecx");
   return p;
 }
 

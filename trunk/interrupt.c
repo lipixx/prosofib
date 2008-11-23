@@ -306,8 +306,8 @@ clock_routine ()
   if (vida == 0)
     {
       //Si nomes hi ha task0 restaurar vida i res mes
-      if (list_first(&runqueue) == list_last(&runqueue))
-	  vida = old_task->quantum;
+      if (list_first (&runqueue) == list_last (&runqueue))
+	vida = old_task->quantum;
       else
 	{
 	  list_del (&(old_task->run_list));
@@ -318,11 +318,11 @@ clock_routine ()
 	  task_switch (new_task);
 	}
     }
-  
-  if (temps % 650 == 0) //18 == 0)
+
+  if (temps % 650 == 0)		//18 == 0)
     {
-      segons = temps/650; // / 18;
-      minuts = segons/60; // / 60;
+      segons = temps / 650;	// / 18;
+      minuts = segons / 60;	// / 60;
       segons = segons % 60;
 
       /* Si fa mes de 100 minuts, reiniciarem el comptador de temps.
@@ -356,49 +356,50 @@ keyboard_routine ()
   char c;
   struct task_struct *bloq;
   c = char_map[b & 0x7f];
-  
-    
-  /* Si el buffer esta ple, aquest caracter es perd.*/
-  
-  if (!(b & 0x80) )//&& char_map[b]!= '\0')		//Make
-    {
-      printc(c);
 
-      buffer_circular[pos]=c;
-      avanzar (); 
+
+  /* Si el buffer esta ple, aquest caracter es perd. */
+
+  if (!(b & 0x80))   //Make
+    {
+      printc (c);
+
+      buffer_circular[pos] = c;
+      avanzar ();
       circ_chars++;
-            
-      if(!list_empty(&keyboard_queue)){
-	/* Hi ha algun proces bloquejat */
-	/* Volem llegir = hem fet un sys_read_keyboard */
-	
-	bloq=list_head_to_task_struct(list_first(&keyboard_queue));    
-		bloq->chars_pendents--;
-	
-	
-	if(bloq->chars_pendents<=0){
-	  /* El buffer no esta ple pero el primer proces de la cua de bloquejats
-	     ja te tots els caracters que demanava. */
-	  
-	  anar_al_circ(bloq,bloq->size); /* Copiem les dades */
-	  circ_chars=0;
-	  avanzar();
-	  inici=pos;
-	  desbloquejar_teclat(bloq);
-	  
+
+      if (!list_empty (&keyboard_queue))
+	{
+	  /* Hi ha algun proces bloquejat */
+	  /* Volem llegir = hem fet un sys_read_keyboard */
+
+	  bloq = list_head_to_task_struct (list_first (&keyboard_queue));
+	  bloq->chars_pendents--;
+
+
+	  if (bloq->chars_pendents <= 0)
+	    {
+	      /* El buffer no esta ple pero el primer proces de la cua de bloquejats
+	         ja te tots els caracters que demanava. */
+
+	      anar_al_circ (bloq, bloq->size);	/* Copiem les dades */
+	      circ_chars = 0;
+	      avanzar ();
+	      inici = pos;
+	      desbloquejar_teclat (bloq);
+
+	    }
+	  else if (circ_chars >= CIRCULAR_SIZE)
+	    {
+
+	      anar_al_circ (bloq, CIRCULAR_SIZE);	/* Copiem les dades */
+	      bloq->size -= circ_chars;
+	      bloq->buffer += circ_chars;
+	      circ_chars = 0;
+	      avanzar ();
+	      inici = pos;
+	    }
 	}
-	else if (circ_chars>=CIRCULAR_SIZE){
-	  
-	  anar_al_circ(bloq,CIRCULAR_SIZE);  /* Copiem les dades */
-	  
-	  //bloq->chars_pendents-=circ_chars;
-	  bloq->size-=circ_chars;
-	  bloq->buffer+=circ_chars;
-	  circ_chars=0;
-	  avanzar();
-	  inici=pos;
-	}  
-      }
     }
-  
+
 }

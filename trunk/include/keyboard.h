@@ -6,14 +6,7 @@
 
 #include <list.h>
 
-/*
-struct keyq {
-  struct list_head *queue;   
-  int chars_pendents;
-  int buffer;
-  int size;
-} keyboard_queue;  
-*/
+
 struct list_head keyboard_queue;
 
  
