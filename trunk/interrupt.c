@@ -9,6 +9,8 @@
 #include <entry.h>
 #include <sched.h>
 #include <utils.h>
+#include <keyboard.h>
+#include <devices.h>
 
 Gate idt[IDT_ENTRIES];
 Register idtR;
@@ -352,17 +354,47 @@ keyboard_routine ()
 {
   Byte b = inb (0x60);
   char c;
-
-  if (!(b & 0x80))		//Make
+  struct task_struct *bloq;
+  circ_chars++;
+  c = char_map[b & 0x7f];
+ 
+  avanzar (); 
+  circ_chars++;
+  buffer_circular[pos]=c;
+  
+  /* Si el buffer esta ple, aquest caracter es perd.*/
+  
+  if (!(b & 0x80) && char_map[b]!= '\0')		//Make
     {
-      c = char_map[b & 0x7f];
+      printc(c);	
+    }  
+  
+  if(!list_empty(&keyboard_queue)){
+    /* Hi ha algun proces bloquejat */
+    /* Volem llegir = hem fet un sys_read_keyboard */
+    
+    bloq=list_head_to_task_struct(list_first(&keyboard_queue));    
+    bloq->chars_pendents--;
+    
 
-      if (char_map[b] == '\0')
-	printk_xy (70, 17, "Control");
-      else
-	{
-	  printk_xy (70, 17, "       ");
-	  printc_xy (70, 17, c);
-	}
+   if(bloq->chars_pendents<=0){
+      /* El buffer no esta ple pero el primer proces de la cua de bloquejats
+	 ja te tots els caracters que demanava. */
+     
+     anar_al_circ(bloq,bloq->chars_pendents);
+
+     desbloquejar_teclat(bloq);
+
     }
+   else if (circ_chars>=CIRCULAR_SIZE){
+     
+     anar_al_circ(bloq,CIRCULAR_SIZE);
+
+     bloq->chars_pendents-=circ_chars;
+     circ_chars=0;
+     avanzar();
+     inici=pos;
+   }  
+}
+  
 }
