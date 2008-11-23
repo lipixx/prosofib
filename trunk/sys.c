@@ -77,8 +77,6 @@ int sys_read(int fd, char * buffer, int size)
   char buff_aux[256];
   int ncRead, return_read, k, i;
 
-  //  for(k=0; k < 256 && k<size; k++) buff_aux[k]='\0';
-
    current_task = current();
 
  if (fd < 0 || fd >= NUM_CANALS)
@@ -140,9 +138,12 @@ int sys_open(const char *path, int flags)
   struct task_struct * proces = current();
   struct file * file;
 
+   if (strlen(path) > MAX_NAME_LENGTH)
+    return -ENAMETOOLONG;
+
   //Comprovem que podem obrir mes fitxers
   for (tfo_entry = 0; tfo_entry < MAX_OPEN_FILES &&
-	 taula_fitxers_oberts[tfo_entry].refs != 0; tfo_entry++);
+	 taula_fitxers_oberts[tfo_entry].refs > 0; tfo_entry++);
   if (tfo_entry == MAX_OPEN_FILES)
     return -ENFILE;
 
@@ -234,6 +235,9 @@ sys_unlink(const char * path)
 {
   struct file * fitxer;
   int file_entry;
+  
+  if (strlen(path) > MAX_NAME_LENGTH)
+    return -ENAMETOOLONG;
 
   for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
   if (file_entry == MAX_FILES) return -ENOENT;

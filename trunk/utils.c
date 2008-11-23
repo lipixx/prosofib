@@ -79,6 +79,12 @@ int strcmp (const char * s1, const char * s2)
     return *(unsigned char *)s1 < *(unsigned char *)s2 ? -1 : 1;
 }
 
+int strlen (const char * s1)
+{
+  int i = 0;
+  for (; s1[i] != 0; i++);
+  return i;
+}
 
 void
 itoa (int n, char *buffer)

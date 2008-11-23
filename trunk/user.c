@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <jocs.h>
 #include <sf.h>
-#include <utils.h>
 
 void runjp ();
 
@@ -143,10 +142,23 @@ char buffer[1024];
 
 				open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);open("screen",O_WRONLY);
 				write(1,"TFO plena: ",11); fd = open("f1",O_RDWR|O_CREAT); if(fd != -1) ok =-1; perror();
+			
+				write(0,"aki",3);
 				for(i=0;i<8;i++) close(i+2);
+				write(0,"AQUI",4);
+				open("1",O_RDWR|O_CREAT);
+				open("2",O_RDWR|O_CREAT);
+				open("3",O_RDWR|O_CREAT);
+				open("4",O_RDWR|O_CREAT);
+				open("5",O_RDWR|O_CREAT);
+				open("6",O_RDWR|O_CREAT);
+				open("7",O_RDWR|O_CREAT);
+				open("8",O_RDWR|O_CREAT);
+				write(1,"Directori ple: ",15); 
+				fd = open("f1",O_RDWR|O_CREAT); 
+				if(fd != -1) ok =-1; 
+				perror();
 
-				open("1",O_RDWR|O_CREAT);open("2",O_RDWR|O_CREAT);open("3",O_RDWR|O_CREAT);open("4",O_RDWR|O_CREAT);open("5",O_RDWR|O_CREAT);open("6",O_RDWR|O_CREAT);open("7",O_RDWR|O_CREAT);open("8",O_RDWR|O_CREAT);
-				write(1,"Directori ple: ",15); fd = open("f1",O_RDWR|O_CREAT); if(fd != -1) ok =-1; perror();
 				for(i=0;i<8;i++) close(i+2); unlink("1");unlink("2");unlink("3");unlink("4");unlink("5");unlink("6");unlink("7");unlink("8");
 
 				

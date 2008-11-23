@@ -120,13 +120,14 @@ int last_block(int bloc0)
 
 struct file * create_file(const char * path)
 {
-  int i, size, fblock;
+  int i, fblock, size;
 
   for (i=0; directori[i].n_refs != -1 && i < MAX_FILES;i++);
   if (i == MAX_FILES) return (struct file *) -ENFILE;
   
-  for (size=0; path[size] != '\0'; ++size);
-  if (size >= MAX_NAME_LENGTH) return (struct file *) -ENAMETOOLONG;
+  size = strlen (path);
+  if (size > MAX_NAME_LENGTH)
+    return (struct file *) -ENAMETOOLONG;
   
   fblock = balloc(1);
   if (fblock < 0)
