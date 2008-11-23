@@ -9,6 +9,21 @@
 #include <errno.h>
 #include <utils.h>
 
+int freespace()
+{
+  int i,espai_lliure;
+ 
+  espai_lliure = 0;
+
+  if (bloc_de_la_llibertat != -1)
+    {
+    i = bloc_de_la_llibertat;
+    for (;fat[i] != -1; ++espai_lliure, i++);
+    }
+
+  return espai_lliure;
+}
+
 /* Retorna el primer bloc lliure de nblocks encadenats
  * a la fat. -1 si no hi ha prou espai.
  */
@@ -89,6 +104,20 @@ int freed(int ibloc0)
   return 0;
 }
 
+void add_block(int blocLast, int blocAdded)
+{
+  fat[blocLast] = blocAdded;
+  fat[blocAdded] = -1;
+}
+
+int last_block(int bloc0)
+{
+  while (fat[bloc0] != -1)
+      bloc0 = fat[bloc0];
+    
+  return bloc0;
+}
+
 struct file * create_file(const char * path)
 {
   int i, size, fblock;
@@ -97,16 +126,16 @@ struct file * create_file(const char * path)
   if (i == MAX_FILES) return (struct file *) -ENFILE;
   
   for (size=0; path[size] != '\0'; ++size);
-  if (size >= MAX_NAME_LENGTH) return (struct file *) -EINVAL;
+  if (size >= MAX_NAME_LENGTH) return (struct file *) -ENAMETOOLONG;
   
   fblock = balloc(1);
   if (fblock < 0)
-    return (struct file *) -EIO;
-
-  //copy_from_user((char *)path,directori[i].nom,size);
-  directori[i].nom = (char *) path;
+    return (struct file *) -ENOSPC;
+  
+  copy_from_user((char *)path,directori[i].nom,size);
+  //directori[i].nom = (char *) path;
   directori[i].mode_acces_valid = O_RDWR; //default per fitxers
-  directori[i].operations->sys_open_dev = sys_open_file;
+  directori[i].operations->sys_open_dev = NULL;
   directori[i].operations->sys_close_dev = sys_close_file;
   directori[i].operations->sys_read_dev = sys_read_file;
   directori[i].operations->sys_write_dev = sys_write_file;

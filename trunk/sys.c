@@ -30,8 +30,10 @@ sys_write (int fd, char *buffer, int size)
   current_task = current();
   fitxer_obert = (current_task->taula_canals[fd]);
   
-  if (fd < 0 || fd >= NUM_CANALS || fitxer_obert->mode_acces == O_RDONLY || current_task->taula_canals[fd] == NULL)
+  if (fd < 0 || fd >= NUM_CANALS || current_task->taula_canals[fd] == NULL)
     return -EBADF;
+  if (fitxer_obert->mode_acces == O_RDONLY)
+    return -EROFS;
   if (size < 0)
     return -EINVAL;
   if (size > ((NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE))
@@ -50,9 +52,11 @@ sys_write (int fd, char *buffer, int size)
       if (copy_from_user (buffer, buff_aux, writeSize)!=0) return -EFAULT;
 
       return_write = (*((fitxer_obert->opened_file)->operations->sys_write_dev))(fd,buff_aux,writeSize);
-      if (return_write == -1 || return_write != writeSize) return -EIO;
-
+      if (return_write < 0) return return_write;
+      
       ncWritten += return_write;
+
+      if (return_write != writeSize) return ncWritten;
 
       buffer += size;
       size -= writeSize;
@@ -61,12 +65,12 @@ sys_write (int fd, char *buffer, int size)
   return ncWritten;
 }
 
-int sys_read(int fd, char *buffer, int size)
+int sys_read(int fd, char * buffer, int size)
 {
   struct task_struct * current_task;
   struct fitxers_oberts * fitxer_obert;
   char buff_aux[256];
-  int ncRead, return_read;
+  int ncRead, return_read, k;
 
   current_task = current();
 
@@ -103,7 +107,9 @@ int sys_read(int fd, char *buffer, int size)
       if (return_read == -1) return -EIO;
       ncRead += return_read;
   
-      if (copy_to_user(buff_aux,buffer,size)!=0) return -EFAULT;
+     //if (copy_to_user(buff_aux,buffer,return_read)!=0) return -EFAULT; <-- copia 2 mas
+      for (k = 0; k < return_read; k++, buffer++)
+	*buffer = buff_aux[k];
     }
   
   //Sempre hem de retornar ncRead, encara que s'hagin llegit
@@ -123,10 +129,7 @@ int sys_open(const char *path, int flags)
   int fd,file_entry,tfo_entry;
   struct task_struct * proces = current();
   struct file * file;
-  //////////////ENAMETOOLONG, ENOSPC, ESPIPE, EROFS, EMLINK
-  //////////////////////////
-  ///////////////////////
-  ///////////////////////
+
   //Comprovem que podem obrir mes fitxers
   for (tfo_entry = 0; tfo_entry < MAX_OPEN_FILES &&
 	 taula_fitxers_oberts[tfo_entry].refs != 0; tfo_entry++);
@@ -139,7 +142,6 @@ int sys_open(const char *path, int flags)
   
   //Obtenim el fitxer del directori
     for (file_entry = 0; file_entry < MAX_FILES && (strcmp(directori[file_entry].nom,path)); file_entry++);
-  
   if (file_entry == MAX_FILES)
     if (flags < O_CREAT) return -ENOENT;
     else
@@ -147,18 +149,21 @@ int sys_open(const char *path, int flags)
 	//Crear nou file:
 	file = create_file(path);
 	if (file < 0) return (int) file;
+	flags -= O_CREAT;
       }
   else
     file = &directori[file_entry];
-  
-  (*(file->operations->sys_open_dev))(path,flags);
+
+  //Nomes open depenent al qui ho tingui implementat
+  if (file->operations->sys_open_dev != NULL)
+    (*(file->operations->sys_open_dev))(path,flags);
+
+  //Obrim el dispositiu/fitxer!
 
   //Comprovem que tenim permis d'acces
   if (file->mode_acces_valid != O_RDWR && flags != file->mode_acces_valid)
     return -EPERM;
   
- 
-
   //Nova entrada a la TFO i punter al canal
   taula_fitxers_oberts[tfo_entry].refs = 1;
   taula_fitxers_oberts[tfo_entry].mode_acces = flags;
@@ -197,7 +202,7 @@ int sys_dup(int fd)
   int new_fd;
   struct task_struct * proces = current();
 
-  if (proces->taula_canals[fd] == NULL)
+  if (fd < 0 || fd >= NUM_CANALS || proces->taula_canals[fd] == NULL)
     return -EBADR;
   
   for (new_fd = 0; new_fd < NUM_CANALS && proces->taula_canals[new_fd] != NULL; new_fd++);
@@ -214,7 +219,7 @@ int
 sys_readdir(struct dir_ent *buffer, int offset)
 {
   int size = 0;
-  char *s1 = directori[offset].nom;
+  char * s1 = directori[offset].nom;
  
   if (offset < 0 || offset >= MAX_FILES)
     return -ENOENT;
@@ -233,7 +238,7 @@ int
 sys_nice (int quantum)
 {
   int old = -EINVAL; /* Invalid argument */
-  //  int old = -EPERM;
+
   struct task_struct *current_task = current ();
   if (quantum > 0)
     {

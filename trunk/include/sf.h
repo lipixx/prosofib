@@ -28,7 +28,11 @@
 
 void init_filesystem();
 struct file * create_file(const char * path);
+int freespace();
 int balloc (int nblocks);
+int freed (int ibloc0);
+void add_block (int blocLast, int blocAdded);
+int last_block (int bloc0);
 
 struct dir_ent {
   char nom[MAX_NAME_LENGTH];
