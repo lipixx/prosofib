@@ -2,13 +2,13 @@
 #include <devices.h>
 #include <sched.h>
 #include <errno.h>
+#include <sf.h>
 #include <keyboard.h>
 #include <utils.h>
 #include <list.h>
 #include <segment.h>
 #include <mm.h>
 #include <mm_address.h>
-
 
 #define EAX KERNEL_STACK_SIZE - 10
 
@@ -32,10 +32,39 @@ sys_write_console (int fd, char *buffer, int size)
 int
 sys_write_file (int fd, char * buffer, int size)
 {
-  //escriure al fitxer
-  
-  /* Incrementam la posicio de lseek per cada caracter escrit*/
-  return 0;
+  int bloc0,destBloc,destByte,i;
+
+  struct task_struct * proces = current();
+  struct fitxers_oberts * opened_file = proces->taula_canals[fd];
+  struct file * fitxer = proces->taula_canals[fd]->opened_file;
+
+  destByte = opened_file->lseek % BLOCK_SIZE;
+  bloc0 = fitxer->first_block;
+
+  //Comensarem a escriure a l'ultim bloc del fitxer
+  destBloc = last_block(fitxer->first_block);
+
+  for (i=0; i<size; i++)
+    {
+      //Si es necessari, incrementem nblocks
+      if (fitxer->size % BLOCK_SIZE == 0 && destByte != 0)
+	{
+	  bloc0 = balloc(1);
+	  if (bloc0 == -1) return i;
+	  //Afegim bloc al fitxer, de l'actual destBloc a bloc0
+	  add_block(destBloc,bloc0);
+	  destBloc = bloc0;
+	  destByte = 0;
+	  fitxer->n_blocs++;
+	}
+      //Copiem dades
+      disk[destBloc][destByte] = buffer[i];
+      fitxer->size++;
+      opened_file->lseek++;
+      destByte++;
+    }
+
+  return i;
 }
 
 int
@@ -174,8 +203,40 @@ int sys_close_file(int fd){
   return 0;
 }
 
-int sys_read_file(int fd, char* buffer, int size){
-  return 0;
+int sys_read_file(int fd, char * buffer, int size)
+{
+  int bloc0,byte0,i,lseekBloc;
+
+  struct task_struct * proces = current();
+  struct fitxers_oberts * opened_file = proces->taula_canals[fd];
+  struct file * fitxer = proces->taula_canals[fd]->opened_file;
+
+  bloc0 = fitxer->first_block;
+  lseekBloc = opened_file->lseek / BLOCK_SIZE;
+  byte0 = opened_file->lseek % BLOCK_SIZE;
+  
+  //Avansem n blocs
+  for (i = 0; i < lseekBloc; i++)
+    bloc0 = fat[bloc0];
+
+  //Llegirem size bytes a partir del bloc0
+   for (i=0; i<size; i++)
+    {
+      //Si es necessari, incrementem nblocks
+      if (byte0 % BLOCK_SIZE == 0 && bloc0 != fitxer->first_block)
+	{
+	  if (opened_file->lseek == size) return i;
+	  //Seguim a partir del seguent bloc
+	  bloc0 = fat[bloc0];
+	  byte0 = 0;
+	}
+      //Copiem dades
+      buffer[i] = disk[bloc0][byte0];
+      opened_file->lseek++;
+      byte0++;
+    }
+
+  return i;
 }
 
 int sys_close_console(int fd)
