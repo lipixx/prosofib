@@ -72,7 +72,7 @@ int sys_read(int fd, char * buffer, int size)
   char buff_aux[256];
   int ncRead, return_read, k, i;
 
-   for(k=0; k < 256 && k<size; k++) buff_aux[k]='\0';
+  //  for(k=0; k < 256 && k<size; k++) buff_aux[k]='\0';
 
    current_task = current();
 
