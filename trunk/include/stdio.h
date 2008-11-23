@@ -10,6 +10,5 @@
 int printf (char *buffer);
 void printint (int i);
 void itoa (int n, char *buffer);
-int strlen (char *buffer);
 
 #endif /* __STDIO_H__ */
