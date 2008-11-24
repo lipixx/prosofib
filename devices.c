@@ -35,10 +35,18 @@ sys_write_file (int fd, char *buffer, int size)
 {
   int bloc0, destBloc, destByte, i;
 
+  char sumar;
+
   struct task_struct *proces = current ();
   struct fitxers_oberts *opened_file = proces->taula_canals[fd];
   struct file *fitxer = proces->taula_canals[fd]->opened_file;
 
+  //Perque mai fem un O_APPEND quan obrim el fitxer.
+  //(Si el volguessim hauriem de fer lseek = fitxer->size)
+  sumar = 1;
+  if (fitxer->size >= size && opened_file->lseek == 0)
+    sumar = 0;
+  
   destByte = opened_file->lseek % BLOCK_SIZE;
   bloc0 = fitxer->first_block;
 
@@ -63,12 +71,11 @@ sys_write_file (int fd, char *buffer, int size)
       if (copy_from_user(&buffer[i],&disk[destBloc][destByte],1) != 0)
 	return -EFAULT;
 
-      //disk[destBloc][destByte] = buffer[i];
-      fitxer->size++;
+      if (sumar) fitxer->size++;
       opened_file->lseek++;
       destByte++;
     }
-
+  
   return i;
 }
 
