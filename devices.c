@@ -60,7 +60,10 @@ sys_write_file (int fd, char *buffer, int size)
 	  fitxer->n_blocs++;
 	}
       //Copiem dades
-      disk[destBloc][destByte] = buffer[i];
+      if (copy_from_user(&buffer[i],&disk[destBloc][destByte],1) != 0)
+	return -EFAULT;
+
+      //disk[destBloc][destByte] = buffer[i];
       fitxer->size++;
       opened_file->lseek++;
       destByte++;

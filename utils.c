@@ -18,17 +18,13 @@ copy_data (void *start, void *dest, int size)
 int
 copy_from_user (void *start, void *dest, int size)
 {
-  unsigned int min_usr_address, max_usr_address, bytes_to_copy, max_bytes;
-
-  max_bytes = (NUM_PAG_CODE + NUM_PAG_DATA) * PAGE_SIZE;
-  min_usr_address = L_USER_START;
-  max_usr_address = L_USER_START + max_bytes;
-  bytes_to_copy = (unsigned int) size;
-
-  if ((unsigned int) start < min_usr_address
-      || (unsigned int) start > max_usr_address || bytes_to_copy > max_bytes)
-    return -EFAULT;
-
+  
+  int error;
+  
+  error = check_address(start, size);
+  
+  if (error != 0) return error;
+  
   DWord *p = start, *q = dest;
   while (size > 0)
     {
@@ -38,25 +34,36 @@ copy_from_user (void *start, void *dest, int size)
   return 0;
 }
 
+int
+check_address(void *buffer, int size)
+{
+  unsigned int min_usr_address, max_usr_address, bytes_to_copy, max_bytes;
+  
+  max_bytes = (NUM_PAG_CODE + NUM_PAG_DATA) * PAGE_SIZE;
+  min_usr_address = L_USER_START;
+  max_usr_address = L_USER_START + max_bytes;
+  bytes_to_copy = (unsigned int) size;
+  
+  if ((unsigned int) buffer < min_usr_address
+      || (unsigned int) buffer > max_usr_address || bytes_to_copy > max_bytes)
+    return -EFAULT;
+
+  return 0;
+}
+
 /* Copia de espacio de kernel a espacio de usuario, devuelve 0 si ok y -1 si error*/
 int
 copy_to_user (void *start, void *dest, int size)
 {
 
-  unsigned int min_usr_address, max_usr_address, bytes_to_copy, max_bytes;
-
-  max_bytes = (NUM_PAG_CODE + NUM_PAG_DATA) * PAGE_SIZE;
-  min_usr_address = L_USER_START;
-  max_usr_address = L_USER_START + max_bytes;
-  bytes_to_copy = (unsigned int) size;
-
+  int error;
 
   if (size < 0)
     return -EINVAL;
 
-  if ((unsigned int) dest < min_usr_address
-      || (unsigned int) dest > max_usr_address || bytes_to_copy > max_bytes)
-    return -EFAULT;
+  error = check_address(dest, size);
+  
+  if (error != 0) return error;
 
   DWord *p = start, *q = dest;
   while (size > 0)
