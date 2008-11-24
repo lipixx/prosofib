@@ -8,7 +8,16 @@ void runjp ();
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  printf ("\nBenvinguts a ZeOS!\n");
+  printf("\n      ################################################");
+  printf("\n                   Benvinguts a ZeOS 1.3b"); 
+  printf("\n      ################################################");
+
+  printf("\n       - A partir d'aquest punt ja has entrat al sistema!");
+  printf("\n       Si estas llegint aquest missatge potser t'agradaria");
+  printf("\n       modificar el fitxer user.c descomentant una prova");
+  printf("\n       dels jocs de proves disponibles per veure les");
+  printf("\n       funcionalitats que t'ofereix ZeOS!\n\n\n\n.");
+
 
   /* Prova KBD -
   char buffer[512];
@@ -42,7 +51,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   //provar_open();
   //provar_dup();
   //provar_close();
-  provar_write_disp();
+  //provar_write_disp();
   //provar_read_disp();
   //provar_unlink();
   //provar_readdir();
