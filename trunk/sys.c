@@ -24,8 +24,7 @@ sys_write (int fd, char *buffer, int size)
 {
   struct task_struct *current_task;
   struct fitxers_oberts *fitxer_obert;
-  char buff_aux[256];
-  int return_write, ncWritten, writeSize;
+  int return_write;
 
   current_task = current ();
   fitxer_obert = (current_task->taula_canals[fd]);
@@ -43,37 +42,18 @@ sys_write (int fd, char *buffer, int size)
 
   if (size > ((NUM_PAG_DATA * PAGE_SIZE) - KERNEL_STACK_SIZE))
     return -EFBIG;
+ 
+  return_write = check_address(buffer,size);
+  if (return_write != 0) return return_write;
 
+  if (fitxer_obert->opened_file->operations->sys_write_dev != NULL)
+  return_write =
+    (*((fitxer_obert->opened_file)->operations->sys_write_dev)) (fd,
+								 buffer,
+								 size);
+  else return -EINVAL;
 
-  ncWritten = 0;
-  writeSize = 0;
-  while (size > 0)
-    {
-      if (size >= 256)
-	writeSize = 256;
-      else
-	writeSize = size;
-
-      if (copy_from_user (buffer, buff_aux, writeSize) != 0)
-	return -EFAULT;
-
-      return_write =
-	(*((fitxer_obert->opened_file)->operations->sys_write_dev)) (fd,
-								     buff_aux,
-								     writeSize);
-      if (return_write < 0)
-	return return_write;
-
-      ncWritten += return_write;
-
-      if (return_write != writeSize)
-	return ncWritten;
-
-      buffer += writeSize;
-      size -= writeSize;
-    }
-
-  return ncWritten;
+  return return_write;
 }
 
 int
@@ -81,8 +61,7 @@ sys_read (int fd, char *buffer, int size)
 {
   struct task_struct *current_task;
   struct fitxers_oberts *fitxer_obert;
-  char buff_aux[256];
-  int ncRead, return_read, k, i;
+  int return_read;
 
   current_task = current ();
   current_task->size = size;	//KBD
@@ -103,42 +82,16 @@ sys_read (int fd, char *buffer, int size)
   if (fitxer_obert->mode_acces == O_WRONLY)
     return -EPERM;
 
-  ncRead = 0;
   current_task->buffer = buffer;
 
-  while (size != 0)
-    {
-      if (size < 256)
-	{
-	  return_read =
-	    (*(fitxer_obert->opened_file->operations->sys_read_dev)) (fd,
-								      buff_aux,
-								      size);
-	  size = 0;
-	}
-      else
-	{
-	  return_read =
-	    (*(fitxer_obert->opened_file->operations->sys_read_dev)) (fd,
-								      buff_aux,
-								      256);
-	  size -= 256;
-	}
+  if (fitxer_obert->opened_file->operations->sys_read_dev == NULL) return -ENOSYS;
+  return_read = (*(fitxer_obert->opened_file->operations->sys_read_dev)) (fd,buffer,size);
 
-      //Farem que si hi ha error de i/o acabi la transaccio
+     //Farem que si hi ha error de i/o acabi la transaccio
       if (return_read == -1)
-	return -EIO;
+     return -EIO;
 
-      for (k = ncRead, i = 0; k < ncRead + return_read; k++, i++)
-	buffer[k] = buff_aux[i];
-
-      ncRead += return_read;
-    }
-
-  //Sempre hem de retornar ncRead, encara que s'hagin llegit
-  //0 bytes, ja que pot ser que haguem arribat a l'EOF
-  return ncRead;
-
+  return return_read;
 }
 
 /*

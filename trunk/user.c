@@ -17,7 +17,7 @@ strlen (char *buffer)
 
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
-  printf ("\nBenvinguts a ZeOS!");
+  printf ("\nBenvinguts a ZeOS!\n");
 
   /* Prova KBD -
   char buffer[512];
@@ -28,15 +28,16 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   if (f == 0)
     {
-      llegits = read (0, buffer, 256);
+      llegits = read (0, buffer,300);
       printf ("\nRead ens retorna: ");
       printint (llegits);
-      write (1, buffer, 256);
+      printf("\n\n");
+      write (1, buffer, 300);
       exit ();
     }
+  
+
   */
-
-
   //JOCS DE PROVES DE LA SEGONA ENTREGA:
   /* __asm__ __volatile__ ("movl $40,%%eax\n"
      "int $0x80\n"
@@ -55,7 +56,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
      QUE INTERESSI: */
   //provar_open();
   //provar_dup();
-  provar_close();
+  //provar_close();
   //provar_write_disp();
   //provar_read_disp();
   //provar_unlink();
