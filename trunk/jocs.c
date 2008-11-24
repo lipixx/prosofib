@@ -6,6 +6,26 @@
 #include <interrupt.h>
 #include <sf.h>
 
+
+void provar_kbd()
+{
+  char buffer[512];
+
+  int f, llegits;
+
+  f = fork ();
+
+  if (f == 0)
+    {
+      llegits = read (0, buffer,300);
+      printf ("\nRead ens retorna: ");
+      printint (llegits);
+      printf("\n\nImprimirem els llegits:");
+      write (1, buffer, 300);
+      exit ();
+    }
+}
+
 void
 provar_open ()
 {

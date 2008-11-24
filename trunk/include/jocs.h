@@ -14,6 +14,7 @@ void provar_switch (void);
 void provar_semafors(void);
 void run2_jp (void);
 
+void provar_kbd();
 void provar_open();
 void provar_dup();
 void provar_close();

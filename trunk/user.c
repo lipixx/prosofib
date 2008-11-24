@@ -16,28 +16,9 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   printf("\n       Si estas llegint aquest missatge potser t'agradaria");
   printf("\n       modificar el fitxer user.c descomentant una prova");
   printf("\n       dels jocs de proves disponibles per veure les");
-  printf("\n       funcionalitats que t'ofereix ZeOS!\n\n\n\n.");
+  printf("\n       funcionalitats que t'ofereix ZeOS!\n\n\n\n");
 
 
-  /* Prova KBD -
-  char buffer[512];
-
-  int f, llegits;
-
-  f = fork ();
-
-  if (f == 0)
-    {
-      llegits = read (0, buffer,300);
-      printf ("\nRead ens retorna: ");
-      printint (llegits);
-      printf("\n\n");
-      write (1, buffer, 300);
-      exit ();
-    }
-  
-
-  */
   //JOCS DE PROVES DE LA SEGONA ENTREGA:
   //provar_fork (9); //No sobrepassar NR_TASKS
   //provar_get_stats ();
@@ -48,6 +29,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   /*JOCS DE PROVES DE LA TERCERA ENTREGA. DESCOMENTAR EL
      QUE INTERESSI: */
+  //provar_kbd();
   //provar_open();
   //provar_dup();
   //provar_close();
@@ -59,10 +41,6 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   /* JOCS DE PROVES DE LA PRIMERA ENTREGA */
 
   //runjp (); //Hi ha que posar NUM_PAG_DATA = 8
-
-  // int fd = open("patata",O_WRONLY|O_CREAT);
-
-  //run2_jp();
 
   while (1);
   return 0;
