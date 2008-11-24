@@ -6,15 +6,6 @@
 
 void runjp ();
 
-
-int
-strlen (char *buffer)
-{
-  int i;
-  for (i = 0; buffer[i] != 0; i++);
-  return i;
-}
-
 int __attribute__ ((__section__ (".text.main"))) main (void)
 {
   printf ("\nBenvinguts a ZeOS!\n");
@@ -39,12 +30,6 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
 
   */
   //JOCS DE PROVES DE LA SEGONA ENTREGA:
-  /* __asm__ __volatile__ ("movl $40,%%eax\n"
-     "int $0x80\n"
-     :
-     :
-     );
-   */
   //provar_fork (9); //No sobrepassar NR_TASKS
   //provar_get_stats ();
   //provar_exit ();
@@ -57,7 +42,7 @@ int __attribute__ ((__section__ (".text.main"))) main (void)
   //provar_open();
   //provar_dup();
   //provar_close();
-  //provar_write_disp();
+  provar_write_disp();
   //provar_read_disp();
   //provar_unlink();
   //provar_readdir();

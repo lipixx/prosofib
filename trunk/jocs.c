@@ -83,7 +83,20 @@ void
 provar_write_disp ()
 {
   int fd, fd2;
+  struct dir_ent buffer;
+
+  printf("Prova escriptura kbd\n");
+  write (0,"Hola",4);
+  perror();
+  printf("\nProva escriptura fitxer\n");
   fd = open ("patata", O_RDWR | O_CREAT);
+
+  printf("\nLs primer: ");
+  readdir(&buffer,2);
+  printf(buffer.nom);
+  printf(" ");
+  printint(buffer.size);
+
   write (fd, "CADENA", 6);
   write (fd, "Kontinuacio", 11);
   write (fd, "12345678901234567890", 20);
@@ -99,6 +112,25 @@ provar_write_disp ()
 	 260);
   close (fd);
   close (fd2);
+  printf("\nAra escrivim.....OK!\n");
+  printf("\nProva sys_write_console:\n");
+  
+  printf("\nProva escriptura sense APPEND");
+  fd = open("patata", O_RDWR);
+
+  printf("\nLs intermedi: ");
+  readdir(&buffer,2);
+  printf(buffer.nom);
+  printf(" ");
+  printint(buffer.size);
+
+  printf("\nEscrivim 5 chars");
+  write(fd,"12345",5);
+  printf("\nLs ultim: ");
+  readdir(&buffer,2);
+  printf(buffer.nom);
+  printf(" ");
+  printint(buffer.size);  
 }
 
 void
