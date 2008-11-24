@@ -136,10 +136,10 @@ provar_write_disp ()
 void
 provar_read_disp ()
 {
-  printf ("/nHan de sortir 3 inicis 2 finals i 1 final total\n");
   int fd;
   char buffer[256 + 255 + 260];
   provar_write_disp ();
+  printf ("\n\n\nHan de sortir 3 inicis 2 finals i 1 final total:\n");
   fd = open ("comino", O_RDONLY);
   read (fd, buffer, 256);
   read (fd, buffer + 256, 255);
